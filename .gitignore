@@ -1,6 +1,7 @@
 # See https://www.dartlang.org/guides/libraries/private-files
 
 # Files and directories created by pub
+.idea/
 .dart_tool/
 .packages
 build/
@@ -27,3 +28,5 @@ doc/api/
 .flutter-plugins-dependencies
 
 .DS_Store
+*.iml
+.metadata
