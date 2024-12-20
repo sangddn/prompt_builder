@@ -1,0 +1,67 @@
+name: prompt_builder
+description: "Prompt Builder"
+publish_to: 'none'
+
+version: 0.0.1+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.1.2
+  auto_route: ^9.2.2
+  shadcn_ui: ^0.16.3
+  cupertino_icons: ^1.0.8
+  macos_window_utils: ^1.6.1
+  drift: ^2.22.1
+  drift_flutter: ^0.2.3
+  flutter_animate: ^4.1.1+1
+  cached_network_image: ^3.3.0
+  confetti: ^0.8.0
+  super_context_menu: ^0.8.22
+  file_picker: ^8.1.6
+  flutter_markdown: ^0.7.3+2
+  tiktoken_tokenizer_gpt4o_o1: ^1.1.0
+  flutter_gemini: ^3.0.0
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  analyzer: ^6.11.0
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.14
+  flutter_launcher_icons: ^0.14.0
+  drift_dev: ^2.22.1
+  auto_route_generator: ^9.0.0
+
+
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/fonts/inter/
+    - assets/images/icon.png
+
+  fonts:
+    - family: Iconsax
+      fonts:
+        - asset: assets/fonts/Iconsax.ttf
+    - family: HgiStrokeRounded
+      fonts:
+        - asset: assets/fonts/hgi-stroke-rounded.ttf
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/inter/InterVariable.ttf
+        - asset: assets/fonts/inter/InterVariable-Italic.ttf
+          style: italic
+
+
+flutter_launcher_icons:
+  macos:
+    generate: true
+    image_path: assets/images/icon.png
