@@ -25,6 +25,7 @@ dependencies:
   flutter_markdown: ^0.7.3+2
   tiktoken_tokenizer_gpt4o_o1: ^1.1.0
   flutter_gemini: ^3.0.0
+  dart_openai: ^5.1.0
 
 
 dev_dependencies:
