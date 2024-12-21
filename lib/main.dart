@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:macos_window_utils/macos_window_utils.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await WindowManipulator.makeTitlebarTransparent();
   runApp(const MyApp());
 }
 
@@ -16,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const ShadApp(
       title: 'Prompt Builder',
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Prompt Builder'),
     );
   }
 }
