@@ -11,4 +11,4 @@ PRODUCT_NAME = prompt_builder
 PRODUCT_BUNDLE_IDENTIFIER = com.promptBuilder
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2024 com. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2024 Sang Doan. All rights reserved.

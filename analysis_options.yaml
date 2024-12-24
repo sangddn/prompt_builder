@@ -230,7 +230,7 @@ linter:
     - valid_regexps
     - void_checks
     - avoid_futureor_void
-    - specify_nonobvious_local_variable_types
+    # - specify_nonobvious_local_variable_types
     - omit_obvious_local_variable_types
     - use_truncating_division
 

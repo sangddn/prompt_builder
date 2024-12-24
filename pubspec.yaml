@@ -14,18 +14,22 @@ dependencies:
   auto_route: ^9.2.2
   shadcn_ui: ^0.16.3
   cupertino_icons: ^1.0.8
-  macos_window_utils: ^1.6.1
   drift: ^2.22.1
   drift_flutter: ^0.2.3
   flutter_animate: ^4.1.1+1
   cached_network_image: ^3.3.0
-  confetti: ^0.8.0
   super_context_menu: ^0.8.22
   file_picker: ^8.1.6
   flutter_markdown: ^0.7.3+2
   tiktoken_tokenizer_gpt4o_o1: ^1.1.0
   flutter_gemini: ^3.0.0
   dart_openai: ^5.1.0
+  animated_tree_view: ^2.3.0
+  fuzzywuzzy: ^1.2.0
+  hive: ^2.2.3
+  path_provider: ^2.1.5
+  shimmer: ^3.0.0
+  gap: ^3.0.1
 
 
 dev_dependencies:
