@@ -49,21 +49,12 @@ flutter:
 
   assets:
     - assets/fonts/
-    - assets/fonts/inter/
     - assets/images/icon.png
 
   fonts:
-    - family: Iconsax
-      fonts:
-        - asset: assets/fonts/Iconsax.ttf
     - family: HgiStrokeRounded
       fonts:
         - asset: assets/fonts/hgi-stroke-rounded.ttf
-    - family: Inter
-      fonts:
-        - asset: assets/fonts/inter/InterVariable.ttf
-        - asset: assets/fonts/inter/InterVariable-Italic.ttf
-          style: italic
 
 
 flutter_launcher_icons:
