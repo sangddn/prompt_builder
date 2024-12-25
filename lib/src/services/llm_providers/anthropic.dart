@@ -6,6 +6,7 @@ final class Anthropic extends LLMProvider {
 
   static const apiKeyKey = 'anthropic_api_key';
   static const instance = Anthropic._();
+  static const _defaultModel = 'claude-3-5-sonnet-20241022';
 
   String _getApiKey() {
     final apiKey = Database().stringRef.get(apiKeyKey);
@@ -19,7 +20,7 @@ final class Anthropic extends LLMProvider {
   Future<String> captionImage(
     Uint8List image, [
     String? captionPrompt,
-    String? model = 'claude-3-5-sonnet-20241022',
+    String? model = _defaultModel,
   ]) async {
     final prompt = captionPrompt ?? _getImageCaptionPrompt();
 
@@ -34,7 +35,7 @@ final class Anthropic extends LLMProvider {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'model': model ?? 'claude-3-5-sonnet-20241022',
+        'model': model ?? _defaultModel,
         'messages': [
           {
             'role': 'user',
@@ -75,7 +76,7 @@ final class Anthropic extends LLMProvider {
   Future<String> generatePrompt(
     String instructions, [
     String? metaPrompt,
-    String? model = 'claude-3-5-sonnet-20241022',
+    String? model = _defaultModel,
   ]) async {
     final prompt = (metaPrompt ?? _getPromptGenerationPrompt())
         .replaceAll('{{INSTRUCTIONS}}', instructions);
@@ -88,7 +89,7 @@ final class Anthropic extends LLMProvider {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'model': model ?? 'claude-3-5-sonnet-20241022',
+        'model': model ?? _defaultModel,
         'messages': [
           {'role': 'user', 'content': prompt},
         ],
@@ -108,7 +109,7 @@ final class Anthropic extends LLMProvider {
   Future<String> summarize(
     String content, [
     String? summarizationPrompt,
-    String? model = 'claude-3-5-sonnet-20241022',
+    String? model = _defaultModel,
   ]) async {
     final prompt = (summarizationPrompt ?? _getSummarizationPrompt())
         .replaceAll('{{CONTENT}}', content);
@@ -121,7 +122,7 @@ final class Anthropic extends LLMProvider {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'model': model ?? 'claude-3-5-sonnet-20241022',
+        'model': model ?? _defaultModel,
         'messages': [
           {'role': 'user', 'content': prompt},
         ],

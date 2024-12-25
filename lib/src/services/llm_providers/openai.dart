@@ -6,6 +6,7 @@ final class OpenAI extends LLMProvider {
 
   static const apiKeyKey = 'openai_api_key';
   static const instance = OpenAI._();
+  static const _defaultModel = 'gpt-4o';
 
   String _getApiKey() {
     final apiKey = Database().stringRef.get(apiKeyKey);
@@ -19,7 +20,7 @@ final class OpenAI extends LLMProvider {
   Future<String> captionImage(
     Uint8List image, [
     String? captionPrompt,
-    String? model = 'gpt-4o',
+    String? model = _defaultModel,
   ]) async {
     final prompt = captionPrompt ?? _getImageCaptionPrompt();
     final apiKey = _getApiKey();
@@ -34,7 +35,7 @@ final class OpenAI extends LLMProvider {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'model': model ?? 'gpt-4o',
+        'model': model ?? _defaultModel,
         'messages': [
           {
             'role': 'user',
@@ -77,7 +78,7 @@ final class OpenAI extends LLMProvider {
   Future<String> generatePrompt(
     String instructions, [
     String? metaPrompt,
-    String? model = 'gpt-4o',
+    String? model = _defaultModel,
   ]) async {
     final apiKey = _getApiKey();
     final prompt = (metaPrompt ?? _getPromptGenerationPrompt())
@@ -90,7 +91,7 @@ final class OpenAI extends LLMProvider {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'model': model ?? 'gpt-4o',
+        'model': model ?? _defaultModel,
         'messages': [
           {'role': 'user', 'content': prompt},
         ],
@@ -110,7 +111,7 @@ final class OpenAI extends LLMProvider {
   Future<String> summarize(
     String content, [
     String? summarizationPrompt,
-    String? model = 'gpt-4o',
+    String? model = _defaultModel,
   ]) async {
     final apiKey = _getApiKey();
     final prompt = (summarizationPrompt ?? _getSummarizationPrompt())
@@ -123,7 +124,7 @@ final class OpenAI extends LLMProvider {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'model': model ?? 'gpt-4o',
+        'model': model ?? _defaultModel,
         'messages': [
           {'role': 'user', 'content': prompt},
         ],
