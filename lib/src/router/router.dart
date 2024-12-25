@@ -9,21 +9,45 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-        AutoRoute(
+        DefaultRoute(
           initial: true,
           page: ShellRoute.page,
           children: [
-            AutoRoute(
+            DefaultRoute(
               path: 'library',
-              page: LibraryRoute.page,
+              page: LibraryShellRoute.page,
               children: [
-                AutoRoute(path: 'prompt', page: PromptRoute.page),
+                DefaultRoute(
+                  initial: true,
+                  page: LibraryRoute.page,
+                ),
+                DefaultRoute(
+                  path: 'prompt',
+                  page: PromptRoute.page,
+                ),
               ],
             ),
-            AutoRoute(path: 'text-prompts', page: TextPromptsRoute.page),
-            AutoRoute(path: 'settings', page: SettingsRoute.page),
-            AutoRoute(path: 'resources', page: ResourcesRoute.page),
+            DefaultRoute(path: 'text-prompts', page: TextPromptsRoute.page),
+            DefaultRoute(path: 'settings', page: SettingsRoute.page),
+            DefaultRoute(path: 'resources', page: ResourcesRoute.page),
           ],
         ),
       ];
+}
+
+@RoutePage()
+class LibraryShellPage extends AutoRouter {
+  const LibraryShellPage({super.key});
+}
+
+class DefaultRoute extends CustomRoute<void> {
+  DefaultRoute({
+    super.path,
+    super.initial,
+    required super.page,
+    super.children,
+  }) : super(
+          transitionsBuilder: TransitionsBuilders.fadeIn,
+          durationInMilliseconds: 100,
+        );
 }

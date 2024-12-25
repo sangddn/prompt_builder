@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../components/components.dart';
 import '../../core/core.dart';
+import '../../database/database.dart';
 import '../../router/router.gr.dart';
 
 @RoutePage()
@@ -106,7 +107,13 @@ class _NavButton extends StatelessWidget {
               : PColors.darkGray.resolveFrom(context),
         ),
       ),
-      onTap: () => tabsRouter.setActiveIndex(index),
+      onTap: () {
+        if (isActive) {
+          context.router.replaceNamed(tabsRouter.current.name);
+        } else {
+          tabsRouter.setActiveIndex(index);
+        }
+      },
     );
   }
 }
@@ -118,7 +125,12 @@ class _NewPromptButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CButton(
       tooltip: 'New Prompt',
-      onTap: () {},
+      onTap: () async {
+        final id = await Database().createPrompt();
+        if (context.mounted) {
+          context.router.push(PromptRoute(id: id));
+        }
+      },
       color: PColors.gray.resolveFrom(context),
       padding: k24H12VPadding,
       cornerRadius: 16.0,
