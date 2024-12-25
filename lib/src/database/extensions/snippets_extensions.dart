@@ -8,7 +8,7 @@ enum SnippetSortBy {
   lastUsedAt,
 }
 
-extension SnippetsExtension on AppDatabase {
+extension SnippetsExtension on Database {
   /// Create a new text-based prompt
   Future<int> createSnippet({String? title, String? content}) async {
     final snippetId = await into(snippets).insert(

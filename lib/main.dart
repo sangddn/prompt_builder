@@ -14,7 +14,7 @@ Future<void> main() async {
   };
 
   // Initialize the local database
-  await Database.instance.init();
+  await Database().initialize();
 
   runApp(const App());
 }

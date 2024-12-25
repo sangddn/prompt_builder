@@ -13,22 +13,31 @@ export 'tables/db_tables.dart';
 
 part 'database.g.dart';
 
-final class Database {
+@DriftDatabase(tables: [Prompts, PromptBlocks, BlockVariables, Snippets])
+final class Database extends _$Database {
   factory Database() => instance;
-  Database._();
+  Database._() : super(_openConnection());
 
-  static final Database instance = Database._();
+  static final instance = Database._();
+
+  @override
+  int get schemaVersion => 1;
+
+  static QueryExecutor _openConnection() {
+    // `driftDatabase` from `package:drift_flutter` stores the database in
+    // `getApplicationDocumentsDirectory()`.
+    return driftDatabase(name: 'prompt_builder_db');
+  }
 
   bool isInitialized = false;
 
-  final db = AppDatabase();
   late final Box<bool> boolRef;
   late final Box<String> stringRef;
   late final Box<int> intRef;
   late final Box<double> doubleRef;
   late final Box<DateTime> dateTimeRef;
 
-  Future<void> init() async {
+  Future<void> initialize() async {
     if (isInitialized) {
       return;
     }
@@ -51,34 +60,11 @@ final class Database {
     return;
   }
 
-  void disposeAll() {
+  void closeBoxes() {
     boolRef.close();
     stringRef.close();
     intRef.close();
     doubleRef.close();
     dateTimeRef.close();
-  }
-
-  void deleteAll() {
-    debugPrint('Deleting Local database...');
-    boolRef.clear();
-    stringRef.clear();
-    intRef.clear();
-    doubleRef.clear();
-    dateTimeRef.clear();
-  }
-}
-
-@DriftDatabase(tables: [Prompts, PromptBlocks, BlockVariables, Snippets])
-class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
-
-  @override
-  int get schemaVersion => 1;
-
-  static QueryExecutor _openConnection() {
-    // `driftDatabase` from `package:drift_flutter` stores the database in
-    // `getApplicationDocumentsDirectory()`.
-    return driftDatabase(name: 'prompt_builder_db');
   }
 }

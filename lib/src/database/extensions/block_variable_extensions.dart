@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import '../database.dart';
 
-extension BlockVariableExtension on AppDatabase {
+extension BlockVariableExtension on Database {
   /// Insert or update block variables from text that contains {{VAR=default}}
   Future<void> syncBlockVariables(int blockId, String text) async {
     // naive parser: find all {{VAR=default}}

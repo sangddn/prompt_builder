@@ -7,6 +7,12 @@ class Prompts extends Table {
   // User-defined title of the prompt
   TextColumn get title => text().withDefault(const Constant(''))();
 
+  // User notes
+  TextColumn get notes => text().withDefault(const Constant(''))();
+
+  // Tags
+  TextColumn get tags => text().withDefault(const Constant(''))();
+
   // Optional folder path if user wants to open a directory
   TextColumn get folderPath => text().nullable()();
 

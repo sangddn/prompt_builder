@@ -17,6 +17,12 @@ class _AppState extends State<App> {
   final _themeModeStream = _streamThemeMode();
 
   @override
+  void dispose() {
+    Database().closeBoxes();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder(
       initialData: _initialThemeMode,

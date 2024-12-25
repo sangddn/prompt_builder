@@ -24,6 +24,20 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant(''));
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+      'notes', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _tagsMeta = const VerificationMeta('tags');
+  @override
+  late final GeneratedColumn<String> tags = GeneratedColumn<String>(
+      'tags', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
   static const VerificationMeta _folderPathMeta =
       const VerificationMeta('folderPath');
   @override
@@ -62,6 +76,8 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
   List<GeneratedColumn> get $columns => [
         id,
         title,
+        notes,
+        tags,
         folderPath,
         ignorePatterns,
         createdAt,
@@ -84,6 +100,14 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
     if (data.containsKey('title')) {
       context.handle(
           _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+    }
+    if (data.containsKey('tags')) {
+      context.handle(
+          _tagsMeta, tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta));
     }
     if (data.containsKey('folder_path')) {
       context.handle(
@@ -124,6 +148,10 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      notes: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}notes'])!,
+      tags: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}tags'])!,
       folderPath: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}folder_path']),
       ignorePatterns: attachedDatabase.typeMapping.read(
@@ -146,6 +174,8 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
 class Prompt extends DataClass implements Insertable<Prompt> {
   final int id;
   final String title;
+  final String notes;
+  final String tags;
   final String? folderPath;
   final String ignorePatterns;
   final DateTime createdAt;
@@ -154,6 +184,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   const Prompt(
       {required this.id,
       required this.title,
+      required this.notes,
+      required this.tags,
       this.folderPath,
       required this.ignorePatterns,
       required this.createdAt,
@@ -164,6 +196,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['title'] = Variable<String>(title);
+    map['notes'] = Variable<String>(notes);
+    map['tags'] = Variable<String>(tags);
     if (!nullToAbsent || folderPath != null) {
       map['folder_path'] = Variable<String>(folderPath);
     }
@@ -182,6 +216,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
     return PromptsCompanion(
       id: Value(id),
       title: Value(title),
+      notes: Value(notes),
+      tags: Value(tags),
       folderPath: folderPath == null && nullToAbsent
           ? const Value.absent()
           : Value(folderPath),
@@ -202,6 +238,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
     return Prompt(
       id: serializer.fromJson<int>(json['id']),
       title: serializer.fromJson<String>(json['title']),
+      notes: serializer.fromJson<String>(json['notes']),
+      tags: serializer.fromJson<String>(json['tags']),
       folderPath: serializer.fromJson<String?>(json['folderPath']),
       ignorePatterns: serializer.fromJson<String>(json['ignorePatterns']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -215,6 +253,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'title': serializer.toJson<String>(title),
+      'notes': serializer.toJson<String>(notes),
+      'tags': serializer.toJson<String>(tags),
       'folderPath': serializer.toJson<String?>(folderPath),
       'ignorePatterns': serializer.toJson<String>(ignorePatterns),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -226,6 +266,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   Prompt copyWith(
           {int? id,
           String? title,
+          String? notes,
+          String? tags,
           Value<String?> folderPath = const Value.absent(),
           String? ignorePatterns,
           DateTime? createdAt,
@@ -234,6 +276,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
       Prompt(
         id: id ?? this.id,
         title: title ?? this.title,
+        notes: notes ?? this.notes,
+        tags: tags ?? this.tags,
         folderPath: folderPath.present ? folderPath.value : this.folderPath,
         ignorePatterns: ignorePatterns ?? this.ignorePatterns,
         createdAt: createdAt ?? this.createdAt,
@@ -245,6 +289,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
     return Prompt(
       id: data.id.present ? data.id.value : this.id,
       title: data.title.present ? data.title.value : this.title,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      tags: data.tags.present ? data.tags.value : this.tags,
       folderPath:
           data.folderPath.present ? data.folderPath.value : this.folderPath,
       ignorePatterns: data.ignorePatterns.present
@@ -263,6 +309,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
     return (StringBuffer('Prompt(')
           ..write('id: $id, ')
           ..write('title: $title, ')
+          ..write('notes: $notes, ')
+          ..write('tags: $tags, ')
           ..write('folderPath: $folderPath, ')
           ..write('ignorePatterns: $ignorePatterns, ')
           ..write('createdAt: $createdAt, ')
@@ -273,14 +321,16 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   }
 
   @override
-  int get hashCode => Object.hash(id, title, folderPath, ignorePatterns,
-      createdAt, updatedAt, lastOpenedAt);
+  int get hashCode => Object.hash(id, title, notes, tags, folderPath,
+      ignorePatterns, createdAt, updatedAt, lastOpenedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Prompt &&
           other.id == this.id &&
           other.title == this.title &&
+          other.notes == this.notes &&
+          other.tags == this.tags &&
           other.folderPath == this.folderPath &&
           other.ignorePatterns == this.ignorePatterns &&
           other.createdAt == this.createdAt &&
@@ -291,6 +341,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
 class PromptsCompanion extends UpdateCompanion<Prompt> {
   final Value<int> id;
   final Value<String> title;
+  final Value<String> notes;
+  final Value<String> tags;
   final Value<String?> folderPath;
   final Value<String> ignorePatterns;
   final Value<DateTime> createdAt;
@@ -299,6 +351,8 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
   const PromptsCompanion({
     this.id = const Value.absent(),
     this.title = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.tags = const Value.absent(),
     this.folderPath = const Value.absent(),
     this.ignorePatterns = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -308,6 +362,8 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
   PromptsCompanion.insert({
     this.id = const Value.absent(),
     this.title = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.tags = const Value.absent(),
     this.folderPath = const Value.absent(),
     this.ignorePatterns = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -317,6 +373,8 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
   static Insertable<Prompt> custom({
     Expression<int>? id,
     Expression<String>? title,
+    Expression<String>? notes,
+    Expression<String>? tags,
     Expression<String>? folderPath,
     Expression<String>? ignorePatterns,
     Expression<DateTime>? createdAt,
@@ -326,6 +384,8 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (title != null) 'title': title,
+      if (notes != null) 'notes': notes,
+      if (tags != null) 'tags': tags,
       if (folderPath != null) 'folder_path': folderPath,
       if (ignorePatterns != null) 'ignore_patterns': ignorePatterns,
       if (createdAt != null) 'created_at': createdAt,
@@ -337,6 +397,8 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
   PromptsCompanion copyWith(
       {Value<int>? id,
       Value<String>? title,
+      Value<String>? notes,
+      Value<String>? tags,
       Value<String?>? folderPath,
       Value<String>? ignorePatterns,
       Value<DateTime>? createdAt,
@@ -345,6 +407,8 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     return PromptsCompanion(
       id: id ?? this.id,
       title: title ?? this.title,
+      notes: notes ?? this.notes,
+      tags: tags ?? this.tags,
       folderPath: folderPath ?? this.folderPath,
       ignorePatterns: ignorePatterns ?? this.ignorePatterns,
       createdAt: createdAt ?? this.createdAt,
@@ -361,6 +425,12 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (tags.present) {
+      map['tags'] = Variable<String>(tags.value);
     }
     if (folderPath.present) {
       map['folder_path'] = Variable<String>(folderPath.value);
@@ -385,6 +455,8 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     return (StringBuffer('PromptsCompanion(')
           ..write('id: $id, ')
           ..write('title: $title, ')
+          ..write('notes: $notes, ')
+          ..write('tags: $tags, ')
           ..write('folderPath: $folderPath, ')
           ..write('ignorePatterns: $ignorePatterns, ')
           ..write('createdAt: $createdAt, ')
@@ -1833,9 +1905,9 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
   }
 }
 
-abstract class _$AppDatabase extends GeneratedDatabase {
-  _$AppDatabase(QueryExecutor e) : super(e);
-  $AppDatabaseManager get managers => $AppDatabaseManager(this);
+abstract class _$Database extends GeneratedDatabase {
+  _$Database(QueryExecutor e) : super(e);
+  $DatabaseManager get managers => $DatabaseManager(this);
   late final $PromptsTable prompts = $PromptsTable(this);
   late final $PromptBlocksTable promptBlocks = $PromptBlocksTable(this);
   late final $BlockVariablesTable blockVariables = $BlockVariablesTable(this);
@@ -1851,6 +1923,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 typedef $$PromptsTableCreateCompanionBuilder = PromptsCompanion Function({
   Value<int> id,
   Value<String> title,
+  Value<String> notes,
+  Value<String> tags,
   Value<String?> folderPath,
   Value<String> ignorePatterns,
   Value<DateTime> createdAt,
@@ -1860,6 +1934,8 @@ typedef $$PromptsTableCreateCompanionBuilder = PromptsCompanion Function({
 typedef $$PromptsTableUpdateCompanionBuilder = PromptsCompanion Function({
   Value<int> id,
   Value<String> title,
+  Value<String> notes,
+  Value<String> tags,
   Value<String?> folderPath,
   Value<String> ignorePatterns,
   Value<DateTime> createdAt,
@@ -1868,11 +1944,11 @@ typedef $$PromptsTableUpdateCompanionBuilder = PromptsCompanion Function({
 });
 
 final class $$PromptsTableReferences
-    extends BaseReferences<_$AppDatabase, $PromptsTable, Prompt> {
+    extends BaseReferences<_$Database, $PromptsTable, Prompt> {
   $$PromptsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static MultiTypedResultKey<$PromptBlocksTable, List<PromptBlock>>
-      _promptBlocksRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+      _promptBlocksRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
           db.promptBlocks,
           aliasName:
               $_aliasNameGenerator(db.prompts.id, db.promptBlocks.promptId));
@@ -1887,8 +1963,7 @@ final class $$PromptsTableReferences
   }
 }
 
-class $$PromptsTableFilterComposer
-    extends Composer<_$AppDatabase, $PromptsTable> {
+class $$PromptsTableFilterComposer extends Composer<_$Database, $PromptsTable> {
   $$PromptsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -1901,6 +1976,12 @@ class $$PromptsTableFilterComposer
 
   ColumnFilters<String> get title => $composableBuilder(
       column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get tags => $composableBuilder(
+      column: $table.tags, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get folderPath => $composableBuilder(
       column: $table.folderPath, builder: (column) => ColumnFilters(column));
@@ -1941,7 +2022,7 @@ class $$PromptsTableFilterComposer
 }
 
 class $$PromptsTableOrderingComposer
-    extends Composer<_$AppDatabase, $PromptsTable> {
+    extends Composer<_$Database, $PromptsTable> {
   $$PromptsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -1954,6 +2035,12 @@ class $$PromptsTableOrderingComposer
 
   ColumnOrderings<String> get title => $composableBuilder(
       column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get tags => $composableBuilder(
+      column: $table.tags, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get folderPath => $composableBuilder(
       column: $table.folderPath, builder: (column) => ColumnOrderings(column));
@@ -1974,7 +2061,7 @@ class $$PromptsTableOrderingComposer
 }
 
 class $$PromptsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $PromptsTable> {
+    extends Composer<_$Database, $PromptsTable> {
   $$PromptsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -1987,6 +2074,12 @@ class $$PromptsTableAnnotationComposer
 
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get tags =>
+      $composableBuilder(column: $table.tags, builder: (column) => column);
 
   GeneratedColumn<String> get folderPath => $composableBuilder(
       column: $table.folderPath, builder: (column) => column);
@@ -2026,7 +2119,7 @@ class $$PromptsTableAnnotationComposer
 }
 
 class $$PromptsTableTableManager extends RootTableManager<
-    _$AppDatabase,
+    _$Database,
     $PromptsTable,
     Prompt,
     $$PromptsTableFilterComposer,
@@ -2037,7 +2130,7 @@ class $$PromptsTableTableManager extends RootTableManager<
     (Prompt, $$PromptsTableReferences),
     Prompt,
     PrefetchHooks Function({bool promptBlocksRefs})> {
-  $$PromptsTableTableManager(_$AppDatabase db, $PromptsTable table)
+  $$PromptsTableTableManager(_$Database db, $PromptsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -2050,6 +2143,8 @@ class $$PromptsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> title = const Value.absent(),
+            Value<String> notes = const Value.absent(),
+            Value<String> tags = const Value.absent(),
             Value<String?> folderPath = const Value.absent(),
             Value<String> ignorePatterns = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
@@ -2059,6 +2154,8 @@ class $$PromptsTableTableManager extends RootTableManager<
               PromptsCompanion(
             id: id,
             title: title,
+            notes: notes,
+            tags: tags,
             folderPath: folderPath,
             ignorePatterns: ignorePatterns,
             createdAt: createdAt,
@@ -2068,6 +2165,8 @@ class $$PromptsTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> title = const Value.absent(),
+            Value<String> notes = const Value.absent(),
+            Value<String> tags = const Value.absent(),
             Value<String?> folderPath = const Value.absent(),
             Value<String> ignorePatterns = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
@@ -2077,6 +2176,8 @@ class $$PromptsTableTableManager extends RootTableManager<
               PromptsCompanion.insert(
             id: id,
             title: title,
+            notes: notes,
+            tags: tags,
             folderPath: folderPath,
             ignorePatterns: ignorePatterns,
             createdAt: createdAt,
@@ -2114,7 +2215,7 @@ class $$PromptsTableTableManager extends RootTableManager<
 }
 
 typedef $$PromptsTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
+    _$Database,
     $PromptsTable,
     Prompt,
     $$PromptsTableFilterComposer,
@@ -2165,12 +2266,11 @@ typedef $$PromptBlocksTableUpdateCompanionBuilder = PromptBlocksCompanion
 });
 
 final class $$PromptBlocksTableReferences
-    extends BaseReferences<_$AppDatabase, $PromptBlocksTable, PromptBlock> {
+    extends BaseReferences<_$Database, $PromptBlocksTable, PromptBlock> {
   $$PromptBlocksTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $PromptsTable _promptIdTable(_$AppDatabase db) =>
-      db.prompts.createAlias(
-          $_aliasNameGenerator(db.promptBlocks.promptId, db.prompts.id));
+  static $PromptsTable _promptIdTable(_$Database db) => db.prompts.createAlias(
+      $_aliasNameGenerator(db.promptBlocks.promptId, db.prompts.id));
 
   $$PromptsTableProcessedTableManager get promptId {
     final manager = $$PromptsTableTableManager($_db, $_db.prompts)
@@ -2182,7 +2282,7 @@ final class $$PromptBlocksTableReferences
   }
 
   static MultiTypedResultKey<$BlockVariablesTable, List<BlockVariable>>
-      _blockVariablesRefsTable(_$AppDatabase db) =>
+      _blockVariablesRefsTable(_$Database db) =>
           MultiTypedResultKey.fromTable(db.blockVariables,
               aliasName: $_aliasNameGenerator(
                   db.promptBlocks.id, db.blockVariables.blockId));
@@ -2198,7 +2298,7 @@ final class $$PromptBlocksTableReferences
 }
 
 class $$PromptBlocksTableFilterComposer
-    extends Composer<_$AppDatabase, $PromptBlocksTable> {
+    extends Composer<_$Database, $PromptBlocksTable> {
   $$PromptBlocksTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -2294,7 +2394,7 @@ class $$PromptBlocksTableFilterComposer
 }
 
 class $$PromptBlocksTableOrderingComposer
-    extends Composer<_$AppDatabase, $PromptBlocksTable> {
+    extends Composer<_$Database, $PromptBlocksTable> {
   $$PromptBlocksTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -2369,7 +2469,7 @@ class $$PromptBlocksTableOrderingComposer
 }
 
 class $$PromptBlocksTableAnnotationComposer
-    extends Composer<_$AppDatabase, $PromptBlocksTable> {
+    extends Composer<_$Database, $PromptBlocksTable> {
   $$PromptBlocksTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -2465,7 +2565,7 @@ class $$PromptBlocksTableAnnotationComposer
 }
 
 class $$PromptBlocksTableTableManager extends RootTableManager<
-    _$AppDatabase,
+    _$Database,
     $PromptBlocksTable,
     PromptBlock,
     $$PromptBlocksTableFilterComposer,
@@ -2476,7 +2576,7 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
     (PromptBlock, $$PromptBlocksTableReferences),
     PromptBlock,
     PrefetchHooks Function({bool promptId, bool blockVariablesRefs})> {
-  $$PromptBlocksTableTableManager(_$AppDatabase db, $PromptBlocksTable table)
+  $$PromptBlocksTableTableManager(_$Database db, $PromptBlocksTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -2619,7 +2719,7 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
 }
 
 typedef $$PromptBlocksTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
+    _$Database,
     $PromptBlocksTable,
     PromptBlock,
     $$PromptBlocksTableFilterComposer,
@@ -2648,11 +2748,11 @@ typedef $$BlockVariablesTableUpdateCompanionBuilder = BlockVariablesCompanion
 });
 
 final class $$BlockVariablesTableReferences
-    extends BaseReferences<_$AppDatabase, $BlockVariablesTable, BlockVariable> {
+    extends BaseReferences<_$Database, $BlockVariablesTable, BlockVariable> {
   $$BlockVariablesTableReferences(
       super.$_db, super.$_table, super.$_typedResult);
 
-  static $PromptBlocksTable _blockIdTable(_$AppDatabase db) =>
+  static $PromptBlocksTable _blockIdTable(_$Database db) =>
       db.promptBlocks.createAlias(
           $_aliasNameGenerator(db.blockVariables.blockId, db.promptBlocks.id));
 
@@ -2667,7 +2767,7 @@ final class $$BlockVariablesTableReferences
 }
 
 class $$BlockVariablesTableFilterComposer
-    extends Composer<_$AppDatabase, $BlockVariablesTable> {
+    extends Composer<_$Database, $BlockVariablesTable> {
   $$BlockVariablesTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -2709,7 +2809,7 @@ class $$BlockVariablesTableFilterComposer
 }
 
 class $$BlockVariablesTableOrderingComposer
-    extends Composer<_$AppDatabase, $BlockVariablesTable> {
+    extends Composer<_$Database, $BlockVariablesTable> {
   $$BlockVariablesTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -2752,7 +2852,7 @@ class $$BlockVariablesTableOrderingComposer
 }
 
 class $$BlockVariablesTableAnnotationComposer
-    extends Composer<_$AppDatabase, $BlockVariablesTable> {
+    extends Composer<_$Database, $BlockVariablesTable> {
   $$BlockVariablesTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -2794,7 +2894,7 @@ class $$BlockVariablesTableAnnotationComposer
 }
 
 class $$BlockVariablesTableTableManager extends RootTableManager<
-    _$AppDatabase,
+    _$Database,
     $BlockVariablesTable,
     BlockVariable,
     $$BlockVariablesTableFilterComposer,
@@ -2805,8 +2905,7 @@ class $$BlockVariablesTableTableManager extends RootTableManager<
     (BlockVariable, $$BlockVariablesTableReferences),
     BlockVariable,
     PrefetchHooks Function({bool blockId})> {
-  $$BlockVariablesTableTableManager(
-      _$AppDatabase db, $BlockVariablesTable table)
+  $$BlockVariablesTableTableManager(_$Database db, $BlockVariablesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -2889,7 +2988,7 @@ class $$BlockVariablesTableTableManager extends RootTableManager<
 }
 
 typedef $$BlockVariablesTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
+    _$Database,
     $BlockVariablesTable,
     BlockVariable,
     $$BlockVariablesTableFilterComposer,
@@ -2918,7 +3017,7 @@ typedef $$SnippetsTableUpdateCompanionBuilder = SnippetsCompanion Function({
 });
 
 class $$SnippetsTableFilterComposer
-    extends Composer<_$AppDatabase, $SnippetsTable> {
+    extends Composer<_$Database, $SnippetsTable> {
   $$SnippetsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -2946,7 +3045,7 @@ class $$SnippetsTableFilterComposer
 }
 
 class $$SnippetsTableOrderingComposer
-    extends Composer<_$AppDatabase, $SnippetsTable> {
+    extends Composer<_$Database, $SnippetsTable> {
   $$SnippetsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -2974,7 +3073,7 @@ class $$SnippetsTableOrderingComposer
 }
 
 class $$SnippetsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $SnippetsTable> {
+    extends Composer<_$Database, $SnippetsTable> {
   $$SnippetsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -3002,7 +3101,7 @@ class $$SnippetsTableAnnotationComposer
 }
 
 class $$SnippetsTableTableManager extends RootTableManager<
-    _$AppDatabase,
+    _$Database,
     $SnippetsTable,
     Snippet,
     $$SnippetsTableFilterComposer,
@@ -3010,10 +3109,10 @@ class $$SnippetsTableTableManager extends RootTableManager<
     $$SnippetsTableAnnotationComposer,
     $$SnippetsTableCreateCompanionBuilder,
     $$SnippetsTableUpdateCompanionBuilder,
-    (Snippet, BaseReferences<_$AppDatabase, $SnippetsTable, Snippet>),
+    (Snippet, BaseReferences<_$Database, $SnippetsTable, Snippet>),
     Snippet,
     PrefetchHooks Function()> {
-  $$SnippetsTableTableManager(_$AppDatabase db, $SnippetsTable table)
+  $$SnippetsTableTableManager(_$Database db, $SnippetsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -3063,7 +3162,7 @@ class $$SnippetsTableTableManager extends RootTableManager<
 }
 
 typedef $$SnippetsTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
+    _$Database,
     $SnippetsTable,
     Snippet,
     $$SnippetsTableFilterComposer,
@@ -3071,13 +3170,13 @@ typedef $$SnippetsTableProcessedTableManager = ProcessedTableManager<
     $$SnippetsTableAnnotationComposer,
     $$SnippetsTableCreateCompanionBuilder,
     $$SnippetsTableUpdateCompanionBuilder,
-    (Snippet, BaseReferences<_$AppDatabase, $SnippetsTable, Snippet>),
+    (Snippet, BaseReferences<_$Database, $SnippetsTable, Snippet>),
     Snippet,
     PrefetchHooks Function()>;
 
-class $AppDatabaseManager {
-  final _$AppDatabase _db;
-  $AppDatabaseManager(this._db);
+class $DatabaseManager {
+  final _$Database _db;
+  $DatabaseManager(this._db);
   $$PromptsTableTableManager get prompts =>
       $$PromptsTableTableManager(_db, _db.prompts);
   $$PromptBlocksTableTableManager get promptBlocks =>

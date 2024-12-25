@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import '../database.dart';
 
-extension PromptBlocksExtension on AppDatabase {
+extension PromptBlocksExtension on Database {
   /// Create new block in the prompt
   Future<int> createBlock({
     required int promptId,
