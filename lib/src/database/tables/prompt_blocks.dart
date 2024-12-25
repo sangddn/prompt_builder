@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 
+import '../database.dart';
+
 /// Represents the different types of content blocks that can be part of a prompt.
 enum BlockType {
   /// Plain text content entered by the user
@@ -37,7 +39,7 @@ class PromptBlocks extends Table {
   IntColumn get id => integer().autoIncrement()();
 
   /// Reference to the parent prompt this block belongs to
-  IntColumn get promptId => integer().customConstraint('REFERENCES prompts(id)')();
+  IntColumn get promptId => integer().references(Prompts, #id)();
 
   /// Position of this block within the prompt's sequence of blocks
   /// Defaults to 0 if not specified

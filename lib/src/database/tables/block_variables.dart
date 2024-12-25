@@ -1,11 +1,13 @@
 import 'package:drift/drift.dart';
 
+import '../database.dart';
+
 class BlockVariables extends Table {
   // Unique ID for the variable
   IntColumn get id => integer().autoIncrement()();
 
   // Reference to the block
-  IntColumn get blockId => integer().customConstraint('REFERENCES prompt_blocks(id)')();
+  IntColumn get blockId => integer().references(PromptBlocks, #id)();
 
   // The variable name inside {{ }} e.g. 'VARIABLE'
   TextColumn get varName => text()();
