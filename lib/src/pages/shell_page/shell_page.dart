@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/components.dart';
@@ -21,7 +22,7 @@ class ShellPage extends StatelessWidget {
       ],
       transitionBuilder: (context, child, animation) {
         final position = Tween<Offset>(
-          begin: const Offset(0.0, 0.2),
+          begin: const Offset(0.0, 0.05),
           end: Offset.zero,
         ).animate(
           CurvedAnimation(
@@ -64,15 +65,15 @@ class _Sidebar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         spacing: 8.0,
         children: [
+          _NewPromptButton(),
           _NavButton(HugeIcons.strokeRoundedFolder02, 'Library', 0),
           _NavButton(
             HugeIcons.strokeRoundedParagraphBulletsPoint01,
             'Text Prompts',
             1,
           ),
-          _NewPromptButton(),
           _NavButton(HugeIcons.strokeRoundedSettings01, 'Settings', 2),
-          _NavButton(HugeIcons.strokeRoundedBook01, 'Resources', 3),
+          _NavButton(CupertinoIcons.question_circle, 'Resources', 3),
         ],
       ),
     );
@@ -119,11 +120,11 @@ class _NewPromptButton extends StatelessWidget {
       tooltip: 'New Prompt',
       onTap: () {},
       color: PColors.gray.resolveFrom(context),
-      padding: k24H16VPadding,
+      padding: k24H12VPadding,
       cornerRadius: 16.0,
       child: EnlargeOnHover(
         child: Icon(
-          HugeIcons.strokeRoundedPlusSign,
+          CupertinoIcons.plus,
           size: 24.0,
           color: PColors.textGray.resolveFrom(context),
         ),
