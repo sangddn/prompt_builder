@@ -2,13 +2,13 @@ part of 'ui.dart';
 
 final kLightTheme = ShadThemeData(
   brightness: Brightness.light,
-  colorScheme: const ShadGrayColorScheme.light(background: Color(0xffFAFAFA)),
+  colorScheme: const ShadZincColorScheme.light(background: Color(0xffFAFAFA)),
   switchTheme: const ShadSwitchTheme(margin: 0.0),
 );
 
 final kDarkTheme = ShadThemeData(
   brightness: Brightness.dark,
-  colorScheme: const ShadGrayColorScheme.dark(),
+  colorScheme: const ShadZincColorScheme.dark(),
   switchTheme: const ShadSwitchTheme(margin: 1.0),
 );
 

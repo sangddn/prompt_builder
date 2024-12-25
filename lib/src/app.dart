@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'core/core.dart';
+import 'database/database.dart';
 import 'router/router.dart';
 
 class App extends StatefulWidget {

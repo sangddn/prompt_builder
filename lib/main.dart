@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'src/app.dart';
-import 'src/core/db/database.dart';
+import 'src/database/database.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -101,7 +101,7 @@ class _MenuButtonState extends State<MenuButton> {
 
     final iconTheme = TextStyle(
       color: widget.isDestructive ? destructiveColor : iconColor,
-      fontSize: theme.textTheme.h3.fontSize?.subtract(3.0),
+      fontSize: theme.textTheme.h3.fontSize?.let((s) => s - 3.0),
     );
 
     Widget wrapAnimTheme(Widget child) => AnimatedDefaultTextStyle(
