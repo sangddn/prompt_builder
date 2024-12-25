@@ -49,7 +49,7 @@ class _PTooltipState extends State<PTooltip> {
         triggerMode: widget.triggerMode,
         preferBelow: widget.preferBelow,
         decoration: ShapeDecoration(
-          color: PColors.textGray.resolveFrom(context),
+          color: context.colorScheme.muted,
           shape: Superellipse.border8,
           shadows: const [
             BoxShadow(
@@ -59,7 +59,10 @@ class _PTooltipState extends State<PTooltip> {
             ),
           ],
         ),
-        textStyle: Theme.of(context).textTheme.bodySmall,
+        padding: k16H12VPadding,
+        textStyle: context.theme.textTheme.small.copyWith(
+          color: context.colorScheme.mutedForeground,
+        ),
         child: widget.child,
       ),
     );

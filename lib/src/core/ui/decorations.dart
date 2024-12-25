@@ -1,21 +1,35 @@
 part of 'ui.dart';
 
+const k32APadding = EdgeInsets.all(32.0);
+const k24APadding = EdgeInsets.all(24.0);
+const k16APadding = EdgeInsets.all(16.0);
+const k12APadding = EdgeInsets.all(12.0);
+const k8APadding = EdgeInsets.all(8.0);
+const k4APadding = EdgeInsets.all(4.0);
+
+const k32HPadding = EdgeInsets.symmetric(horizontal: 32.0);
 const k24HPadding = EdgeInsets.symmetric(horizontal: 24.0);
 const k16HPadding = EdgeInsets.symmetric(horizontal: 16.0);
-const k16H4VPadding = EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0);
-const k16H8VPadding = EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0);
-const k16H12VPadding = EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0);
-const k16APadding = EdgeInsets.all(16.0);
-const k8APadding = EdgeInsets.all(8.0);
 const k12HPadding = EdgeInsets.symmetric(horizontal: 12.0);
-const k12H8VPadding = EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0);
 const k8HPadding = EdgeInsets.symmetric(horizontal: 8.0);
-const k4VPadding = EdgeInsets.symmetric(vertical: 4.0);
 const k4HPadding = EdgeInsets.symmetric(horizontal: 4.0);
-const k8VPadding = EdgeInsets.symmetric(vertical: 8.0);
-const k6VPadding = EdgeInsets.symmetric(vertical: 6.0);
-const k12VPadding = EdgeInsets.symmetric(vertical: 12.0);
+
+const k32VPadding = EdgeInsets.symmetric(vertical: 32.0);
+const k24VPadding = EdgeInsets.symmetric(vertical: 24.0);
 const k16VPadding = EdgeInsets.symmetric(vertical: 16.0);
+const k12VPadding = EdgeInsets.symmetric(vertical: 12.0);
+const k8VPadding = EdgeInsets.symmetric(vertical: 8.0);
+const k4VPadding = EdgeInsets.symmetric(vertical: 4.0);
+
+const k24H16VPadding = EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0);
+const k24H12VPadding = EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0);
+const k24H8VPadding = EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0);
+const k16H12VPadding = EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0);
+const k16H8VPadding = EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0);
+const k16H4VPadding = EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0);
+const k12H8VPadding = EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0);
+const k12H4VPadding = EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0);
+const k8H4VPadding = EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0);
 
 List<BoxShadow> elevation(
   double elevation, {
