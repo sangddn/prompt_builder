@@ -16,4 +16,5 @@ class Prompts extends Table {
   // Timestamps
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
+  DateTimeColumn get lastOpenedAt => dateTime().nullable()();
 }

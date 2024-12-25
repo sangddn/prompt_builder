@@ -6,7 +6,10 @@ import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../models/models.dart';
+import 'tables/db_tables.dart';
+
+export 'extensions/db_extensions.dart';
+export 'tables/db_tables.dart';
 
 part 'database.g.dart';
 
@@ -18,7 +21,7 @@ final class Database {
 
   bool isInitialized = false;
 
-  final db = _AppDatabase();
+  final db = AppDatabase();
   late final Box<bool> boolRef;
   late final Box<String> stringRef;
   late final Box<int> intRef;
@@ -66,9 +69,9 @@ final class Database {
   }
 }
 
-@DriftDatabase(tables: [Prompts, PromptBlocks, BlockVariables])
-class _AppDatabase extends _$_AppDatabase {
-  _AppDatabase() : super(_openConnection());
+@DriftDatabase(tables: [Prompts, PromptBlocks, BlockVariables, Snippets])
+class AppDatabase extends _$AppDatabase {
+  AppDatabase() : super(_openConnection());
 
   @override
   int get schemaVersion => 1;

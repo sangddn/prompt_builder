@@ -52,9 +52,22 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
       'updated_at', aliasedName, true,
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _lastOpenedAtMeta =
+      const VerificationMeta('lastOpenedAt');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, title, folderPath, ignorePatterns, createdAt, updatedAt];
+  late final GeneratedColumn<DateTime> lastOpenedAt = GeneratedColumn<DateTime>(
+      'last_opened_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        title,
+        folderPath,
+        ignorePatterns,
+        createdAt,
+        updatedAt,
+        lastOpenedAt
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -92,6 +105,12 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
       context.handle(_updatedAtMeta,
           updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
     }
+    if (data.containsKey('last_opened_at')) {
+      context.handle(
+          _lastOpenedAtMeta,
+          lastOpenedAt.isAcceptableOrUnknown(
+              data['last_opened_at']!, _lastOpenedAtMeta));
+    }
     return context;
   }
 
@@ -113,6 +132,8 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at']),
+      lastOpenedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}last_opened_at']),
     );
   }
 
@@ -129,13 +150,15 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   final String ignorePatterns;
   final DateTime createdAt;
   final DateTime? updatedAt;
+  final DateTime? lastOpenedAt;
   const Prompt(
       {required this.id,
       required this.title,
       this.folderPath,
       required this.ignorePatterns,
       required this.createdAt,
-      this.updatedAt});
+      this.updatedAt,
+      this.lastOpenedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -148,6 +171,9 @@ class Prompt extends DataClass implements Insertable<Prompt> {
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    if (!nullToAbsent || lastOpenedAt != null) {
+      map['last_opened_at'] = Variable<DateTime>(lastOpenedAt);
     }
     return map;
   }
@@ -164,6 +190,9 @@ class Prompt extends DataClass implements Insertable<Prompt> {
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(updatedAt),
+      lastOpenedAt: lastOpenedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastOpenedAt),
     );
   }
 
@@ -177,6 +206,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
       ignorePatterns: serializer.fromJson<String>(json['ignorePatterns']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+      lastOpenedAt: serializer.fromJson<DateTime?>(json['lastOpenedAt']),
     );
   }
   @override
@@ -189,6 +219,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
       'ignorePatterns': serializer.toJson<String>(ignorePatterns),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+      'lastOpenedAt': serializer.toJson<DateTime?>(lastOpenedAt),
     };
   }
 
@@ -198,7 +229,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
           Value<String?> folderPath = const Value.absent(),
           String? ignorePatterns,
           DateTime? createdAt,
-          Value<DateTime?> updatedAt = const Value.absent()}) =>
+          Value<DateTime?> updatedAt = const Value.absent(),
+          Value<DateTime?> lastOpenedAt = const Value.absent()}) =>
       Prompt(
         id: id ?? this.id,
         title: title ?? this.title,
@@ -206,6 +238,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
         ignorePatterns: ignorePatterns ?? this.ignorePatterns,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+        lastOpenedAt:
+            lastOpenedAt.present ? lastOpenedAt.value : this.lastOpenedAt,
       );
   Prompt copyWithCompanion(PromptsCompanion data) {
     return Prompt(
@@ -218,6 +252,9 @@ class Prompt extends DataClass implements Insertable<Prompt> {
           : this.ignorePatterns,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      lastOpenedAt: data.lastOpenedAt.present
+          ? data.lastOpenedAt.value
+          : this.lastOpenedAt,
     );
   }
 
@@ -229,14 +266,15 @@ class Prompt extends DataClass implements Insertable<Prompt> {
           ..write('folderPath: $folderPath, ')
           ..write('ignorePatterns: $ignorePatterns, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastOpenedAt: $lastOpenedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, title, folderPath, ignorePatterns, createdAt, updatedAt);
+  int get hashCode => Object.hash(id, title, folderPath, ignorePatterns,
+      createdAt, updatedAt, lastOpenedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -246,7 +284,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
           other.folderPath == this.folderPath &&
           other.ignorePatterns == this.ignorePatterns &&
           other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.lastOpenedAt == this.lastOpenedAt);
 }
 
 class PromptsCompanion extends UpdateCompanion<Prompt> {
@@ -256,6 +295,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
   final Value<String> ignorePatterns;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
+  final Value<DateTime?> lastOpenedAt;
   const PromptsCompanion({
     this.id = const Value.absent(),
     this.title = const Value.absent(),
@@ -263,6 +303,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     this.ignorePatterns = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.lastOpenedAt = const Value.absent(),
   });
   PromptsCompanion.insert({
     this.id = const Value.absent(),
@@ -271,6 +312,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     this.ignorePatterns = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.lastOpenedAt = const Value.absent(),
   });
   static Insertable<Prompt> custom({
     Expression<int>? id,
@@ -279,6 +321,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     Expression<String>? ignorePatterns,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<DateTime>? lastOpenedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -287,6 +330,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
       if (ignorePatterns != null) 'ignore_patterns': ignorePatterns,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (lastOpenedAt != null) 'last_opened_at': lastOpenedAt,
     });
   }
 
@@ -296,7 +340,8 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
       Value<String?>? folderPath,
       Value<String>? ignorePatterns,
       Value<DateTime>? createdAt,
-      Value<DateTime?>? updatedAt}) {
+      Value<DateTime?>? updatedAt,
+      Value<DateTime?>? lastOpenedAt}) {
     return PromptsCompanion(
       id: id ?? this.id,
       title: title ?? this.title,
@@ -304,6 +349,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
       ignorePatterns: ignorePatterns ?? this.ignorePatterns,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      lastOpenedAt: lastOpenedAt ?? this.lastOpenedAt,
     );
   }
 
@@ -328,6 +374,9 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (lastOpenedAt.present) {
+      map['last_opened_at'] = Variable<DateTime>(lastOpenedAt.value);
+    }
     return map;
   }
 
@@ -339,7 +388,8 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
           ..write('folderPath: $folderPath, ')
           ..write('ignorePatterns: $ignorePatterns, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastOpenedAt: $lastOpenedAt')
           ..write(')'))
         .toString();
   }
@@ -1443,18 +1493,357 @@ class BlockVariablesCompanion extends UpdateCompanion<BlockVariable> {
   }
 }
 
-abstract class _$_AppDatabase extends GeneratedDatabase {
-  _$_AppDatabase(QueryExecutor e) : super(e);
-  $_AppDatabaseManager get managers => $_AppDatabaseManager(this);
+class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SnippetsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _contentMeta =
+      const VerificationMeta('content');
+  @override
+  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+      'content', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _lastUsedAtMeta =
+      const VerificationMeta('lastUsedAt');
+  @override
+  late final GeneratedColumn<DateTime> lastUsedAt = GeneratedColumn<DateTime>(
+      'last_used_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, title, content, createdAt, updatedAt, lastUsedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'snippets';
+  @override
+  VerificationContext validateIntegrity(Insertable<Snippet> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    }
+    if (data.containsKey('content')) {
+      context.handle(_contentMeta,
+          content.isAcceptableOrUnknown(data['content']!, _contentMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    if (data.containsKey('last_used_at')) {
+      context.handle(
+          _lastUsedAtMeta,
+          lastUsedAt.isAcceptableOrUnknown(
+              data['last_used_at']!, _lastUsedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Snippet map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Snippet(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      content: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at']),
+      lastUsedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}last_used_at']),
+    );
+  }
+
+  @override
+  $SnippetsTable createAlias(String alias) {
+    return $SnippetsTable(attachedDatabase, alias);
+  }
+}
+
+class Snippet extends DataClass implements Insertable<Snippet> {
+  final int id;
+  final String title;
+  final String content;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  final DateTime? lastUsedAt;
+  const Snippet(
+      {required this.id,
+      required this.title,
+      required this.content,
+      required this.createdAt,
+      this.updatedAt,
+      this.lastUsedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['title'] = Variable<String>(title);
+    map['content'] = Variable<String>(content);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    if (!nullToAbsent || lastUsedAt != null) {
+      map['last_used_at'] = Variable<DateTime>(lastUsedAt);
+    }
+    return map;
+  }
+
+  SnippetsCompanion toCompanion(bool nullToAbsent) {
+    return SnippetsCompanion(
+      id: Value(id),
+      title: Value(title),
+      content: Value(content),
+      createdAt: Value(createdAt),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+      lastUsedAt: lastUsedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUsedAt),
+    );
+  }
+
+  factory Snippet.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Snippet(
+      id: serializer.fromJson<int>(json['id']),
+      title: serializer.fromJson<String>(json['title']),
+      content: serializer.fromJson<String>(json['content']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+      lastUsedAt: serializer.fromJson<DateTime?>(json['lastUsedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'title': serializer.toJson<String>(title),
+      'content': serializer.toJson<String>(content),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+      'lastUsedAt': serializer.toJson<DateTime?>(lastUsedAt),
+    };
+  }
+
+  Snippet copyWith(
+          {int? id,
+          String? title,
+          String? content,
+          DateTime? createdAt,
+          Value<DateTime?> updatedAt = const Value.absent(),
+          Value<DateTime?> lastUsedAt = const Value.absent()}) =>
+      Snippet(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        content: content ?? this.content,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+        lastUsedAt: lastUsedAt.present ? lastUsedAt.value : this.lastUsedAt,
+      );
+  Snippet copyWithCompanion(SnippetsCompanion data) {
+    return Snippet(
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      content: data.content.present ? data.content.value : this.content,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      lastUsedAt:
+          data.lastUsedAt.present ? data.lastUsedAt.value : this.lastUsedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Snippet(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('content: $content, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastUsedAt: $lastUsedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, title, content, createdAt, updatedAt, lastUsedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Snippet &&
+          other.id == this.id &&
+          other.title == this.title &&
+          other.content == this.content &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.lastUsedAt == this.lastUsedAt);
+}
+
+class SnippetsCompanion extends UpdateCompanion<Snippet> {
+  final Value<int> id;
+  final Value<String> title;
+  final Value<String> content;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> updatedAt;
+  final Value<DateTime?> lastUsedAt;
+  const SnippetsCompanion({
+    this.id = const Value.absent(),
+    this.title = const Value.absent(),
+    this.content = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastUsedAt = const Value.absent(),
+  });
+  SnippetsCompanion.insert({
+    this.id = const Value.absent(),
+    this.title = const Value.absent(),
+    this.content = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastUsedAt = const Value.absent(),
+  });
+  static Insertable<Snippet> custom({
+    Expression<int>? id,
+    Expression<String>? title,
+    Expression<String>? content,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? lastUsedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (title != null) 'title': title,
+      if (content != null) 'content': content,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (lastUsedAt != null) 'last_used_at': lastUsedAt,
+    });
+  }
+
+  SnippetsCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? title,
+      Value<String>? content,
+      Value<DateTime>? createdAt,
+      Value<DateTime?>? updatedAt,
+      Value<DateTime?>? lastUsedAt}) {
+    return SnippetsCompanion(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      content: content ?? this.content,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      lastUsedAt: lastUsedAt ?? this.lastUsedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (lastUsedAt.present) {
+      map['last_used_at'] = Variable<DateTime>(lastUsedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SnippetsCompanion(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('content: $content, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastUsedAt: $lastUsedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+abstract class _$AppDatabase extends GeneratedDatabase {
+  _$AppDatabase(QueryExecutor e) : super(e);
+  $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $PromptsTable prompts = $PromptsTable(this);
   late final $PromptBlocksTable promptBlocks = $PromptBlocksTable(this);
   late final $BlockVariablesTable blockVariables = $BlockVariablesTable(this);
+  late final $SnippetsTable snippets = $SnippetsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [prompts, promptBlocks, blockVariables];
+      [prompts, promptBlocks, blockVariables, snippets];
 }
 
 typedef $$PromptsTableCreateCompanionBuilder = PromptsCompanion Function({
@@ -1464,6 +1853,7 @@ typedef $$PromptsTableCreateCompanionBuilder = PromptsCompanion Function({
   Value<String> ignorePatterns,
   Value<DateTime> createdAt,
   Value<DateTime?> updatedAt,
+  Value<DateTime?> lastOpenedAt,
 });
 typedef $$PromptsTableUpdateCompanionBuilder = PromptsCompanion Function({
   Value<int> id,
@@ -1472,10 +1862,11 @@ typedef $$PromptsTableUpdateCompanionBuilder = PromptsCompanion Function({
   Value<String> ignorePatterns,
   Value<DateTime> createdAt,
   Value<DateTime?> updatedAt,
+  Value<DateTime?> lastOpenedAt,
 });
 
 class $$PromptsTableFilterComposer
-    extends Composer<_$_AppDatabase, $PromptsTable> {
+    extends Composer<_$AppDatabase, $PromptsTable> {
   $$PromptsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -1501,10 +1892,13 @@ class $$PromptsTableFilterComposer
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
       column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastOpenedAt => $composableBuilder(
+      column: $table.lastOpenedAt, builder: (column) => ColumnFilters(column));
 }
 
 class $$PromptsTableOrderingComposer
-    extends Composer<_$_AppDatabase, $PromptsTable> {
+    extends Composer<_$AppDatabase, $PromptsTable> {
   $$PromptsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -1530,10 +1924,14 @@ class $$PromptsTableOrderingComposer
 
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
       column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastOpenedAt => $composableBuilder(
+      column: $table.lastOpenedAt,
+      builder: (column) => ColumnOrderings(column));
 }
 
 class $$PromptsTableAnnotationComposer
-    extends Composer<_$_AppDatabase, $PromptsTable> {
+    extends Composer<_$AppDatabase, $PromptsTable> {
   $$PromptsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -1558,10 +1956,13 @@ class $$PromptsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastOpenedAt => $composableBuilder(
+      column: $table.lastOpenedAt, builder: (column) => column);
 }
 
 class $$PromptsTableTableManager extends RootTableManager<
-    _$_AppDatabase,
+    _$AppDatabase,
     $PromptsTable,
     Prompt,
     $$PromptsTableFilterComposer,
@@ -1569,10 +1970,10 @@ class $$PromptsTableTableManager extends RootTableManager<
     $$PromptsTableAnnotationComposer,
     $$PromptsTableCreateCompanionBuilder,
     $$PromptsTableUpdateCompanionBuilder,
-    (Prompt, BaseReferences<_$_AppDatabase, $PromptsTable, Prompt>),
+    (Prompt, BaseReferences<_$AppDatabase, $PromptsTable, Prompt>),
     Prompt,
     PrefetchHooks Function()> {
-  $$PromptsTableTableManager(_$_AppDatabase db, $PromptsTable table)
+  $$PromptsTableTableManager(_$AppDatabase db, $PromptsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -1589,6 +1990,7 @@ class $$PromptsTableTableManager extends RootTableManager<
             Value<String> ignorePatterns = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime?> updatedAt = const Value.absent(),
+            Value<DateTime?> lastOpenedAt = const Value.absent(),
           }) =>
               PromptsCompanion(
             id: id,
@@ -1597,6 +1999,7 @@ class $$PromptsTableTableManager extends RootTableManager<
             ignorePatterns: ignorePatterns,
             createdAt: createdAt,
             updatedAt: updatedAt,
+            lastOpenedAt: lastOpenedAt,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
@@ -1605,6 +2008,7 @@ class $$PromptsTableTableManager extends RootTableManager<
             Value<String> ignorePatterns = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime?> updatedAt = const Value.absent(),
+            Value<DateTime?> lastOpenedAt = const Value.absent(),
           }) =>
               PromptsCompanion.insert(
             id: id,
@@ -1613,6 +2017,7 @@ class $$PromptsTableTableManager extends RootTableManager<
             ignorePatterns: ignorePatterns,
             createdAt: createdAt,
             updatedAt: updatedAt,
+            lastOpenedAt: lastOpenedAt,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -1622,7 +2027,7 @@ class $$PromptsTableTableManager extends RootTableManager<
 }
 
 typedef $$PromptsTableProcessedTableManager = ProcessedTableManager<
-    _$_AppDatabase,
+    _$AppDatabase,
     $PromptsTable,
     Prompt,
     $$PromptsTableFilterComposer,
@@ -1630,7 +2035,7 @@ typedef $$PromptsTableProcessedTableManager = ProcessedTableManager<
     $$PromptsTableAnnotationComposer,
     $$PromptsTableCreateCompanionBuilder,
     $$PromptsTableUpdateCompanionBuilder,
-    (Prompt, BaseReferences<_$_AppDatabase, $PromptsTable, Prompt>),
+    (Prompt, BaseReferences<_$AppDatabase, $PromptsTable, Prompt>),
     Prompt,
     PrefetchHooks Function()>;
 typedef $$PromptBlocksTableCreateCompanionBuilder = PromptBlocksCompanion
@@ -1673,7 +2078,7 @@ typedef $$PromptBlocksTableUpdateCompanionBuilder = PromptBlocksCompanion
 });
 
 class $$PromptBlocksTableFilterComposer
-    extends Composer<_$_AppDatabase, $PromptBlocksTable> {
+    extends Composer<_$AppDatabase, $PromptBlocksTable> {
   $$PromptBlocksTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -1731,7 +2136,7 @@ class $$PromptBlocksTableFilterComposer
 }
 
 class $$PromptBlocksTableOrderingComposer
-    extends Composer<_$_AppDatabase, $PromptBlocksTable> {
+    extends Composer<_$AppDatabase, $PromptBlocksTable> {
   $$PromptBlocksTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -1789,7 +2194,7 @@ class $$PromptBlocksTableOrderingComposer
 }
 
 class $$PromptBlocksTableAnnotationComposer
-    extends Composer<_$_AppDatabase, $PromptBlocksTable> {
+    extends Composer<_$AppDatabase, $PromptBlocksTable> {
   $$PromptBlocksTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -1847,7 +2252,7 @@ class $$PromptBlocksTableAnnotationComposer
 }
 
 class $$PromptBlocksTableTableManager extends RootTableManager<
-    _$_AppDatabase,
+    _$AppDatabase,
     $PromptBlocksTable,
     PromptBlock,
     $$PromptBlocksTableFilterComposer,
@@ -1857,11 +2262,11 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
     $$PromptBlocksTableUpdateCompanionBuilder,
     (
       PromptBlock,
-      BaseReferences<_$_AppDatabase, $PromptBlocksTable, PromptBlock>
+      BaseReferences<_$AppDatabase, $PromptBlocksTable, PromptBlock>
     ),
     PromptBlock,
     PrefetchHooks Function()> {
-  $$PromptBlocksTableTableManager(_$_AppDatabase db, $PromptBlocksTable table)
+  $$PromptBlocksTableTableManager(_$AppDatabase db, $PromptBlocksTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -1951,7 +2356,7 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
 }
 
 typedef $$PromptBlocksTableProcessedTableManager = ProcessedTableManager<
-    _$_AppDatabase,
+    _$AppDatabase,
     $PromptBlocksTable,
     PromptBlock,
     $$PromptBlocksTableFilterComposer,
@@ -1961,7 +2366,7 @@ typedef $$PromptBlocksTableProcessedTableManager = ProcessedTableManager<
     $$PromptBlocksTableUpdateCompanionBuilder,
     (
       PromptBlock,
-      BaseReferences<_$_AppDatabase, $PromptBlocksTable, PromptBlock>
+      BaseReferences<_$AppDatabase, $PromptBlocksTable, PromptBlock>
     ),
     PromptBlock,
     PrefetchHooks Function()>;
@@ -1983,7 +2388,7 @@ typedef $$BlockVariablesTableUpdateCompanionBuilder = BlockVariablesCompanion
 });
 
 class $$BlockVariablesTableFilterComposer
-    extends Composer<_$_AppDatabase, $BlockVariablesTable> {
+    extends Composer<_$AppDatabase, $BlockVariablesTable> {
   $$BlockVariablesTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -2008,7 +2413,7 @@ class $$BlockVariablesTableFilterComposer
 }
 
 class $$BlockVariablesTableOrderingComposer
-    extends Composer<_$_AppDatabase, $BlockVariablesTable> {
+    extends Composer<_$AppDatabase, $BlockVariablesTable> {
   $$BlockVariablesTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -2034,7 +2439,7 @@ class $$BlockVariablesTableOrderingComposer
 }
 
 class $$BlockVariablesTableAnnotationComposer
-    extends Composer<_$_AppDatabase, $BlockVariablesTable> {
+    extends Composer<_$AppDatabase, $BlockVariablesTable> {
   $$BlockVariablesTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -2059,7 +2464,7 @@ class $$BlockVariablesTableAnnotationComposer
 }
 
 class $$BlockVariablesTableTableManager extends RootTableManager<
-    _$_AppDatabase,
+    _$AppDatabase,
     $BlockVariablesTable,
     BlockVariable,
     $$BlockVariablesTableFilterComposer,
@@ -2069,12 +2474,12 @@ class $$BlockVariablesTableTableManager extends RootTableManager<
     $$BlockVariablesTableUpdateCompanionBuilder,
     (
       BlockVariable,
-      BaseReferences<_$_AppDatabase, $BlockVariablesTable, BlockVariable>
+      BaseReferences<_$AppDatabase, $BlockVariablesTable, BlockVariable>
     ),
     BlockVariable,
     PrefetchHooks Function()> {
   $$BlockVariablesTableTableManager(
-      _$_AppDatabase db, $BlockVariablesTable table)
+      _$AppDatabase db, $BlockVariablesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -2120,7 +2525,7 @@ class $$BlockVariablesTableTableManager extends RootTableManager<
 }
 
 typedef $$BlockVariablesTableProcessedTableManager = ProcessedTableManager<
-    _$_AppDatabase,
+    _$AppDatabase,
     $BlockVariablesTable,
     BlockVariable,
     $$BlockVariablesTableFilterComposer,
@@ -2130,18 +2535,194 @@ typedef $$BlockVariablesTableProcessedTableManager = ProcessedTableManager<
     $$BlockVariablesTableUpdateCompanionBuilder,
     (
       BlockVariable,
-      BaseReferences<_$_AppDatabase, $BlockVariablesTable, BlockVariable>
+      BaseReferences<_$AppDatabase, $BlockVariablesTable, BlockVariable>
     ),
     BlockVariable,
     PrefetchHooks Function()>;
+typedef $$SnippetsTableCreateCompanionBuilder = SnippetsCompanion Function({
+  Value<int> id,
+  Value<String> title,
+  Value<String> content,
+  Value<DateTime> createdAt,
+  Value<DateTime?> updatedAt,
+  Value<DateTime?> lastUsedAt,
+});
+typedef $$SnippetsTableUpdateCompanionBuilder = SnippetsCompanion Function({
+  Value<int> id,
+  Value<String> title,
+  Value<String> content,
+  Value<DateTime> createdAt,
+  Value<DateTime?> updatedAt,
+  Value<DateTime?> lastUsedAt,
+});
 
-class $_AppDatabaseManager {
-  final _$_AppDatabase _db;
-  $_AppDatabaseManager(this._db);
+class $$SnippetsTableFilterComposer
+    extends Composer<_$AppDatabase, $SnippetsTable> {
+  $$SnippetsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastUsedAt => $composableBuilder(
+      column: $table.lastUsedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$SnippetsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SnippetsTable> {
+  $$SnippetsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastUsedAt => $composableBuilder(
+      column: $table.lastUsedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$SnippetsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SnippetsTable> {
+  $$SnippetsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUsedAt => $composableBuilder(
+      column: $table.lastUsedAt, builder: (column) => column);
+}
+
+class $$SnippetsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $SnippetsTable,
+    Snippet,
+    $$SnippetsTableFilterComposer,
+    $$SnippetsTableOrderingComposer,
+    $$SnippetsTableAnnotationComposer,
+    $$SnippetsTableCreateCompanionBuilder,
+    $$SnippetsTableUpdateCompanionBuilder,
+    (Snippet, BaseReferences<_$AppDatabase, $SnippetsTable, Snippet>),
+    Snippet,
+    PrefetchHooks Function()> {
+  $$SnippetsTableTableManager(_$AppDatabase db, $SnippetsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SnippetsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SnippetsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SnippetsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<String> content = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime?> updatedAt = const Value.absent(),
+            Value<DateTime?> lastUsedAt = const Value.absent(),
+          }) =>
+              SnippetsCompanion(
+            id: id,
+            title: title,
+            content: content,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            lastUsedAt: lastUsedAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<String> content = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime?> updatedAt = const Value.absent(),
+            Value<DateTime?> lastUsedAt = const Value.absent(),
+          }) =>
+              SnippetsCompanion.insert(
+            id: id,
+            title: title,
+            content: content,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            lastUsedAt: lastUsedAt,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$SnippetsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $SnippetsTable,
+    Snippet,
+    $$SnippetsTableFilterComposer,
+    $$SnippetsTableOrderingComposer,
+    $$SnippetsTableAnnotationComposer,
+    $$SnippetsTableCreateCompanionBuilder,
+    $$SnippetsTableUpdateCompanionBuilder,
+    (Snippet, BaseReferences<_$AppDatabase, $SnippetsTable, Snippet>),
+    Snippet,
+    PrefetchHooks Function()>;
+
+class $AppDatabaseManager {
+  final _$AppDatabase _db;
+  $AppDatabaseManager(this._db);
   $$PromptsTableTableManager get prompts =>
       $$PromptsTableTableManager(_db, _db.prompts);
   $$PromptBlocksTableTableManager get promptBlocks =>
       $$PromptBlocksTableTableManager(_db, _db.promptBlocks);
   $$BlockVariablesTableTableManager get blockVariables =>
       $$BlockVariablesTableTableManager(_db, _db.blockVariables);
+  $$SnippetsTableTableManager get snippets =>
+      $$SnippetsTableTableManager(_db, _db.snippets);
 }
