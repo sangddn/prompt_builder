@@ -13,7 +13,13 @@ class AppRouter extends RootStackRouter {
           initial: true,
           page: ShellRoute.page,
           children: [
-            AutoRoute(path: 'library', page: LibraryRoute.page),
+            AutoRoute(
+              path: 'library',
+              page: LibraryRoute.page,
+              children: [
+                AutoRoute(path: 'prompt', page: PromptRoute.page),
+              ],
+            ),
             AutoRoute(path: 'text-prompts', page: TextPromptsRoute.page),
             AutoRoute(path: 'settings', page: SettingsRoute.page),
             AutoRoute(path: 'resources', page: ResourcesRoute.page),
