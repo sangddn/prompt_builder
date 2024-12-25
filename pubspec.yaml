@@ -23,13 +23,15 @@ dependencies:
   flutter_markdown: ^0.7.3+2
   tiktoken_tokenizer_gpt4o_o1: ^1.1.0
   flutter_gemini: ^3.0.0
-  dart_openai: ^5.1.0
   animated_tree_view: ^2.3.0
   fuzzywuzzy: ^1.2.0
   hive: ^2.2.3
   path_provider: ^2.1.5
   shimmer: ^3.0.0
   gap: ^3.0.1
+  youtube_explode_dart: ^2.3.6
+  any_link_preview: ^3.0.2
+  http: ^1.2.2
 
 
 dev_dependencies:
