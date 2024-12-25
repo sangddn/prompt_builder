@@ -1,5 +1,8 @@
 import 'dart:async';
-import 'dart:math';
+
+extension FP<T> on T {
+  R let<R>(R Function(T) fn) => fn(this);
+}
 
 extension MinMax<T extends Comparable<T>> on Iterable<T> {
   T? minOrNull() {
@@ -632,26 +635,5 @@ class CombineAnyLatestStream<T, R> extends StreamView<R> {
     };
 
     return controller;
-  }
-}
-
-extension RandomElement<T> on Iterable<T> {
-  T randomElement([int? seed, Set<T>? except]) {
-    final random = seed != null ? Random(seed) : Random();
-    final list = except != null
-        ? (toList()..removeWhere((ele) => except.contains(ele)))
-        : toList();
-    return list[random.nextInt(list.length)];
-  }
-
-  Iterable<T> randomSubset(int size, [int? seed]) {
-    return (toList()..shuffle(seed != null ? Random(seed) : null)).take(size);
-  }
-}
-
-extension PrependStream<T> on Stream<T> {
-  Stream<T> prepend(T value) async* {
-    yield value;
-    yield* this;
   }
 }
