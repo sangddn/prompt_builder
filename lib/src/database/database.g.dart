@@ -417,7 +417,8 @@ class $PromptBlocksTable extends PromptBlocks
       'prompt_id', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: true,
-      $customConstraints: 'REFERENCES prompts(id)');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES prompts (id)'));
   static const VerificationMeta _sortOrderMeta =
       const VerificationMeta('sortOrder');
   @override
@@ -1206,7 +1207,8 @@ class $BlockVariablesTable extends BlockVariables
       'block_id', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: true,
-      $customConstraints: 'REFERENCES prompt_blocks(id)');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES prompt_blocks (id)'));
   static const VerificationMeta _varNameMeta =
       const VerificationMeta('varName');
   @override
@@ -1865,6 +1867,26 @@ typedef $$PromptsTableUpdateCompanionBuilder = PromptsCompanion Function({
   Value<DateTime?> lastOpenedAt,
 });
 
+final class $$PromptsTableReferences
+    extends BaseReferences<_$AppDatabase, $PromptsTable, Prompt> {
+  $$PromptsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$PromptBlocksTable, List<PromptBlock>>
+      _promptBlocksRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+          db.promptBlocks,
+          aliasName:
+              $_aliasNameGenerator(db.prompts.id, db.promptBlocks.promptId));
+
+  $$PromptBlocksTableProcessedTableManager get promptBlocksRefs {
+    final manager = $$PromptBlocksTableTableManager($_db, $_db.promptBlocks)
+        .filter((f) => f.promptId.id($_item.id));
+
+    final cache = $_typedResult.readTableOrNull(_promptBlocksRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
 class $$PromptsTableFilterComposer
     extends Composer<_$AppDatabase, $PromptsTable> {
   $$PromptsTableFilterComposer({
@@ -1895,6 +1917,27 @@ class $$PromptsTableFilterComposer
 
   ColumnFilters<DateTime> get lastOpenedAt => $composableBuilder(
       column: $table.lastOpenedAt, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> promptBlocksRefs(
+      Expression<bool> Function($$PromptBlocksTableFilterComposer f) f) {
+    final $$PromptBlocksTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.promptBlocks,
+        getReferencedColumn: (t) => t.promptId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PromptBlocksTableFilterComposer(
+              $db: $db,
+              $table: $db.promptBlocks,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$PromptsTableOrderingComposer
@@ -1959,6 +2002,27 @@ class $$PromptsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get lastOpenedAt => $composableBuilder(
       column: $table.lastOpenedAt, builder: (column) => column);
+
+  Expression<T> promptBlocksRefs<T extends Object>(
+      Expression<T> Function($$PromptBlocksTableAnnotationComposer a) f) {
+    final $$PromptBlocksTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.promptBlocks,
+        getReferencedColumn: (t) => t.promptId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PromptBlocksTableAnnotationComposer(
+              $db: $db,
+              $table: $db.promptBlocks,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$PromptsTableTableManager extends RootTableManager<
@@ -1970,9 +2034,9 @@ class $$PromptsTableTableManager extends RootTableManager<
     $$PromptsTableAnnotationComposer,
     $$PromptsTableCreateCompanionBuilder,
     $$PromptsTableUpdateCompanionBuilder,
-    (Prompt, BaseReferences<_$AppDatabase, $PromptsTable, Prompt>),
+    (Prompt, $$PromptsTableReferences),
     Prompt,
-    PrefetchHooks Function()> {
+    PrefetchHooks Function({bool promptBlocksRefs})> {
   $$PromptsTableTableManager(_$AppDatabase db, $PromptsTable table)
       : super(TableManagerState(
           db: db,
@@ -2020,9 +2084,32 @@ class $$PromptsTableTableManager extends RootTableManager<
             lastOpenedAt: lastOpenedAt,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) =>
+                  (e.readTable(table), $$PromptsTableReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({promptBlocksRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (promptBlocksRefs) db.promptBlocks],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (promptBlocksRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable:
+                            $$PromptsTableReferences._promptBlocksRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$PromptsTableReferences(db, table, p0)
+                                .promptBlocksRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.promptId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
@@ -2035,9 +2122,9 @@ typedef $$PromptsTableProcessedTableManager = ProcessedTableManager<
     $$PromptsTableAnnotationComposer,
     $$PromptsTableCreateCompanionBuilder,
     $$PromptsTableUpdateCompanionBuilder,
-    (Prompt, BaseReferences<_$AppDatabase, $PromptsTable, Prompt>),
+    (Prompt, $$PromptsTableReferences),
     Prompt,
-    PrefetchHooks Function()>;
+    PrefetchHooks Function({bool promptBlocksRefs})>;
 typedef $$PromptBlocksTableCreateCompanionBuilder = PromptBlocksCompanion
     Function({
   Value<int> id,
@@ -2077,6 +2164,39 @@ typedef $$PromptBlocksTableUpdateCompanionBuilder = PromptBlocksCompanion
   Value<DateTime?> updatedAt,
 });
 
+final class $$PromptBlocksTableReferences
+    extends BaseReferences<_$AppDatabase, $PromptBlocksTable, PromptBlock> {
+  $$PromptBlocksTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $PromptsTable _promptIdTable(_$AppDatabase db) =>
+      db.prompts.createAlias(
+          $_aliasNameGenerator(db.promptBlocks.promptId, db.prompts.id));
+
+  $$PromptsTableProcessedTableManager get promptId {
+    final manager = $$PromptsTableTableManager($_db, $_db.prompts)
+        .filter((f) => f.id($_item.promptId!));
+    final item = $_typedResult.readTableOrNull(_promptIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$BlockVariablesTable, List<BlockVariable>>
+      _blockVariablesRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.blockVariables,
+              aliasName: $_aliasNameGenerator(
+                  db.promptBlocks.id, db.blockVariables.blockId));
+
+  $$BlockVariablesTableProcessedTableManager get blockVariablesRefs {
+    final manager = $$BlockVariablesTableTableManager($_db, $_db.blockVariables)
+        .filter((f) => f.blockId.id($_item.id));
+
+    final cache = $_typedResult.readTableOrNull(_blockVariablesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
 class $$PromptBlocksTableFilterComposer
     extends Composer<_$AppDatabase, $PromptBlocksTable> {
   $$PromptBlocksTableFilterComposer({
@@ -2088,9 +2208,6 @@ class $$PromptBlocksTableFilterComposer
   });
   ColumnFilters<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get promptId => $composableBuilder(
-      column: $table.promptId, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get sortOrder => $composableBuilder(
       column: $table.sortOrder, builder: (column) => ColumnFilters(column));
@@ -2133,6 +2250,47 @@ class $$PromptBlocksTableFilterComposer
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
       column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  $$PromptsTableFilterComposer get promptId {
+    final $$PromptsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.promptId,
+        referencedTable: $db.prompts,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PromptsTableFilterComposer(
+              $db: $db,
+              $table: $db.prompts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> blockVariablesRefs(
+      Expression<bool> Function($$BlockVariablesTableFilterComposer f) f) {
+    final $$BlockVariablesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.blockVariables,
+        getReferencedColumn: (t) => t.blockId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$BlockVariablesTableFilterComposer(
+              $db: $db,
+              $table: $db.blockVariables,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$PromptBlocksTableOrderingComposer
@@ -2146,9 +2304,6 @@ class $$PromptBlocksTableOrderingComposer
   });
   ColumnOrderings<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get promptId => $composableBuilder(
-      column: $table.promptId, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<int> get sortOrder => $composableBuilder(
       column: $table.sortOrder, builder: (column) => ColumnOrderings(column));
@@ -2191,6 +2346,26 @@ class $$PromptBlocksTableOrderingComposer
 
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
       column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  $$PromptsTableOrderingComposer get promptId {
+    final $$PromptsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.promptId,
+        referencedTable: $db.prompts,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PromptsTableOrderingComposer(
+              $db: $db,
+              $table: $db.prompts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $$PromptBlocksTableAnnotationComposer
@@ -2204,9 +2379,6 @@ class $$PromptBlocksTableAnnotationComposer
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<int> get promptId =>
-      $composableBuilder(column: $table.promptId, builder: (column) => column);
 
   GeneratedColumn<int> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
@@ -2249,6 +2421,47 @@ class $$PromptBlocksTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$PromptsTableAnnotationComposer get promptId {
+    final $$PromptsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.promptId,
+        referencedTable: $db.prompts,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PromptsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.prompts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<T> blockVariablesRefs<T extends Object>(
+      Expression<T> Function($$BlockVariablesTableAnnotationComposer a) f) {
+    final $$BlockVariablesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.blockVariables,
+        getReferencedColumn: (t) => t.blockId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$BlockVariablesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.blockVariables,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$PromptBlocksTableTableManager extends RootTableManager<
@@ -2260,12 +2473,9 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
     $$PromptBlocksTableAnnotationComposer,
     $$PromptBlocksTableCreateCompanionBuilder,
     $$PromptBlocksTableUpdateCompanionBuilder,
-    (
-      PromptBlock,
-      BaseReferences<_$AppDatabase, $PromptBlocksTable, PromptBlock>
-    ),
+    (PromptBlock, $$PromptBlocksTableReferences),
     PromptBlock,
-    PrefetchHooks Function()> {
+    PrefetchHooks Function({bool promptId, bool blockVariablesRefs})> {
   $$PromptBlocksTableTableManager(_$AppDatabase db, $PromptBlocksTable table)
       : super(TableManagerState(
           db: db,
@@ -2349,9 +2559,62 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
             updatedAt: updatedAt,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable(table),
+                    $$PromptBlocksTableReferences(db, table, e)
+                  ))
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: (
+              {promptId = false, blockVariablesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (blockVariablesRefs) db.blockVariables
+              ],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (promptId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.promptId,
+                    referencedTable:
+                        $$PromptBlocksTableReferences._promptIdTable(db),
+                    referencedColumn:
+                        $$PromptBlocksTableReferences._promptIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (blockVariablesRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable: $$PromptBlocksTableReferences
+                            ._blockVariablesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$PromptBlocksTableReferences(db, table, p0)
+                                .blockVariablesRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.blockId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
@@ -2364,12 +2627,9 @@ typedef $$PromptBlocksTableProcessedTableManager = ProcessedTableManager<
     $$PromptBlocksTableAnnotationComposer,
     $$PromptBlocksTableCreateCompanionBuilder,
     $$PromptBlocksTableUpdateCompanionBuilder,
-    (
-      PromptBlock,
-      BaseReferences<_$AppDatabase, $PromptBlocksTable, PromptBlock>
-    ),
+    (PromptBlock, $$PromptBlocksTableReferences),
     PromptBlock,
-    PrefetchHooks Function()>;
+    PrefetchHooks Function({bool promptId, bool blockVariablesRefs})>;
 typedef $$BlockVariablesTableCreateCompanionBuilder = BlockVariablesCompanion
     Function({
   Value<int> id,
@@ -2387,6 +2647,25 @@ typedef $$BlockVariablesTableUpdateCompanionBuilder = BlockVariablesCompanion
   Value<String?> userValue,
 });
 
+final class $$BlockVariablesTableReferences
+    extends BaseReferences<_$AppDatabase, $BlockVariablesTable, BlockVariable> {
+  $$BlockVariablesTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $PromptBlocksTable _blockIdTable(_$AppDatabase db) =>
+      db.promptBlocks.createAlias(
+          $_aliasNameGenerator(db.blockVariables.blockId, db.promptBlocks.id));
+
+  $$PromptBlocksTableProcessedTableManager get blockId {
+    final manager = $$PromptBlocksTableTableManager($_db, $_db.promptBlocks)
+        .filter((f) => f.id($_item.blockId!));
+    final item = $_typedResult.readTableOrNull(_blockIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
 class $$BlockVariablesTableFilterComposer
     extends Composer<_$AppDatabase, $BlockVariablesTable> {
   $$BlockVariablesTableFilterComposer({
@@ -2399,9 +2678,6 @@ class $$BlockVariablesTableFilterComposer
   ColumnFilters<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get blockId => $composableBuilder(
-      column: $table.blockId, builder: (column) => ColumnFilters(column));
-
   ColumnFilters<String> get varName => $composableBuilder(
       column: $table.varName, builder: (column) => ColumnFilters(column));
 
@@ -2410,6 +2686,26 @@ class $$BlockVariablesTableFilterComposer
 
   ColumnFilters<String> get userValue => $composableBuilder(
       column: $table.userValue, builder: (column) => ColumnFilters(column));
+
+  $$PromptBlocksTableFilterComposer get blockId {
+    final $$PromptBlocksTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.blockId,
+        referencedTable: $db.promptBlocks,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PromptBlocksTableFilterComposer(
+              $db: $db,
+              $table: $db.promptBlocks,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $$BlockVariablesTableOrderingComposer
@@ -2424,9 +2720,6 @@ class $$BlockVariablesTableOrderingComposer
   ColumnOrderings<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get blockId => $composableBuilder(
-      column: $table.blockId, builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<String> get varName => $composableBuilder(
       column: $table.varName, builder: (column) => ColumnOrderings(column));
 
@@ -2436,6 +2729,26 @@ class $$BlockVariablesTableOrderingComposer
 
   ColumnOrderings<String> get userValue => $composableBuilder(
       column: $table.userValue, builder: (column) => ColumnOrderings(column));
+
+  $$PromptBlocksTableOrderingComposer get blockId {
+    final $$PromptBlocksTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.blockId,
+        referencedTable: $db.promptBlocks,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PromptBlocksTableOrderingComposer(
+              $db: $db,
+              $table: $db.promptBlocks,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $$BlockVariablesTableAnnotationComposer
@@ -2450,9 +2763,6 @@ class $$BlockVariablesTableAnnotationComposer
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<int> get blockId =>
-      $composableBuilder(column: $table.blockId, builder: (column) => column);
-
   GeneratedColumn<String> get varName =>
       $composableBuilder(column: $table.varName, builder: (column) => column);
 
@@ -2461,6 +2771,26 @@ class $$BlockVariablesTableAnnotationComposer
 
   GeneratedColumn<String> get userValue =>
       $composableBuilder(column: $table.userValue, builder: (column) => column);
+
+  $$PromptBlocksTableAnnotationComposer get blockId {
+    final $$PromptBlocksTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.blockId,
+        referencedTable: $db.promptBlocks,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PromptBlocksTableAnnotationComposer(
+              $db: $db,
+              $table: $db.promptBlocks,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $$BlockVariablesTableTableManager extends RootTableManager<
@@ -2472,12 +2802,9 @@ class $$BlockVariablesTableTableManager extends RootTableManager<
     $$BlockVariablesTableAnnotationComposer,
     $$BlockVariablesTableCreateCompanionBuilder,
     $$BlockVariablesTableUpdateCompanionBuilder,
-    (
-      BlockVariable,
-      BaseReferences<_$AppDatabase, $BlockVariablesTable, BlockVariable>
-    ),
+    (BlockVariable, $$BlockVariablesTableReferences),
     BlockVariable,
-    PrefetchHooks Function()> {
+    PrefetchHooks Function({bool blockId})> {
   $$BlockVariablesTableTableManager(
       _$AppDatabase db, $BlockVariablesTable table)
       : super(TableManagerState(
@@ -2518,9 +2845,46 @@ class $$BlockVariablesTableTableManager extends RootTableManager<
             userValue: userValue,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable(table),
+                    $$BlockVariablesTableReferences(db, table, e)
+                  ))
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({blockId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (blockId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.blockId,
+                    referencedTable:
+                        $$BlockVariablesTableReferences._blockIdTable(db),
+                    referencedColumn:
+                        $$BlockVariablesTableReferences._blockIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ));
 }
 
@@ -2533,12 +2897,9 @@ typedef $$BlockVariablesTableProcessedTableManager = ProcessedTableManager<
     $$BlockVariablesTableAnnotationComposer,
     $$BlockVariablesTableCreateCompanionBuilder,
     $$BlockVariablesTableUpdateCompanionBuilder,
-    (
-      BlockVariable,
-      BaseReferences<_$AppDatabase, $BlockVariablesTable, BlockVariable>
-    ),
+    (BlockVariable, $$BlockVariablesTableReferences),
     BlockVariable,
-    PrefetchHooks Function()>;
+    PrefetchHooks Function({bool blockId})>;
 typedef $$SnippetsTableCreateCompanionBuilder = SnippetsCompanion Function({
   Value<int> id,
   Value<String> title,
