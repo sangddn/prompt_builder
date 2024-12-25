@@ -2,13 +2,13 @@ part of 'ui.dart';
 
 final kLightTheme = ShadThemeData(
   brightness: Brightness.light,
-  colorScheme: const ShadSlateColorScheme.light(),
+  colorScheme: const ShadGrayColorScheme.light(background: Color(0xffFAFAFA)),
   switchTheme: const ShadSwitchTheme(margin: 0.0),
 );
 
 final kDarkTheme = ShadThemeData(
   brightness: Brightness.dark,
-  colorScheme: const ShadSlateColorScheme.dark(),
+  colorScheme: const ShadGrayColorScheme.dark(),
   switchTheme: const ShadSwitchTheme(margin: 1.0),
 );
 
@@ -234,6 +234,7 @@ extension BrightnessCheckData on ShadThemeData {
 }
 
 extension ThemeUtils on BuildContext {
+  ThemeData get materialTheme => Theme.of(this);
   ShadThemeData get theme => ShadTheme.of(this);
   ShadColorScheme get colorScheme => theme.colorScheme;
 }
