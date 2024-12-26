@@ -27,7 +27,7 @@ class AppRouter extends RootStackRouter {
                 ),
               ],
             ),
-            DefaultRoute(path: 'text-prompts', page: TextPromptsRoute.page),
+            DefaultRoute(path: 'snippets', page: SnippetsRoute.page),
             DefaultRoute(path: 'settings', page: SettingsRoute.page),
             DefaultRoute(path: 'resources', page: ResourcesRoute.page),
           ],
@@ -48,6 +48,6 @@ class DefaultRoute extends CustomRoute<void> {
     super.children,
   }) : super(
           transitionsBuilder: TransitionsBuilders.fadeIn,
-          durationInMilliseconds: 100,
+          durationInMilliseconds: 50,
         );
 }

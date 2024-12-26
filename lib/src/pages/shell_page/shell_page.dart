@@ -6,6 +6,7 @@ import '../../components/components.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';
 import '../../router/router.gr.dart';
+import '../library_page/library_observer.dart';
 
 @RoutePage()
 class ShellPage extends StatelessWidget {
@@ -17,7 +18,7 @@ class ShellPage extends StatelessWidget {
       homeIndex: 0,
       routes: const [
         LibraryRoute(),
-        TextPromptsRoute(),
+        SnippetsRoute(),
         SettingsRoute(),
         ResourcesRoute(),
       ],
@@ -69,8 +70,8 @@ class _Sidebar extends StatelessWidget {
           _NewPromptButton(),
           _NavButton(HugeIcons.strokeRoundedFolder02, 'Library', 0),
           _NavButton(
-            HugeIcons.strokeRoundedParagraphBulletsPoint01,
-            'Text Prompts',
+            HugeIcons.strokeRoundedParagraphBulletsPoint02,
+            'Snippets',
             1,
           ),
           _NavButton(HugeIcons.strokeRoundedSettings01, 'Settings', 2),
@@ -92,7 +93,6 @@ class _NavButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final tabsRouter = AutoTabsRouter.of(context, watch: true);
     final isActive = tabsRouter.activeIndex == index;
-
     return CButton(
       tooltip: tooltip,
       padding: k24H12VPadding,
@@ -108,11 +108,7 @@ class _NavButton extends StatelessWidget {
         ),
       ),
       onTap: () {
-        if (isActive) {
-          context.router.replaceNamed(tabsRouter.current.name);
-        } else {
-          tabsRouter.setActiveIndex(index);
-        }
+        tabsRouter.setActiveIndex(index);
       },
     );
   }
@@ -127,9 +123,9 @@ class _NewPromptButton extends StatelessWidget {
       tooltip: 'New Prompt',
       onTap: () async {
         final id = await Database().createPrompt();
-        if (context.mounted) {
-          context.router.push(PromptRoute(id: id));
-        }
+        if (!context.mounted) return;
+        NewPromptAddedNotification(id: id).dispatch(context);
+        context.router.push(PromptRoute(id: id));
       },
       color: PColors.gray.resolveFrom(context),
       padding: k24H12VPadding,

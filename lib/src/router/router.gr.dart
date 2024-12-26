@@ -17,7 +17,7 @@ import 'package:prompt_builder/src/pages/resources_page/resources_page.dart'
 import 'package:prompt_builder/src/pages/settings_page/settings_page.dart'
     as _i5;
 import 'package:prompt_builder/src/pages/shell_page/shell_page.dart' as _i6;
-import 'package:prompt_builder/src/pages/text_prompts_page/text_prompts_page.dart'
+import 'package:prompt_builder/src/pages/snippets_page/snippets_page.dart'
     as _i7;
 import 'package:prompt_builder/src/router/router.dart' as _i2;
 
@@ -163,20 +163,20 @@ class ShellRoute extends _i8.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i7.TextPromptsPage]
-class TextPromptsRoute extends _i8.PageRouteInfo<void> {
-  const TextPromptsRoute({List<_i8.PageRouteInfo>? children})
+/// [_i7.SnippetsPage]
+class SnippetsRoute extends _i8.PageRouteInfo<void> {
+  const SnippetsRoute({List<_i8.PageRouteInfo>? children})
       : super(
-          TextPromptsRoute.name,
+          SnippetsRoute.name,
           initialChildren: children,
         );
 
-  static const String name = 'TextPromptsRoute';
+  static const String name = 'SnippetsRoute';
 
   static _i8.PageInfo page = _i8.PageInfo(
     name,
     builder: (data) {
-      return const _i7.TextPromptsPage();
+      return const _i7.SnippetsPage();
     },
   );
 }
