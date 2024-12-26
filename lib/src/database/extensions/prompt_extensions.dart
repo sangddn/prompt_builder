@@ -58,7 +58,14 @@ extension PromptsExtension on Database {
   /// - [limit] Maximum number of results to return (default: 50)
   /// - [offset] Number of results to skip for pagination (default: 0)
   /// - [tags] Optional list of tags to filter by
-  ///
+  /// - [searchQuery] Optional search query to filter by
+  /// 
+  /// If [searchQuery] is not empty, it will be used to filter prompts 
+  /// case-insensitively in:
+  /// - Prompt titles
+  /// - Notes
+  /// - Tags
+  /// 
   /// Returns a list of prompts matching the query parameters.
   Future<List<Prompt>> queryPrompts({
     PromptSortBy sortBy = PromptSortBy.createdAt,
@@ -66,6 +73,7 @@ extension PromptsExtension on Database {
     int limit = 50,
     int offset = 0,
     List<String> tags = const [],
+    String searchQuery = '',
   }) async {
     final q = select(prompts)..limit(limit, offset: offset);
 
@@ -75,6 +83,16 @@ extension PromptsExtension on Database {
         tagFilter = tagFilter | prompts.tags.like('%${tags[i]}%');
       }
       q.where((t) => tagFilter);
+    }
+
+    if (searchQuery.isNotEmpty) {
+      final searchTerm = '%${searchQuery.toLowerCase()}%';
+      q.where((t) {
+        final titleMatch = t.title.lower().like(searchTerm);
+        final notesMatch = t.notes.lower().like(searchTerm);
+        final tagsMatch = t.tags.lower().like(searchTerm);
+        return titleMatch | notesMatch | tagsMatch;
+      });
     }
 
     switch (sortBy) {
@@ -120,6 +138,7 @@ extension PromptsExtension on Database {
   Future<void> updatePrompt(
     int promptId, {
     String? title,
+    String? notes,
     String? folderPath,
     String? ignorePatterns,
     bool? isLibrary,
@@ -128,6 +147,7 @@ extension PromptsExtension on Database {
     await (update(prompts)..where((tbl) => tbl.id.equals(promptId))).write(
       PromptsCompanion(
         title: title != null ? Value(title) : const Value.absent(),
+        notes: notes != null ? Value(notes) : const Value.absent(),
         folderPath:
             folderPath != null ? Value(folderPath) : const Value.absent(),
         ignorePatterns: ignorePatterns != null
@@ -164,41 +184,6 @@ extension PromptsExtension on Database {
         updatedAt: Value(DateTime.now()),
       ),
     );
-  }
-
-  /// Searches prompts by matching a query string against multiple fields.
-  ///
-  /// Searches case-insensitively in:
-  /// - Prompt titles
-  /// - Notes
-  /// - Tags
-  ///
-  /// If query is empty, returns regular prompt listing.
-  ///
-  /// Parameters:
-  /// - [query] Search term to match
-  /// - [limit] Maximum number of results (default: 50)
-  /// - [offset] Number of results to skip (default: 0)
-  Future<List<Prompt>> searchPrompts(
-    String query, {
-    int limit = 50,
-    int offset = 0,
-  }) async {
-    if (query.isEmpty) {
-      return queryPrompts(limit: limit, offset: offset);
-    }
-
-    final searchTerm = '%${query.toLowerCase()}%';
-    final q = select(prompts)
-      ..limit(limit, offset: offset)
-      ..where((t) {
-        final titleMatch = t.title.lower().like(searchTerm);
-        final notesMatch = t.notes.lower().like(searchTerm);
-        final tagsMatch = t.tags.lower().like(searchTerm);
-        return titleMatch | notesMatch | tagsMatch;
-      });
-
-    return q.get();
   }
 }
 

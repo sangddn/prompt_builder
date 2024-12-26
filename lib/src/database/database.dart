@@ -16,17 +16,17 @@ part 'database.g.dart';
 @DriftDatabase(tables: [Prompts, PromptBlocks, BlockVariables, Snippets])
 final class Database extends _$Database {
   factory Database() => instance;
-  Database._() : super(_openConnection());
+  Database.custom(String name) : super(_openConnection(name));
 
-  static final instance = Database._();
+  static final instance = Database.custom('pb_db');
 
   @override
   int get schemaVersion => 1;
 
-  static QueryExecutor _openConnection() {
+  static QueryExecutor _openConnection(String name) {
     // `driftDatabase` from `package:drift_flutter` stores the database in
     // `getApplicationDocumentsDirectory()`.
-    return driftDatabase(name: 'prompt_builder_db');
+    return driftDatabase(name: name);
   }
 
   bool isInitialized = false;
@@ -66,5 +66,31 @@ final class Database extends _$Database {
     intRef.close();
     doubleRef.close();
     dateTimeRef.close();
+  }
+}
+
+@visibleForTesting
+final class MockDatabase extends Database {
+  MockDatabase() : super.custom('mock_db');
+
+  @override
+  Future<void> initialize() async {
+    if (isInitialized) {
+      return;
+    }
+
+    debugPrint('Initializing MockDatabase...');
+
+    boolRef = await Hive.openBox<bool>('mockBoolMap', path: '.'); 
+    stringRef = await Hive.openBox<String>('mockStringMap', path: '.');
+    intRef = await Hive.openBox<int>('mockIntMap', path: '.');
+    doubleRef = await Hive.openBox<double>('mockDoubleMap', path: '.');
+    dateTimeRef = await Hive.openBox<DateTime>('mockDateTimeMap', path: '.');
+
+    isInitialized = true;
+
+    debugPrint('Mock database initialized. 🚀');
+
+    return;
   }
 }
