@@ -46,7 +46,7 @@ class ContextMenuButton extends StatefulWidget {
     this.overlayController,
     this.overlayPosition,
     required this.items,
-    required this.childBuilder,
+    required this.builder,
     super.key,
   });
 
@@ -62,8 +62,7 @@ class ContextMenuButton extends StatefulWidget {
   /// Typically a list of [MenuButton].
   ///
   final List<Widget> items;
-  final Widget Function(BuildContext context, VoidCallback showMenu)
-      childBuilder;
+  final Widget Function(BuildContext context, VoidCallback showMenu) builder;
 
   @override
   State<ContextMenuButton> createState() => _ContextMenuButtonState();
@@ -247,7 +246,7 @@ class _ContextMenuButtonState extends State<ContextMenuButton>
         builder: (context, child) {
           return Opacity(
             opacity: (1.0 - _animationController.value).clamp(0.2, 1.0),
-            child: widget.childBuilder(
+            child: widget.builder(
               context,
               _show,
             ),
