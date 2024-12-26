@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -12,7 +11,7 @@ import '../components.dart';
 /// When pressed, the feedback animates from behind of the button up, down,
 /// left or right.
 ///
-class FeedbackButton extends StatefulWidget {
+class FeedbackButton<T> extends StatefulWidget {
   const FeedbackButton({
     this.overlayController,
     this.feedbackPosition,
@@ -38,7 +37,7 @@ class FeedbackButton extends StatefulWidget {
   final Widget Function(
     BuildContext context,
     VoidCallback hideFeedback,
-    bool isSuccess,
+    T? isSuccess,
   ) feedbackBuilder;
 
   /// Builds the button that will be shown to the user.
@@ -48,16 +47,16 @@ class FeedbackButton extends StatefulWidget {
   /// If true, [Haptics.success()] will be called.
   /// If false, [Haptics.error()] will be called.
   ///
-  final Widget Function(BuildContext context, ValueChanged<bool> showFeedback)
+  final Widget Function(BuildContext context, ValueChanged<T?> showFeedback)
       builder;
 
   @override
-  State<FeedbackButton> createState() => _FeedbackButtonState();
+  State<FeedbackButton<T>> createState() => _FeedbackButtonState<T>();
 }
 
-class _FeedbackButtonState extends State<FeedbackButton>
+class _FeedbackButtonState<T> extends State<FeedbackButton<T>>
     with SingleTickerProviderStateMixin {
-  bool _isSuccess = false;
+  T? _isSuccess;
   late final _animationController = AnimationController(
     vsync: this,
     duration: Effects.veryShortDuration,
@@ -71,14 +70,14 @@ class _FeedbackButtonState extends State<FeedbackButton>
     super.dispose();
   }
 
-  void _show(bool isSuccess) {
+  void _show(T? isSuccess) {
     _isSuccess = isSuccess;
     _overlayController.show();
     _animationController.forward().then(
           (value) => Future.delayed(
             widget.timeToLive,
             () {
-              if (_animationController.isCompleted) {
+              if (mounted && _animationController.isCompleted) {
                 _hide();
               }
             },
@@ -88,14 +87,17 @@ class _FeedbackButtonState extends State<FeedbackButton>
 
   void _hide() {
     _animationController.reverse().then(
-          (value) => _overlayController.hide(),
-        );
+      (_) {
+        if (mounted) {
+          _overlayController.hide();
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final direction = Directionality.of(context);
-
+    final theme = Theme.of(context);
     return OverlayPortal(
       controller: _overlayController,
       overlayChildBuilder: (overlayContext) {
@@ -149,10 +151,11 @@ class _FeedbackButtonState extends State<FeedbackButton>
             Positioned.fill(
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
-                onTap: _hide,
+                onTapDown: (_) => _hide(),
               ),
             ),
             Positioned.directional(
+              textDirection: TextDirection.ltr,
               top: shouldShowAbove
                   ? 0.0
                   : shouldShowBelow
@@ -173,7 +176,6 @@ class _FeedbackButtonState extends State<FeedbackButton>
                   : shouldShowStart
                       ? endOfButton + childSize.width
                       : endOfButton - minHorizontal,
-              textDirection: direction,
               child: Align(
                 alignment: shouldShowAbove
                     ? Alignment.bottomCenter
@@ -183,24 +185,16 @@ class _FeedbackButtonState extends State<FeedbackButton>
                             ? AlignmentDirectional.centerEnd
                             : AlignmentDirectional.centerStart,
                 child: IconTheme(
-                  data: IconThemeData(
-                    color: _isSuccess
-                        ? CupertinoColors.activeGreen.resolveFrom(context)
-                        : context.colorScheme.destructiveForeground,
-                    size: 20.0,
-                  ),
+                  data: theme.iconTheme.copyWith(size: 20.0),
                   child: Container(
                     decoration: ShapeDecoration(
-                      color: overlayContext.colorScheme.card,
-                      shape: Superellipse.border12,
-                      shadows: const [
-                        BoxShadow(
-                          blurRadius: 8.0,
-                        ),
-                      ],
+                      shape: const SquircleStadiumBorder(),
+                      color: context.colorScheme.secondary,
+                      shadows: focusedShadows(),
                     ),
                     padding: k8VPadding + k8HPadding,
                     margin: k16H8VPadding,
+                    // width: 600.0,
                     child: Material(
                       color: Colors.transparent,
                       shape: Superellipse.border12,
@@ -251,12 +245,10 @@ class _FeedbackButtonState extends State<FeedbackButton>
         builder: (context, child) {
           return Opacity(
             opacity: (1.0 - _animationController.value).clamp(0.2, 1.0),
-            child: widget.builder(
-              context,
-              _show,
-            ),
+            child: child,
           );
         },
+        child: widget.builder(context, _show),
       ),
     );
   }
