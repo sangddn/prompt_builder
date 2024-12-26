@@ -35,7 +35,9 @@ dependencies:
   infinite_scroll_pagination: ^4.1.0
   super_drag_and_drop: ^0.8.24
   super_clipboard: ^0.8.24
-
+  super_sliver_list: ^0.4.1
+  fast_immutable_collections: ^11.0.0
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:

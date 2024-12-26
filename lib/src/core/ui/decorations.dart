@@ -140,3 +140,14 @@ List<BoxShadow> broadShadows(
     ),
   ];
 }
+
+Decoration broadShadowsCard(
+  BuildContext context, {
+  double cornerRadius = 12.0,
+  BorderSide side = BorderSide.none,
+}) =>
+    ShapeDecoration(
+      shape: Superellipse(cornerRadius: cornerRadius, side: side),
+      color: context.theme.colorScheme.card,
+      shadows: broadShadows(context),
+    );

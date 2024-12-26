@@ -4,12 +4,14 @@ final kLightTheme = ShadThemeData(
   brightness: Brightness.light,
   colorScheme: const ShadZincColorScheme.light(background: Color(0xffFAFAFA)),
   switchTheme: const ShadSwitchTheme(margin: 0.0),
+  radius: BorderRadius.circular(8.0),
 );
 
 final kDarkTheme = ShadThemeData(
   brightness: Brightness.dark,
   colorScheme: const ShadZincColorScheme.dark(),
   switchTheme: const ShadSwitchTheme(margin: 1.0),
+  radius: BorderRadius.circular(8.0),
 );
 
 extension TextStyleUtils on TextStyle {
@@ -39,7 +41,7 @@ extension TextStyleUtils on TextStyle {
   /// of `100`. Typically, the weight is clamped below by `100` and above by
   /// `900`, but the exact effect can vary depending on the font.
   ///
-  TextStyle withWeight(double delta) {
+  TextStyle addWeight(double delta) {
     if (delta == 0.0) {
       return this;
     }
@@ -236,5 +238,7 @@ extension BrightnessCheckData on ShadThemeData {
 extension ThemeUtils on BuildContext {
   ThemeData get materialTheme => Theme.of(this);
   ShadThemeData get theme => ShadTheme.of(this);
+  ShadTextTheme get textTheme => theme.textTheme;
   ShadColorScheme get colorScheme => theme.colorScheme;
+  ShadToasterState get toaster => ShadToaster.of(this);
 }
