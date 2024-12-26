@@ -1,4 +1,4 @@
-// FlipSwitcher, ZoomSwitcher, and TranslationSwitcher are based on 
+// FlipSwitcher, ZoomSwitcher, and TranslationSwitcher are based on
 // the package [AnimatedSwitcherPlus](https://pub.dev/packages/animated_switcher_plus).
 // This file adds "size-fade" and blur effect transitions and additional switcher
 // widgets.
@@ -344,3 +344,22 @@ extension AnimationStatusExtension on AnimationStatus {
   bool get isCompletedOrReversed =>
       this == AnimationStatus.completed || this == AnimationStatus.reverse;
 }
+
+AnimatedSwitcherLayoutBuilder alignedLayoutBuilder(
+  AlignmentGeometry alignment, {
+  StackFit fit = StackFit.loose,
+  Widget? Function(Widget?)? currentChildBuilder,
+}) =>
+    (
+      Widget? currentChild,
+      List<Widget> previousChildren,
+    ) =>
+        Stack(
+          alignment: alignment,
+          children: <Widget>[
+            ...previousChildren,
+            if (currentChildBuilder?.call(currentChild) ?? currentChild
+                case final child?)
+              child,
+          ],
+        );
