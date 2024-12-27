@@ -7,7 +7,8 @@ enum BlockType {
   /// Plain text content entered by the user
   text,
 
-  /// Local file content like PDFs or documents
+  /// Local file content like PDFs or documents, excluding images, audios and
+  /// videos
   localFile,
 
   /// YouTube video content with optional transcript
@@ -43,7 +44,7 @@ class PromptBlocks extends Table {
 
   /// Position of this block within the prompt's sequence of blocks
   /// Defaults to 0 if not specified
-  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+  RealColumn get sortOrder => real().withDefault(const Constant(0.0))();
 
   /// The type of content in this block, stored as a string representation
   /// of the [BlockType] enum
@@ -53,7 +54,16 @@ class PromptBlocks extends Table {
   TextColumn get displayName => text().withDefault(const Constant(''))();
 
   /// Number of tokens in this block's content, used for API limits
-  IntColumn get tokenCount => integer().withDefault(const Constant(0))();
+  IntColumn get textContentTokenCount => integer().nullable()();
+
+  /// Number of tokens in this block's summary, used for API limits
+  IntColumn get summaryTokenCount => integer().nullable()();
+
+  /// Number of tokens in this block's transcript, used for API limits
+  IntColumn get transcriptTokenCount => integer().nullable()();
+
+  /// Number of tokens in this block's caption, used for API limits
+  IntColumn get captionTokenCount => integer().nullable()();
 
   /// Main text content for text-based blocks
   /// Nullable since not all block types contain text

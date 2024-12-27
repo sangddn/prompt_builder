@@ -18,7 +18,7 @@ final class Database extends _$Database {
   factory Database() => instance;
   Database.custom(String name) : super(_openConnection(name));
 
-  static final instance = Database.custom('pb_db');
+  static final instance = Database.custom('app_db');
 
   @override
   int get schemaVersion => 1;

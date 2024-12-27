@@ -40,6 +40,12 @@ extension PromptsExtension on Database {
         createdAt: Value(now),
       ),
     );
+    // We always create a TextBlock for the prompt
+    await createBlock(
+      promptId: id,
+      blockType: BlockType.text,
+      sortOrder: 100.0,
+    );
     return id;
   }
 
@@ -59,13 +65,13 @@ extension PromptsExtension on Database {
   /// - [offset] Number of results to skip for pagination (default: 0)
   /// - [tags] Optional list of tags to filter by
   /// - [searchQuery] Optional search query to filter by
-  /// 
-  /// If [searchQuery] is not empty, it will be used to filter prompts 
+  ///
+  /// If [searchQuery] is not empty, it will be used to filter prompts
   /// case-insensitively in:
   /// - Prompt titles
   /// - Notes
   /// - Tags
-  /// 
+  ///
   /// Returns a list of prompts matching the query parameters.
   Future<List<Prompt>> queryPrompts({
     PromptSortBy sortBy = PromptSortBy.createdAt,
@@ -135,6 +141,7 @@ extension PromptsExtension on Database {
   /// - [folderPath] Optional new folder path
   /// - [ignorePatterns] Optional new ignore patterns
   /// - [isLibrary] Optional library status flag
+  /// - [tags] Optional list of tags to replace existing tags
   Future<void> updatePrompt(
     int promptId, {
     String? title,
@@ -142,6 +149,7 @@ extension PromptsExtension on Database {
     String? folderPath,
     String? ignorePatterns,
     bool? isLibrary,
+    List<String>? tags,
   }) async {
     final now = DateTime.now();
     await (update(prompts)..where((tbl) => tbl.id.equals(promptId))).write(
@@ -152,6 +160,9 @@ extension PromptsExtension on Database {
             folderPath != null ? Value(folderPath) : const Value.absent(),
         ignorePatterns: ignorePatterns != null
             ? Value(ignorePatterns)
+            : const Value.absent(),
+        tags: tags != null
+            ? Value(PromptTagsExtension.tagsToString(tags))
             : const Value.absent(),
         updatedAt: Value(now),
       ),
@@ -171,19 +182,6 @@ extension PromptsExtension on Database {
     }
     // Delete the prompt:
     await (delete(prompts)..where((tbl) => tbl.id.equals(promptId))).go();
-  }
-
-  /// Updates the tags associated with a prompt.
-  ///
-  /// Replaces all existing tags with the provided list.
-  /// Tags are stored as a pipe-separated string internally.
-  Future<void> updatePromptTags(int promptId, List<String> tags) async {
-    await (update(prompts)..where((t) => t.id.equals(promptId))).write(
-      PromptsCompanion(
-        tags: Value(PromptTagsExtension.tagsToString(tags)),
-        updatedAt: Value(DateTime.now()),
-      ),
-    );
   }
 }
 
