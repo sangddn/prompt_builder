@@ -11,6 +11,12 @@ part 'anthropic.dart';
 part 'gemini.dart';
 part 'openai.dart';
 
+enum LLMProviderType {
+  openai,
+  anthropic,
+  gemini,
+}
+
 /// Base class for LLM (Large Language Model) providers.
 ///
 /// This abstract class defines the common interface that all LLM providers must implement.

@@ -4,8 +4,8 @@ final class OpenAI extends LLMProvider {
   factory OpenAI() => instance;
   const OpenAI._();
 
-  static const apiKeyKey = 'openai_api_key';
   static const instance = OpenAI._();
+  static const apiKeyKey = 'openai_api_key';
   static const _defaultModel = 'gpt-4o';
 
   String _getApiKey() {
