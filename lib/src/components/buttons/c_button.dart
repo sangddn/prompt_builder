@@ -54,22 +54,22 @@ class CButton extends StatelessWidget {
           decoration: ShapeDecoration(
             shape: Superellipse(
               side: side.copyWith(
-                color: color ?? context.materialTheme.dividerColor,
+                color: Colors.blueAccent,
                 width: side.width * 2.0,
               ),
-              cornerRadius: cornerRadius + extraPadding,
+              cornerRadius: cornerRadius + extraPadding - 0.5,
             ),
           ),
           padding: EdgeInsets.all(extraPadding),
           clipBehavior: clipBehavior,
           child: CupertinoButton(
             color: color,
-            focusNode: context.select((FocusNode fn) => fn),
-            focusColor: Theme.of(context).highlightColor,
+            focusNode: context.read(),
+            focusColor: context.colorScheme.selection,
             padding: padding,
             minSize: 0.0,
             pressedOpacity: pressedOpacity,
-            borderRadius: BorderRadius.circular(0.0),
+            borderRadius: BorderRadius.circular(cornerRadius),
             onPressed: onTap == null
                 ? null
                 : addFeedback
