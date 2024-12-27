@@ -40,9 +40,9 @@ class PColors {
   );
   static final opaqueLightGray =
       CupertinoDynamicColor.withBrightnessAndContrast(
-    color: Colors.grey.tint(.95),
-    darkColor: Colors.grey.shade(.9),
-    highContrastColor: Colors.grey.tint(.9),
+    color: Colors.grey.tint(.875),
+    darkColor: Colors.grey.shade(.85),
+    highContrastColor: Colors.grey.tint(.8),
     darkHighContrastColor: Colors.grey.shade(.7),
   );
   static final gray = CupertinoDynamicColor.withBrightnessAndContrast(
