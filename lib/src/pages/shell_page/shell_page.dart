@@ -16,11 +16,11 @@ class ShellPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AutoTabsRouter(
       homeIndex: 0,
-      routes: const [
+      routes: [
         LibraryRoute(),
-        SnippetsRoute(),
-        SettingsRoute(),
-        ResourcesRoute(),
+        const SnippetsRoute(),
+        const SettingsRoute(),
+        const ResourcesRoute(),
       ],
       transitionBuilder: (context, child, animation) {
         final position = Tween<Offset>(
@@ -68,7 +68,7 @@ class _Sidebar extends StatelessWidget {
         spacing: 8.0,
         children: [
           _NewPromptButton(),
-          _NavButton(HugeIcons.strokeRoundedFolder02, 'Library', 0),
+          _NavButton(HugeIcons.strokeRoundedHome09, 'Library', 0),
           _NavButton(
             HugeIcons.strokeRoundedParagraphBulletsPoint02,
             'Snippets',

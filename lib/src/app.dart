@@ -3,6 +3,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'core/core.dart';
 import 'database/database.dart';
+import 'pages/library_page/library_observer.dart';
 import 'router/router.dart';
 
 class App extends StatefulWidget {
@@ -36,6 +37,7 @@ class _AppState extends State<App> {
           darkTheme: kDarkTheme,
           themeMode: snapshot.data ?? _initialThemeMode,
           routerConfig: _appRouter.config(),
+          builder: (context, child) => LibraryObserver(child: child!),
         );
       },
     );

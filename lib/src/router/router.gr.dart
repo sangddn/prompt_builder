@@ -9,7 +9,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i8;
-import 'package:flutter/material.dart' as _i9;
+import 'package:flutter/cupertino.dart' as _i10;
+import 'package:flutter/material.dart' as _i11;
+import 'package:prompt_builder/src/database/database.dart' as _i9;
 import 'package:prompt_builder/src/pages/library_page/library_page.dart' as _i1;
 import 'package:prompt_builder/src/pages/prompt_page/prompt_page.dart' as _i3;
 import 'package:prompt_builder/src/pages/resources_page/resources_page.dart'
@@ -23,10 +25,17 @@ import 'package:prompt_builder/src/router/router.dart' as _i2;
 
 /// generated route for
 /// [_i1.LibraryPage]
-class LibraryRoute extends _i8.PageRouteInfo<void> {
-  const LibraryRoute({List<_i8.PageRouteInfo>? children})
-      : super(
+class LibraryRoute extends _i8.PageRouteInfo<LibraryRouteArgs> {
+  LibraryRoute({
+    _i9.Database? database,
+    _i10.Key? key,
+    List<_i8.PageRouteInfo>? children,
+  }) : super(
           LibraryRoute.name,
+          args: LibraryRouteArgs(
+            database: database,
+            key: key,
+          ),
           initialChildren: children,
         );
 
@@ -35,9 +44,30 @@ class LibraryRoute extends _i8.PageRouteInfo<void> {
   static _i8.PageInfo page = _i8.PageInfo(
     name,
     builder: (data) {
-      return const _i1.LibraryPage();
+      final args =
+          data.argsAs<LibraryRouteArgs>(orElse: () => const LibraryRouteArgs());
+      return _i1.LibraryPage(
+        database: args.database,
+        key: args.key,
+      );
     },
   );
+}
+
+class LibraryRouteArgs {
+  const LibraryRouteArgs({
+    this.database,
+    this.key,
+  });
+
+  final _i9.Database? database;
+
+  final _i10.Key? key;
+
+  @override
+  String toString() {
+    return 'LibraryRouteArgs{database: $database, key: $key}';
+  }
 }
 
 /// generated route for
@@ -63,12 +93,14 @@ class LibraryShellRoute extends _i8.PageRouteInfo<void> {
 /// [_i3.PromptPage]
 class PromptRoute extends _i8.PageRouteInfo<PromptRouteArgs> {
   PromptRoute({
+    _i9.Database? database,
     required int id,
-    _i9.Key? key,
+    _i11.Key? key,
     List<_i8.PageRouteInfo>? children,
   }) : super(
           PromptRoute.name,
           args: PromptRouteArgs(
+            database: database,
             id: id,
             key: key,
           ),
@@ -82,6 +114,7 @@ class PromptRoute extends _i8.PageRouteInfo<PromptRouteArgs> {
     builder: (data) {
       final args = data.argsAs<PromptRouteArgs>();
       return _i3.PromptPage(
+        database: args.database,
         id: args.id,
         key: args.key,
       );
@@ -91,17 +124,20 @@ class PromptRoute extends _i8.PageRouteInfo<PromptRouteArgs> {
 
 class PromptRouteArgs {
   const PromptRouteArgs({
+    this.database,
     required this.id,
     this.key,
   });
 
+  final _i9.Database? database;
+
   final int id;
 
-  final _i9.Key? key;
+  final _i11.Key? key;
 
   @override
   String toString() {
-    return 'PromptRouteArgs{id: $id, key: $key}';
+    return 'PromptRouteArgs{database: $database, id: $id, key: $key}';
   }
 }
 
