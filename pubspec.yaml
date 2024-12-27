@@ -18,12 +18,14 @@ dependencies:
   drift_flutter: ^0.2.3
   flutter_animate: ^4.1.1+1
   cached_network_image: ^3.3.0
-  super_context_menu: ^0.8.22
   file_picker: ^8.1.6
   flutter_markdown: ^0.7.3+2
   tiktoken_tokenizer_gpt4o_o1: ^1.1.0
   flutter_gemini: ^3.0.0
-  animated_tree_view: ^2.3.0
+  # A custom fork of animated_tree_view that allows for custom animations.
+  animated_tree_view:
+    git:
+      url: https://github.com/sangddn/animated_tree_view
   fuzzywuzzy: ^1.2.0
   hive: ^2.2.3
   path_provider: ^2.1.5
@@ -38,6 +40,10 @@ dependencies:
   super_sliver_list: ^0.4.1
   fast_immutable_collections: ^11.0.0
   path: ^1.9.0
+  process_run: ^1.2.2+1
+  flutter_highlight: ^0.7.0
+  highlight: ^0.7.0
+  mime: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +68,9 @@ flutter:
     - family: HgiStrokeRounded
       fonts:
         - asset: assets/fonts/hgi-stroke-rounded.ttf
+    - family: GeistMono
+      fonts:
+        - asset: assets/fonts/GeistMono-VariableFont_wght.ttf
 
 
 flutter_launcher_icons:
