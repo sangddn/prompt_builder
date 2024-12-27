@@ -193,11 +193,7 @@ class _ContextMenuButtonState extends State<ContextMenuButton>
                   decoration: ShapeDecoration(
                     color: overlayContext.colorScheme.card,
                     shape: Superellipse.border12,
-                    shadows: const [
-                      BoxShadow(
-                        blurRadius: 8.0,
-                      ),
-                    ],
+                    shadows: broadShadows(context),
                   ),
                   padding: const EdgeInsets.all(4.0),
                   child: Material(

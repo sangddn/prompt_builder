@@ -74,7 +74,6 @@ class _MenuButtonState extends State<MenuButton> {
               color: widget.isDestructive
                   ? destructiveColor
                   : theme.colorScheme.foreground,
-              fontWeight: FontWeight.w800,
             )
         : menuButtonTheme.titleStyle ??
             theme.textTheme.p.copyWith(

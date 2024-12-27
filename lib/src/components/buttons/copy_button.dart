@@ -75,10 +75,12 @@ class CopyButton extends StatelessWidget {
               color: foregroundColor,
             ),
             const Gap(8.0),
-            Text(
-              label,
-              style: theme.textTheme.p.copyWith(
-                color: foregroundColor,
+            Flexible(
+              child: Text(
+                label,
+                style: theme.textTheme.p.copyWith(color: foregroundColor),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
           ],
