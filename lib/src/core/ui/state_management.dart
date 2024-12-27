@@ -551,7 +551,6 @@ class _SelectListenableBuilderState<T extends Listenable?, R>
 // Providers
 // ---------------------------------------------------------------------------
 
-typedef ValueProvider<T> = ChangeNotifierProvider<ValueNotifier<T>>;
 typedef TextEditingProvider = ChangeNotifierProvider<TextEditingController>;
 
 /// A [Provider] that provides a [ValueNotifier] of a type T and the contained
@@ -583,5 +582,26 @@ class StateProvider<T> extends ChangeNotifierProvider<ValueNotifier<T>> {
             builder: builder,
             child: child,
           ),
+        );
+}
+
+/// A [ChangeNotifierProvider] that provides a callback for dispose before
+/// disposing the notifier.
+///
+/// This is useful for side effects just before the provider and notifier is
+/// disposed.
+class ValueProvider<T extends ChangeNotifier> extends ListenableProvider<T> {
+  ValueProvider({
+    required super.create,
+    void Function(BuildContext context, T? notifier)? onDisposed,
+    super.lazy,
+    super.builder,
+    super.child,
+    super.key,
+  }) : super(
+          dispose: (BuildContext context, T? notifier) {
+            onDisposed?.call(context, notifier);
+            notifier?.dispose();
+          },
         );
 }
