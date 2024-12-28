@@ -20,7 +20,7 @@ class CopyButton extends StatelessWidget {
   final Color? backgroundColor;
   final double? cornerRadius;
   final String Function() data;
-  final String label;
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -74,15 +74,17 @@ class CopyButton extends StatelessWidget {
               size: 16.0,
               color: foregroundColor,
             ),
-            const Gap(8.0),
-            Flexible(
-              child: Text(
-                label,
-                style: theme.textTheme.p.copyWith(color: foregroundColor),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
+            if (label != null) ...[
+              const Gap(8.0),
+              Flexible(
+                child: Text(
+                  label!,
+                  style: theme.textTheme.p.copyWith(color: foregroundColor),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),
