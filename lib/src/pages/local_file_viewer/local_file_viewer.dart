@@ -1,11 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_highlight/themes/tomorrow-night.dart';
-import 'package:flutter_highlight/themes/tomorrow.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gap/gap.dart';
-import 'package:highlight/highlight.dart';
 import 'package:path/path.dart' as path;
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -15,7 +11,6 @@ import '../../services/services.dart';
 
 part 'lfv_code_viewer.dart';
 part 'lfv_image_viewer.dart';
-part 'lfv_text_viewer.dart';
 
 class LocalFileViewer extends StatelessWidget {
   const LocalFileViewer({
@@ -63,6 +58,7 @@ class LocalFileViewer extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 500, maxWidth: 750),
       enterDuration: const Duration(milliseconds: 100),
       exitDuration: const Duration(milliseconds: 100),
+      // isScrollControlled: true,
       child: _FileViewerContent(filePath),
     );
   }
@@ -145,7 +141,7 @@ class __FileViewerContentState extends State<_FileViewerContent> {
                 fileContent: content,
                 fileType: _fileType,
               )
-            : _TextViewer(content: content);
+            : SingleChildScrollView(child: Markdown(data: content));
       },
     );
   }
