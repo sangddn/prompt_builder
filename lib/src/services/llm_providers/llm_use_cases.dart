@@ -13,6 +13,7 @@ sealed class LLMUseCase {
   (LLMProvider provider, String model)? getProviderAndModel();
   void setProviderAndModel(LLMProvider provider, String model);
 
+  String? getPrompt();
   void setPrompt(String prompt);
 }
 
@@ -53,6 +54,9 @@ class SummarizeContentUseCase extends LLMUseCase {
   }
 
   @override
+  String? getPrompt() => ModelPreferences.getSummarizationPrompt();
+
+  @override
   void setPrompt(String prompt) =>
       ModelPreferences.setSummarizationPrompt(prompt);
 }
@@ -80,6 +84,9 @@ class DescribeImagesUseCase extends LLMUseCase {
   @override
   (LLMProvider provider, String model)? getProviderAndModel() =>
       ModelPreferences.getImageCaptionProviderAndModel();
+
+  @override
+  String? getPrompt() => ModelPreferences.getImageCaptionPrompt();
 
   @override
   void setProviderAndModel(LLMProvider provider, String model) {
@@ -121,6 +128,9 @@ class GeneratePromptUseCase extends LLMUseCase {
   }
 
   @override
+  String? getPrompt() => ModelPreferences.getPromptGenerationPrompt();
+
+  @override
   void setPrompt(String prompt) =>
       ModelPreferences.setPromptGenerationPrompt(prompt);
 }
@@ -153,6 +163,9 @@ class TranscribeAudioUseCase extends LLMUseCase {
   void setProviderAndModel(LLMProvider provider, String model) {
     ModelPreferences.setAudioTranscriptionProviderAndModel(provider, model);
   }
+
+  @override
+  String? getPrompt() => null;
 
   @override
   void setPrompt(String prompt) => throw UnsupportedError(

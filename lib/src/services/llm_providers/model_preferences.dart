@@ -11,10 +11,10 @@ abstract final class ModelPreferences {
   static const promptGenerationPromptKey = 'prompt_generation_prompt';
 
   static const defaultSummarizationPrompt =
-      r'Summarize the following text:\n\n{{CONTENT}}';
+      'Summarize the following text:\n\n{{CONTENT}}';
   static const defaultImageCaptionPrompt = r'Describe the following image.';
   static const defaultPromptGenerationPrompt =
-      r'Generate a prompt for an LLM based on the following user instruction:\n\n{{INSTRUCTIONS}}';
+      'Generate a prompt for an LLM based on the following user instruction:\n\n{{INSTRUCTIONS}}';
 
   static (LLMProvider, String)? _getProvider(String key) {
     final providerModel = Database().stringRef.get(key);

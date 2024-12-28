@@ -115,15 +115,15 @@ class _LLMUseCasePromptField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultPrompt = useCase.defaultPrompt;
-    if (defaultPrompt == null) {
+    final initialPrompt = useCase.getPrompt();
+    if (initialPrompt == null) {
       return const SizedBox.shrink();
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ShadInput(
-          initialValue: defaultPrompt,
+          initialValue: initialPrompt,
           minLines: 2,
           maxLines: 5,
           placeholder: const Text('Prompt'),
