@@ -79,6 +79,7 @@ class _AddButton extends StatelessWidget {
     final isDirectory = context.selectNode((n) => n.data!.isDirectory);
     final selectionCount = context.watch<int>();
     final isSelected = selectionCount > 0;
+    final theme = context.theme;
     final color = PColors.opaqueLightGray.resolveFrom(context);
     return Material(
       color: Colors.transparent,
@@ -91,7 +92,9 @@ class _AddButton extends StatelessWidget {
         },
         builder: (context, isHovered) {
           return Container(
-            color: isHovered ? color.tint(0.1) : color,
+            color: isHovered
+                ? theme.resolveColor(color.tint(.4), color.tint(.1))
+                : color,
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
             child: DefaultTextStyle(
               style: context.textTheme.small,

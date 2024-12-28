@@ -24,6 +24,7 @@ part 'item_previewer.dart';
 class FileTree extends StatefulWidget {
   const FileTree({
     required this.dirPath,
+    this.showRootNode = false,
     this.countSelection,
     this.onNodeSelected,
     this.skipHiddenFoldersAndFiles = true,
@@ -39,6 +40,9 @@ class FileTree extends StatefulWidget {
 
   /// The root directory path to display
   final String? dirPath;
+
+  /// Whether to show the root node
+  final bool showRootNode;
 
   /// List of glob patterns to ignore
   final IList<String> ignorePatterns;
@@ -116,7 +120,7 @@ class _FileTreeState extends State<FileTree> {
               if (tree != null)
                 SliverTreeView.indexed(
                   tree: tree,
-                  showRootNode: false,
+                  showRootNode: widget.showRootNode,
                   animation: (animation) => CurvedAnimation(
                     parent: animation,
                     curve: widget.curve,
