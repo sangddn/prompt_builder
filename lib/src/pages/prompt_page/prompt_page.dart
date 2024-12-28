@@ -1,17 +1,57 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
+
+import '../../components/components.dart';
+import '../../core/core.dart';
+import '../../database/database.dart';
+import '../../services/services.dart';
+import '../library_page/library_observer.dart';
+
+part 'states/pp_providers.dart';
+part 'states/pp_prompt_extensions.dart';
+part 'states/pp_llm_scope.dart';
+part 'states/pp_block_scope.dart';
+part 'states/pp_block_content_scope.dart';
+
+part 'components/pp_app_bar.dart';
+part 'components/pp_main_body.dart';
+part 'components/pp_folder_tree.dart';
+part 'components/pp_search_section.dart';
+part 'components/pp_prompt_content.dart';
+part 'components/pp_right_sidebar.dart';
+part 'components/pp_copy_section.dart';
 
 @RoutePage()
 class PromptPage extends StatelessWidget {
-  const PromptPage({required this.id, super.key});
+  const PromptPage({
+    this.database,
+    required this.id,
+    super.key,
+  });
 
+  final Database? database;
   final int id;
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Prompt Page'),
+    return _PPProviders(
+      db: database ?? Database(),
+      id: id,
+      child: const Scaffold(
+        body: Column(
+          children: [
+            _PPAppBar(),
+            Expanded(child: _PPMainBody()),
+          ],
+        ),
       ),
     );
   }
