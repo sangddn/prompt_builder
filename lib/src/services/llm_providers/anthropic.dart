@@ -1,41 +1,74 @@
+// ignore_for_file: avoid_dynamic_calls
+
 part of 'llm_providers.dart';
 
 final class Anthropic extends LLMProvider {
-  factory Anthropic() => instance;
-  const Anthropic._();
+  factory Anthropic({String? apiKey}) =>
+      apiKey != null ? Anthropic._(apiKey: apiKey) : instance;
+  const Anthropic._({super.apiKey});
 
-  static const apiKeyKey = 'anthropic_api_key';
   static const instance = Anthropic._();
-  static const _defaultModel = 'claude-3-5-sonnet-20241022';
+  static const _defaultModelsList = [
+    'claude-3-5-sonnet-latest',
+    'claude-3-5-sonnet-20241022',
+    'claude-3-5-sonnet-20240620',
+    'claude-3-5-haiku-latest',
+    'claude-3-5-haiku-20241022',
+    'claude-3-opus-20240229',
+    'claude-3-sonnet-20240229',
+    'claude-3-haiku-20240307',
+  ];
 
-  String _getApiKey() {
-    final apiKey = Database().stringRef.get(apiKeyKey);
-    if (apiKey == null) {
-      throw Exception('Anthropic API key not found');
+  @override
+  String get defaultModel => 'claude-3-5-sonnet-latest';
+
+  @override
+  String get apiKeyKey => 'anthropic_api_key';
+
+  Map<String, String> _getHeaders() => {
+        'x-api-key': getApiKey(),
+        'anthropic-version': '2023-06-01',
+        'Content-Type': 'application/json',
+      };
+
+  @override
+  Future<List<String>> listModels() async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://api.anthropic.com/v1/models'),
+        headers: _getHeaders()..remove('Content-Type'),
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Failed to list models: ${response.body}');
+      }
+      final data = jsonDecode(response.body);
+
+      return (data['data'] as List)
+          .map((model) => model['id'] as String)
+          .toList();
+    } on Exception catch (e) {
+      debugPrint('Failed to list models: $e. Using default models list.');
+      return _defaultModelsList;
     }
-    return apiKey;
   }
 
   @override
   Future<String> captionImage(
     Uint8List image, [
+    String mimeType = 'image/jpeg',
     String? captionPrompt,
-    String? model = _defaultModel,
+    String? model,
   ]) async {
-    final prompt = captionPrompt ?? _getImageCaptionPrompt();
+    final prompt = captionPrompt ?? ModelPreferences.getImageCaptionPrompt();
 
     // Convert image to base64
     final base64Image = base64Encode(image);
 
     final response = await http.post(
       Uri.parse('https://api.anthropic.com/v1/messages'),
-      headers: {
-        'x-api-key': _getApiKey(),
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json',
-      },
+      headers: _getHeaders(),
       body: jsonEncode({
-        'model': model ?? _defaultModel,
+        'model': model ?? defaultModel,
         'messages': [
           {
             'role': 'user',
@@ -45,7 +78,7 @@ final class Anthropic extends LLMProvider {
                 'type': 'image',
                 'source': {
                   'type': 'base64',
-                  'media_type': 'image/jpeg',
+                  'media_type': mimeType,
                   'data': base64Image,
                 },
               },
@@ -61,35 +94,133 @@ final class Anthropic extends LLMProvider {
     }
 
     final data = jsonDecode(response.body);
-    // ignore: avoid_dynamic_calls
+
     return data['content'][0]['text'] as String;
   }
 
+  /// Counts the number of tokens in a text string using Anthropic's token counting API.
+  ///
+  /// This method is useful for estimating costs and ensuring text fits within model
+  /// context limits before making API calls.
+  ///
+  /// Parameters:
+  /// - [text] The text content to count tokens for
+  /// - [model] Optional model identifier. Defaults to [_defaultModel]
+  ///
+  /// Returns the number of tokens in the text.
+  ///
+  /// Throws:
+  /// - [Exception] if the API request fails
   @override
-  int countTokens(String text, [String? model]) {
-    // Anthropic uses the same tokenizer as GPT-4
-    final tiktoken = Tiktoken(OpenAiModel.gpt_4);
-    return tiktoken.count(text);
+  Future<(int, String)> _countTokens(String text, [String? model]) async {
+    final response = await http.post(
+      Uri.parse('https://api.anthropic.com/v1/messages/count_tokens'),
+      headers: _getHeaders(),
+      body: jsonEncode({
+        'model': model ?? defaultModel,
+        'messages': [
+          {'role': 'user', 'content': text},
+        ],
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to count tokens: ${response.body}');
+    }
+
+    final data = jsonDecode(response.body);
+    return (
+      data['input_tokens'] as int,
+      'Anthropic API • ${model ?? defaultModel}'
+    );
+  }
+
+  /// Counts tokens for binary data (images or PDFs) using Anthropic's token counting API.
+  ///
+  /// Supports:
+  /// - Images (JPEG, PNG, GIF, WEBP)
+  /// - PDFs (requires beta feature flag)
+  ///
+  /// Parameters:
+  /// - [data] The binary content as [Uint8List]
+  /// - [mimeType] The MIME type of the content (e.g., 'image/jpeg', 'application/pdf')
+  /// - [model] Optional model identifier. Defaults to [_defaultModel]
+  ///
+  /// Returns the number of tokens the binary data will consume.
+  ///
+  /// Throws:
+  /// - [UnsupportedError] for unsupported mime types (video/audio)
+  /// - [Exception] if the API request fails
+  @override
+  Future<int> countTokensFromData(
+    Uint8List data,
+    String mimeType, [
+    String? model,
+  ]) async {
+    if (!mimeType.startsWith('image/') &&
+        !mimeType.startsWith('application/pdf')) {
+      throw UnsupportedError(
+        'Anthropic does not support token counting for $mimeType files',
+      );
+    }
+
+    final base64Data = base64Encode(data);
+    final contentType = mimeType.startsWith('image/') ? 'image' : 'document';
+
+    final Map<String, dynamic> requestBody = {
+      'model': model ?? defaultModel,
+      'messages': [
+        {
+          'role': 'user',
+          'content': [
+            {
+              'type': contentType,
+              'source': {
+                'type': 'base64',
+                'media_type': mimeType,
+                'data': base64Data,
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    // Create mutable copy of headers and add PDF beta flag if needed
+    final headers = Map<String, String>.from(_getHeaders());
+    if (mimeType == 'application/pdf') {
+      headers['anthropic-beta'] = 'pdfs-2024-09-25';
+    }
+
+    final response = await http.post(
+      Uri.parse('https://api.anthropic.com/v1/messages/count_tokens'),
+      headers: headers,
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to count tokens: ${response.body}');
+    }
+
+    final responseData = jsonDecode(response.body);
+
+    return responseData['input_tokens'] as int;
   }
 
   @override
   Future<String> generatePrompt(
     String instructions, [
     String? metaPrompt,
-    String? model = _defaultModel,
+    String? model,
   ]) async {
-    final prompt = (metaPrompt ?? _getPromptGenerationPrompt())
+    final prompt = (metaPrompt ?? ModelPreferences.getPromptGenerationPrompt())
         .replaceAll('{{INSTRUCTIONS}}', instructions);
 
     final response = await http.post(
       Uri.parse('https://api.anthropic.com/v1/messages'),
-      headers: {
-        'x-api-key': _getApiKey(),
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json',
-      },
+      headers: _getHeaders(),
       body: jsonEncode({
-        'model': model ?? _defaultModel,
+        'model': model ?? defaultModel,
         'messages': [
           {'role': 'user', 'content': prompt},
         ],
@@ -101,7 +232,6 @@ final class Anthropic extends LLMProvider {
     }
 
     final data = jsonDecode(response.body);
-    // ignore: avoid_dynamic_calls
     return data['content'][0]['text'] as String;
   }
 
@@ -109,20 +239,17 @@ final class Anthropic extends LLMProvider {
   Future<String> summarize(
     String content, [
     String? summarizationPrompt,
-    String? model = _defaultModel,
+    String? model,
   ]) async {
-    final prompt = (summarizationPrompt ?? _getSummarizationPrompt())
-        .replaceAll('{{CONTENT}}', content);
+    final prompt =
+        (summarizationPrompt ?? ModelPreferences.getSummarizationPrompt())
+            .replaceAll('{{CONTENT}}', content);
 
     final response = await http.post(
       Uri.parse('https://api.anthropic.com/v1/messages'),
-      headers: {
-        'x-api-key': _getApiKey(),
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json',
-      },
+      headers: _getHeaders(),
       body: jsonEncode({
-        'model': model ?? _defaultModel,
+        'model': model ?? defaultModel,
         'messages': [
           {'role': 'user', 'content': prompt},
         ],
@@ -134,13 +261,17 @@ final class Anthropic extends LLMProvider {
     }
 
     final data = jsonDecode(response.body);
-    // ignore: avoid_dynamic_calls
+
     return data['content'][0]['text'] as String;
   }
 
   @override
-  Future<String> transcribeAudio(Uint8List audio, [String? model]) {
-    throw UnimplementedError(
+  Future<String> transcribeAudio(
+    Uint8List audio, [
+    String? mimeType,
+    String? model,
+  ]) {
+    throw UnsupportedError(
       'Anthropic does not currently support audio transcription',
     );
   }
