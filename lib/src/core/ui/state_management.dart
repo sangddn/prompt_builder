@@ -449,14 +449,18 @@ class _FutureBuilder3State<T, R, P> extends State<FutureBuilder3<T, R, P>> {
   }
 }
 
-class StreamBuilder2<T, R> extends StatefulWidget {
+class StreamBuilder2<T, R> extends StatelessWidget {
   const StreamBuilder2({
+    this.initialValue1,
+    this.initialValue2,
     required this.stream1,
     required this.stream2,
     required this.builder,
     super.key,
   });
 
+  final T? initialValue1;
+  final R? initialValue2;
   final Stream<T> stream1;
   final Stream<R> stream2;
   final Widget Function(
@@ -466,22 +470,16 @@ class StreamBuilder2<T, R> extends StatefulWidget {
   ) builder;
 
   @override
-  State<StreamBuilder2<T, R>> createState() => _StreamBuilder2State<T, R>();
-}
-
-class _StreamBuilder2State<T, R> extends State<StreamBuilder2<T, R>> {
-  late final _stream1 = widget.stream1;
-  late final _stream2 = widget.stream2;
-
-  @override
   Widget build(BuildContext context) {
     return StreamBuilder<T>(
-      stream: _stream1,
+      initialData: initialValue1,
+      stream: stream1,
       builder: (context, snapshot1) {
         return StreamBuilder<R>(
-          stream: _stream2,
+          initialData: initialValue2,
+          stream: stream2,
           builder: (context, snapshot2) {
-            return widget.builder(context, snapshot1, snapshot2);
+            return builder(context, snapshot1, snapshot2);
           },
         );
       },
@@ -553,13 +551,30 @@ class _SelectListenableBuilderState<T extends Listenable?, R>
 
 typedef TextEditingProvider = ChangeNotifierProvider<TextEditingController>;
 
+/// {@template state_provider}
 /// A [Provider] that provides a [ValueNotifier] of a type T and the contained
 /// value via a [ProxyProvider].
 ///
+/// Example:
+/// ```dart
+/// StateProvider<String>(
+///   createInitialValue: (_) => 'initial value',
+///   builder: (context, _) {
+///       // Access the ValueNotifier
+///       final notifier = context.read<ValueNotifier<String>>();
+///       // Access the value directly
+///       final value = context.read<String>();
+///       return Text(value);
+///   },
+/// )
+/// ```
+///
 /// ! This cannot be used inside a [MultiProvider] as [MultiProvider] ignores
 /// children of its providers.
+/// {@endtemplate}
 ///
 class StateProvider<T> extends ChangeNotifierProvider<ValueNotifier<T>> {
+  /// {@macro state_provider}
   StateProvider({
     required T Function(BuildContext context) createInitialValue,
     void Function(BuildContext context, ValueNotifier<T> notifier)? initState,

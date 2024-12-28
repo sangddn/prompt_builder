@@ -1,18 +1,57 @@
 part of 'ui.dart';
 
-final kLightTheme = ShadThemeData(
-  brightness: Brightness.light,
-  colorScheme: const ShadZincColorScheme.light(background: Color(0xffFAFAFA)),
-  switchTheme: const ShadSwitchTheme(margin: 0.0),
-  radius: BorderRadius.circular(8.0),
-);
+const kThemeModeKey = 'theme-mode';
+const kInitialThemeMode = ThemeMode.system;
+Stream<ThemeMode> streamThemeMode() => Database()
+    .stringRef //
+    .watch(key: kThemeModeKey)
+    .map(
+      (event) => ThemeMode.values.firstWhere(
+        (element) => element.toString() == event.value,
+        orElse: () => kInitialThemeMode,
+      ),
+    );
+void setThemeMode(ThemeMode themeMode) =>
+    Database().stringRef.put(kThemeModeKey, themeMode.toString());
 
-final kDarkTheme = ShadThemeData(
-  brightness: Brightness.dark,
-  colorScheme: const ShadZincColorScheme.dark(),
-  switchTheme: const ShadSwitchTheme(margin: 1.0),
-  radius: BorderRadius.circular(8.0),
-);
+enum ThemeAccent {
+  blue,
+  gray,
+  green,
+  neutral,
+  orange,
+  red,
+  rose,
+  slate,
+  stone,
+  violet,
+  yellow,
+  zinc,
+}
+
+const kThemeAccentKey = 'theme-accent';
+const kInitialThemeAccent = ThemeAccent.zinc;
+Stream<ThemeAccent> streamThemeAccent() => Database()
+    .stringRef //
+    .watch(key: kThemeAccentKey)
+    .map(
+      (event) => ThemeAccent.values.firstWhere(
+        (element) => element.toString() == event.value,
+        orElse: () => kInitialThemeAccent,
+      ),
+    );
+void setThemeAccent(ThemeAccent themeAccent) =>
+    Database().stringRef.put(kThemeAccentKey, themeAccent.toString());
+
+ShadThemeData getTheme(ThemeAccent themeAccent, Brightness brightness) =>
+    ShadThemeData(
+      brightness: brightness,
+      colorScheme:
+          ShadColorScheme.fromName(themeAccent.name, brightness: brightness),
+      switchTheme:
+          ShadSwitchTheme(margin: brightness == Brightness.light ? 0.0 : 1.0),
+      radius: BorderRadius.circular(8.0),
+    );
 
 extension TextStyleUtils on TextStyle {
   TextStyle get w300 =>

@@ -15,7 +15,8 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   final _appRouter = AppRouter();
-  final _themeModeStream = _streamThemeMode();
+  final _themeModeStream = streamThemeMode();
+  final _themeAccentStream = streamThemeAccent();
 
   @override
   void dispose() {
@@ -25,17 +26,21 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      initialData: _initialThemeMode,
-      stream: _themeModeStream,
-      builder: (context, snapshot) {
+    return StreamBuilder2(
+      initialValue1: kInitialThemeMode,
+      initialValue2: kInitialThemeAccent,
+      stream1: _themeModeStream,
+      stream2: _themeAccentStream,
+      builder: (context, snapshot1, snapshot2) {
+        final mode = snapshot1.data ?? kInitialThemeMode;
+        final accent = snapshot2.data ?? kInitialThemeAccent;
         return ShadApp.materialRouter(
           title: 'Prompt Builder',
           debugShowCheckedModeBanner: false,
           themeCurve: Curves.ease,
-          theme: kLightTheme,
-          darkTheme: kDarkTheme,
-          themeMode: snapshot.data ?? _initialThemeMode,
+          theme: getTheme(accent, Brightness.light),
+          darkTheme: getTheme(accent, Brightness.dark),
+          themeMode: mode,
           routerConfig: _appRouter.config(),
           builder: (context, child) => LibraryObserver(child: child!),
         );
@@ -43,18 +48,6 @@ class _AppState extends State<App> {
     );
   }
 }
-
-const _themeModeKey = 'theme-mode';
-const _initialThemeMode = ThemeMode.system;
-Stream<ThemeMode> _streamThemeMode() => Database()
-    .stringRef //
-    .watch(key: _themeModeKey)
-    .map(
-      (event) => ThemeMode.values.firstWhere(
-        (element) => element.toString() == event.value,
-        orElse: () => _initialThemeMode,
-      ),
-    );
 
 /// A parent widget that re-themes its child based on the user's theme preference
 /// and the system's platform brightness.
@@ -82,22 +75,25 @@ class ReTheme extends StatefulWidget {
 }
 
 class _ReThemeState extends State<ReTheme> {
-  final _themeModeStream = _streamThemeMode();
+  final _themeModeStream = streamThemeMode();
+  final _themeAccentStream = streamThemeAccent();
 
   @override
   Widget build(BuildContext context) {
-    final themedChild = StreamBuilder(
-      initialData: _initialThemeMode,
-      stream: _themeModeStream,
-      builder: (context, snapshot) {
-        final mode = snapshot.data ?? _initialThemeMode;
-        final theme = mode == ThemeMode.dark
-            ? kDarkTheme
-            : mode == ThemeMode.light
-                ? kLightTheme
-                : MediaQuery.platformBrightnessOf(context) == Brightness.dark
-                    ? kDarkTheme
-                    : kLightTheme;
+    final themedChild = StreamBuilder2(
+      initialValue1: kInitialThemeMode,
+      initialValue2: kInitialThemeAccent,
+      stream1: _themeModeStream,
+      stream2: _themeAccentStream,
+      builder: (context, snapshot1, snapshot2) {
+        final mode = snapshot1.data ?? kInitialThemeMode;
+        final accent = snapshot2.data ?? kInitialThemeAccent;
+        final brightness = mode == ThemeMode.dark ||
+                (mode == ThemeMode.system &&
+                    MediaQuery.platformBrightnessOf(context) == Brightness.dark)
+            ? Brightness.dark
+            : Brightness.light;
+        final theme = getTheme(accent, brightness);
         return ShadAnimatedTheme(
           data: theme,
           child: Builder(builder: widget.builder),
