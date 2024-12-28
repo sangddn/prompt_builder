@@ -150,6 +150,7 @@ extension PromptsExtension on Database {
     String? ignorePatterns,
     bool? isLibrary,
     List<String>? tags,
+    DateTime? lastOpenedAt,
   }) async {
     final now = DateTime.now();
     await (update(prompts)..where((tbl) => tbl.id.equals(promptId))).write(
@@ -165,9 +166,21 @@ extension PromptsExtension on Database {
             ? Value(PromptTagsExtension.tagsToString(tags))
             : const Value.absent(),
         updatedAt: Value(now),
+        lastOpenedAt:
+            lastOpenedAt != null ? Value(lastOpenedAt) : const Value.absent(),
       ),
     );
   }
+
+  /// Updates the last opened timestamp for a prompt.
+  ///
+  /// Parameters:
+  /// - [promptId] ID of the prompt to update
+  /// - [lastOpenedAt] Optional new last opened timestamp
+  Future<void> recordPromptOpened(int promptId) => updatePrompt(
+        promptId,
+        lastOpenedAt: DateTime.now(),
+      );
 
   /// Deletes a prompt and all its associated blocks.
   ///

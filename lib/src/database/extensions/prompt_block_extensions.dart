@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:mime/mime.dart';
+import '../../core/core.dart';
 import '../../services/other_services/mime_utils.dart';
 import '../database.dart';
 
@@ -39,6 +40,10 @@ extension PromptBlocksExtension on Database {
         createdAt: Value(now),
       ),
     );
+  }
+
+  Future<void> _createBlocks(List<PromptBlocksCompanion> blocks) async {
+    return batch((b) => b.insertAll(promptBlocks, blocks));
   }
 
   Future<PromptBlock> getBlock(int id) async {
@@ -323,37 +328,43 @@ extension PromptBlockCreation on Database {
       isAudioFile(filePath) ||
       isVideoFile(filePath);
 
-  Future<int> createBlockFromFile(
-    String filePath, {
+  Future<void> createBlocksFromFiles(
+    List<String> filePaths, {
     required int promptId,
-    required double sortOrder,
   }) async {
-    final mimeType = lookupMimeType(filePath);
+    final lastCurrentBlock = await (select(promptBlocks)
+          ..where((tbl) => tbl.promptId.equals(promptId))
+          ..orderBy([(tbl) => OrderingTerm.desc(tbl.sortOrder)])
+          ..limit(1))
+        .getSingleOrNull();
+    final lastSortOrder = lastCurrentBlock?.sortOrder ?? 100.0;
+    final companions = await Future.wait(
+      filePaths.indexedMap((index, filePath) async {
+        final mimeType = lookupMimeType(filePath);
 
-    if (canBeRepresentedAsText(filePath)) {
-      final text = await File(filePath).readAsString();
-      return createBlock(
-        promptId: promptId,
-        blockType: BlockType.localFile,
-        filePath: filePath,
-        textContent: text,
-        mimeType: mimeType,
-        sortOrder: sortOrder,
-      );
-    }
+        final text = canBeRepresentedAsText(filePath)
+            ? await File(filePath).readAsString()
+            : null;
 
-    return createBlock(
-      promptId: promptId,
-      blockType: isImageFile(filePath)
-          ? BlockType.image
-          : isAudioFile(filePath)
-              ? BlockType.audio
-              : isVideoFile(filePath)
-                  ? BlockType.video
-                  : BlockType.unsupported,
-      filePath: filePath,
-      mimeType: mimeType,
-      sortOrder: sortOrder,
+        return PromptBlocksCompanion.insert(
+          promptId: promptId,
+          blockType: (text != null
+                  ? BlockType.localFile
+                  : isImageFile(filePath)
+                      ? BlockType.image
+                      : isAudioFile(filePath)
+                          ? BlockType.audio
+                          : isVideoFile(filePath)
+                              ? BlockType.video
+                              : BlockType.unsupported)
+              .name,
+          filePath: Value(filePath),
+          textContent: Value(text),
+          mimeType: Value(mimeType),
+          sortOrder: Value(lastSortOrder + 100.0 * (index + 1)),
+        );
+      }),
     );
+    return _createBlocks(companions);
   }
 }
