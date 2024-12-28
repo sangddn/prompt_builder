@@ -44,6 +44,8 @@ dependencies:
   flutter_highlight: ^0.7.0
   highlight: ^0.7.0
   mime: ^2.0.0
+  http_parser: ^4.1.1
+  image: ^4.5.2
 
 dev_dependencies:
   flutter_test:
@@ -54,7 +56,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.0
   drift_dev: ^2.22.1
   auto_route_generator: ^9.0.0
-
+  flutter_dotenv: ^5.2.1
 
 
 flutter:
@@ -62,7 +64,7 @@ flutter:
 
   assets:
     - assets/fonts/
-    - assets/images/icon.png
+    - assets/images/
 
   fonts:
     - family: HgiStrokeRounded
