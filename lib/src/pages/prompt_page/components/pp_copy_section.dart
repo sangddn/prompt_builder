@@ -5,30 +5,20 @@ class _PPCopySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StateProvider<_CopySectionType>(
-      createInitialValue: (_) => _CopySectionType.fullContent,
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _EditPreviewToggler(),
-          Gap(20.0),
-          Padding(
-            padding: k8HPadding,
-            child: _EstimatedTokenCount(),
-          ),
-          Gap(12.0),
-          _PreferSummaryCheckbox(),
-          Gap(20.0),
-          _CopyButton(),
-        ],
-      ),
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _EditPreviewToggler(),
+        Gap(20.0),
+        Padding(
+          padding: k8HPadding,
+          child: _EstimatedTokenCount(),
+        ),
+        Gap(20.0),
+        _CopyButton(),
+      ],
     );
   }
-}
-
-enum _CopySectionType {
-  fullContent,
-  summary,
 }
 
 class _EstimatedTokenCount extends StatelessWidget {
@@ -36,61 +26,44 @@ class _EstimatedTokenCount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (fullContentCount, summaryCount) = context.select(
+    final tokenCount = context.select(
       (_PromptBlockContents content) => content.values.fold(
-        (0, 0),
-        (acc, block) => (
-          acc.$1 + (block.textTokenCount ?? 0),
-          acc.$2 + (block.summaryTokenCount ?? 0)
-        ),
+        0,
+        (acc, block) => acc + (block.textTokenCount ?? 0),
       ),
     );
-    return Column(
+    return Row(
       children: [
-        Row(
-          children: [
-            const Expanded(child: Text('Full Content')),
-            _TokenEstimation(fullContentCount, 'Full Content'),
-          ],
-        ),
-        Row(
-          children: [
-            const Expanded(
-              child: Row(
-                children: [
-                  Text('Summary'),
-                  _SummaryExplanation(),
-                ],
-              ),
-            ),
-            _TokenEstimation(summaryCount, 'Summary'),
-          ],
-        ),
+        const Expanded(child: Text('Estimated Tokens')),
+        _TokenEstimation(tokenCount, true),
       ],
     );
   }
 }
 
 class _TokenEstimationProgress extends StatelessWidget {
-  const _TokenEstimationProgress();
+  const _TokenEstimationProgress(this.isFullContent);
+
+  final bool isFullContent;
 
   @override
   Widget build(BuildContext context) {
-    final percentage = context.watch<_TokenCountingState>().percentage;
+    final numBlocks = context.selectBlocks((bs) => bs.length);
+    final percentage = context.watch<_TokenCountingState>().count / numBlocks;
     return TranslationSwitcher.top(
       duration: Effects.shortDuration,
-      child: percentage == 1.0
+      child: percentage >= 1.0
           ? const SizedBox.shrink()
-          : AnimatedCircularProgress(percentage: percentage, size: 28.0),
+          : AnimatedCircularProgress(percentage: percentage, size: 20.0),
     );
   }
 }
 
 class _TokenEstimation extends StatefulWidget {
-  const _TokenEstimation(this.count, this.kind);
+  const _TokenEstimation(this.count, this.isFullContent);
 
   final int count;
-  final String kind;
+  final bool isFullContent;
 
   @override
   State<_TokenEstimation> createState() => _TokenEstimationState();
@@ -122,7 +95,7 @@ class _TokenEstimationState extends State<_TokenEstimation> {
                 textAlign: TextAlign.start,
               ),
               Text(
-                'Estimated ${widget.kind} Tokens',
+                'Estimated ${widget.isFullContent ? 'Full Content' : 'Summary'} Tokens',
                 style: textTheme.muted,
               ),
             ],
@@ -134,7 +107,8 @@ class _TokenEstimationState extends State<_TokenEstimation> {
         onExit: (_) => _controller.hide(),
         child: Row(
           children: [
-            const _TokenEstimationProgress(),
+            _TokenEstimationProgress(widget.isFullContent),
+            const Gap(4.0),
             Text(
               _formatNumber(widget.count),
               style: const TextStyle(fontWeight: FontWeight.bold),
@@ -156,94 +130,53 @@ String _formatNumber(int number) {
   return '${m}M';
 }
 
-class _PreferSummaryCheckbox extends StatelessWidget {
-  const _PreferSummaryCheckbox();
-
-  @override
-  Widget build(BuildContext context) {
-    final notifier = context.watch<ValueNotifier<_CopySectionType>>();
-    return ShadCheckbox(
-      value: notifier.value == _CopySectionType.summary,
-      onChanged: (v) => notifier.value =
-          v ? _CopySectionType.summary : _CopySectionType.fullContent,
-      label: const Text('Prefer summary'),
-      sublabel: const Text(
-        'Copy summaries instead of full content where available.',
-      ),
-    );
-  }
-}
-
 class _CopyButton extends StatelessWidget {
   const _CopyButton();
 
   @override
   Widget build(BuildContext context) {
-    final isSummary =
-        context.watch<_CopySectionType>() == _CopySectionType.summary;
-    return CopyButton(
-      data: () => context.getContent(preferSummary: isSummary),
-      backgroundColor: context.colorScheme.primary,
-      foregroundColor: context.colorScheme.primaryForeground,
-      label: isSummary ? 'Copy Summary' : 'Copy Prompt',
-    );
-  }
-}
-
-class _SummaryExplanation extends StatefulWidget {
-  const _SummaryExplanation();
-  @override
-  State<_SummaryExplanation> createState() => _SummaryExplanationState();
-}
-
-class _SummaryExplanationState extends State<_SummaryExplanation> {
-  final _controller = ShadPopoverController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ShadPopover(
-      controller: _controller,
-      popover: (context) {
-        final textTheme = context.textTheme;
-        return SizedBox(
-          width: 288,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final theme = context.theme;
+    final copySpan = _shortcutSpan(context, true, true, 'C');
+    return CopyButton.builder(
+      data: () => context.getContent(),
+      builder: (context, show) {
+        if (context.watch<ValueNotifier<_PromptCopiedEvent?>>().value != null) {
+          // Side effect
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            show(true);
+          });
+        }
+        return CButton(
+          tooltip: copySpan,
+          tooltipTriggerMode: TooltipTriggerMode.tap,
+          padding: k16H8VPadding,
+          color: theme.colorScheme.primary,
+          onTap: () {
+            Clipboard.setData(ClipboardData(text: context.getContent()));
+            show(true);
+          },
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Summary',
-                style: textTheme.muted,
+              ShadImage.square(
+                HugeIcons.strokeRoundedCopy01,
+                size: 14.0,
+                color: theme.colorScheme.primaryForeground,
               ),
-              const Gap(4.0),
-              Text(
-                'Some content such as web pages, text files, and audio transcripts can be summarized '
-                'before being injected into the prompt. This can save tokens and improve performance.',
-                style: textTheme.p,
-                textAlign: TextAlign.start,
+              const Gap(8.0),
+              Flexible(
+                child: Text(
+                  'Copy Prompt',
+                  style: theme.textTheme.p
+                      .copyWith(color: theme.colorScheme.primaryForeground),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
               ),
             ],
           ),
         );
       },
-      child: MouseRegion(
-        onHover: (_) => _controller.show(),
-        onExit: (_) => _controller.hide(),
-        child: const ShadButton.ghost(
-          padding: k8H4VPadding,
-          size: ShadButtonSize.sm,
-          child: ShadImage.square(
-            CupertinoIcons.question_circle,
-            size: 16.0,
-          ),
-        ),
-      ),
     );
   }
 }
@@ -255,22 +188,30 @@ class _EditPreviewToggler extends StatelessWidget {
   Widget build(BuildContext context) {
     final notifier = context.watch<ValueNotifier<_PromptContentViewState>>();
     return CupertinoSlidingSegmentedControl<_PromptContentViewState>(
-      children: const {
-        _PromptContentViewState.edit: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ShadImage.square(HugeIcons.strokeRoundedEdit01, size: 14.0),
-            Gap(4.0),
-            Text('Edit'),
-          ],
+      children: {
+        _PromptContentViewState.edit: PTooltip(
+          richMessage: _shortcutSpan(context, true, false, 'E'),
+          preferBelow: false,
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ShadImage.square(HugeIcons.strokeRoundedEdit01, size: 14.0),
+              Gap(4.0),
+              Text('Edit'),
+            ],
+          ),
         ),
-        _PromptContentViewState.preview: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ShadImage.square(HugeIcons.strokeRoundedEye, size: 14.0),
-            Gap(4.0),
-            Text('Preview'),
-          ],
+        _PromptContentViewState.preview: PTooltip(
+          richMessage: _shortcutSpan(context, true, false, 'E'),
+          preferBelow: false,
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ShadImage.square(HugeIcons.strokeRoundedEye, size: 14.0),
+              Gap(4.0),
+              Text('Preview'),
+            ],
+          ),
         ),
       },
       groupValue: notifier.value,
@@ -278,3 +219,40 @@ class _EditPreviewToggler extends StatelessWidget {
     );
   }
 }
+
+TextSpan _shortcutSpan(
+  BuildContext context,
+  bool command,
+  bool shift,
+  String key,
+) =>
+    TextSpan(
+      children: [
+        if (command)
+          WidgetSpan(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 2.0),
+              child: Icon(
+                HugeIcons.strokeRoundedCommand,
+                color: context.textTheme.muted.color,
+                size: 14.0,
+              ),
+            ),
+          ),
+        if (shift)
+          WidgetSpan(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 2.0),
+              child: Icon(
+                CupertinoIcons.shift,
+                color: context.textTheme.muted.color,
+                size: 14.0,
+              ),
+            ),
+          ),
+        TextSpan(
+          text: key,
+          style: context.textTheme.muted,
+        ),
+      ],
+    );

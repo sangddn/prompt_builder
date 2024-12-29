@@ -5,6 +5,24 @@ class _PPSearchSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox.shrink();
+    return const CustomScrollView(
+      slivers: [
+        PinnedHeaderSliver(
+          child: _SearchBar(),
+        ),
+      ],
+    );
+  }
+}
+
+class _SearchBar extends StatelessWidget {
+  const _SearchBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return const ShadInput(
+      prefix: ShadImage.square(HugeIcons.strokeRoundedGlobe02, size: 16.0),
+      placeholder: Text('Search or paste URL'),
+    );
   }
 }

@@ -24,7 +24,7 @@ class _PPBlockScope extends StatefulWidget {
 }
 
 class _PPBlockScopeState extends State<_PPBlockScope> {
-  final _blockKeys = <int, UniqueKey>{};
+  final _blockKeys = <int, GlobalKey>{};
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class _PPBlockScopeState extends State<_PPBlockScope> {
         ProxyProvider<_PromptBlockList, _BlockKeyList>(
           update: (BuildContext context, _PromptBlockList blocks, _) => blocks
               .map(
-                (b) => (b.id, _blockKeys.putIfAbsent(b.id, () => UniqueKey())),
+                (b) => (b.id, _blockKeys.putIfAbsent(b.id, () => GlobalKey())),
               )
               .toIList(),
         ),
@@ -51,11 +51,6 @@ class _PPBlockScopeState extends State<_PPBlockScope> {
                     newIndex: newIndex,
                   ),
         ),
-        ProxyProvider<_PromptBlockList, _SelectedFilePaths>(
-          update: (context, blocks, _) =>
-              blocks.map((b) => b.filePath).nonNulls.toISet(),
-        ),
-        Provider<_NodeSelectionCallback>(create: _getNodeSelectionHandler),
       ],
       child: widget.child,
     );
@@ -63,52 +58,12 @@ class _PPBlockScopeState extends State<_PPBlockScope> {
 }
 
 // -----------------------------------------------------------------------------
-// Handle File/Folder Selection Mixin
-// -----------------------------------------------------------------------------
-
-_NodeSelectionCallback _getNodeSelectionHandler(BuildContext context) => (
-      IndexedFileTree node,
-      bool isSelected,
-    ) async {
-      final item = node.data!;
-      final path = item.path;
-      // Deselect the file, or all files in the folder (recursively)
-      if (!isSelected) {
-        final blocks = context.promptBlocks;
-        final blocksToRemove = blocks
-            .where((b) => b.filePath?.startsWith(path) ?? false)
-            .map((b) => b.id)
-            .toList();
-        await context.db.deleteBlocks(blocksToRemove);
-        return;
-      }
-      // Select the file, or all files in the folder (recursively)
-      final allFilePaths = <String>[];
-      final nodesToVisit = <IndexedFileTree>[node];
-      while (nodesToVisit.isNotEmpty) {
-        final node = nodesToVisit.removeLast();
-        final item = node.data!;
-        final path = item.path;
-        if (item.isDirectory) {
-          nodesToVisit.addAll(node.children.cast());
-        } else {
-          allFilePaths.add(path);
-        }
-      }
-      await context.db.createBlocksFromFiles(
-        allFilePaths,
-        promptId: context.prompt!.id,
-      );
-    };
-
-// -----------------------------------------------------------------------------
 // Providers & Typedefs
 // -----------------------------------------------------------------------------
 
 typedef _PromptBlockList = IList<PromptBlock>;
-typedef _BlockKeyList = IList<(int, Key)>;
+typedef _BlockKeyList = IList<(int, GlobalKey)>;
 typedef _BlockReorderCallback = void Function(int oldIndex, int newIndex);
-typedef _SelectedFilePaths = ISet<String>;
 
 // -----------------------------------------------------------------------------
 // Extensions
@@ -129,18 +84,4 @@ extension _PromptBlockScopeExtension on BuildContext {
   PromptBlock? watchBlock(int id) => selectBlocks(
         (bs) => bs.firstWhereOrNull((b) => b.id == id),
       );
-
-  /// Applies a transformation function to a specific block and watches for changes
-  T selectBlock<T>(int id, T Function(PromptBlock?) fn) => selectBlocks(
-        (bs) => fn(bs.firstWhereOrNull((b) => b.id == id)),
-      );
-
-  /// Counts how many selected files start with the given file path
-  int countSelection(String filePath) => select(
-        (_SelectedFilePaths s) => s.where((e) => e.startsWith(filePath)).length,
-      );
-
-  /// Handles the selection of a file or folder
-  void handleNodeSelection(IndexedFileTree node, bool isSelected) =>
-      read<_NodeSelectionCallback>()(node, isSelected);
 }

@@ -15,9 +15,9 @@ class _PPProviders extends StatelessWidget {
   Widget build(BuildContext context) => MultiProvider(
         providers: [
           Provider<Database>.value(value: db),
-          FutureProvider<Prompt?>(
+          StreamProvider<Prompt?>(
             initialData: null,
-            create: (context) => db.getPrompt(id),
+            create: (context) => db.streamPrompt(id),
           ),
           ValueProvider<ValueNotifier<_PromptContentViewState>>(
             create: (_) => ValueNotifier(_PromptContentViewState.edit),
@@ -27,7 +27,11 @@ class _PPProviders extends StatelessWidget {
         child: _PPLLMScope(
           child: _PPBlockScope(
             promptId: id,
-            child: _PPBlockContentScope(child: child),
+            child: _PPBlockContentScope(
+              child: _PPFileTreeScope(
+                child: _KeyboardListener(child: child),
+              ),
+            ),
           ),
         ),
       );

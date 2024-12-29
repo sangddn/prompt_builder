@@ -1,63 +1,77 @@
 part of '../prompt_page.dart';
 
-class _PPBlockContentScope extends StatefulWidget {
+class _PPBlockContentScope extends StatelessWidget {
   const _PPBlockContentScope({required this.child});
 
   final Widget child;
 
   @override
-  State<_PPBlockContentScope> createState() => _PPBlockContentScopeState();
+  Widget build(BuildContext context) => StateProvider<_TokenCountingState>(
+        createInitialValue: (context) => const _TokenCountingState(0),
+        child: _BlockChangesHandler(child: child),
+      );
 }
 
-class _PPBlockContentScopeState extends State<_PPBlockContentScope>
-    with _BlockChangesHandler {
+// -----------------------------------------------------------------------------
+// Handle Block Changes
+// -----------------------------------------------------------------------------
+
+class _BlockChangesHandler extends StatefulWidget {
+  const _BlockChangesHandler({required this.child});
+
+  final Widget child;
+
   @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<_PromptBlockContents>.value(value: _contents),
-        ProxyProvider<_PromptBlockContents, _PromptCopiableContent>(
-          update: (context, contents, _) => _PromptCopiableContent(
-            text: contents.values.map((e) => e.text).nonNulls.join('\n\n'),
-            summary:
-                contents.values.map((e) => e.summary).nonNulls.join('\n\n'),
-          ),
-        ),
-        ProxyProvider2<_PromptBlockList, _PromptBlockContents,
-            _TokenCountingState>(
-          update: (context, blocks, contents, _) => _TokenCountingState(
-            contents.length / blocks.length,
-          ),
-        ),
-      ],
-      child: widget.child,
-    );
-  }
+  State<_BlockChangesHandler> createState() => _BlockChangesHandlerState();
 }
 
-// -----------------------------------------------------------------------------
-// Handle Block Changes Mixin
-// -----------------------------------------------------------------------------
-
-mixin _BlockChangesHandler on State<_PPBlockContentScope> {
+class _BlockChangesHandlerState extends State<_BlockChangesHandler> {
   _PromptBlockContents _contents = const IMap.empty();
 
-  void _addContents(List<PromptBlock> newBlocks) {
+  Future<(String?, int?, String?)> _extractContentAndCountTokens(
+    LLMProvider provider,
+    PromptBlock block,
+  ) async {
+    final content = block.copyToPrompt();
+    final preferSummary = block.preferSummary;
+    if (preferSummary && block.summaryTokenCountAndMethod != null) {
+      return (
+        content,
+        block.summaryTokenCountAndMethod!.$1,
+        block.summaryTokenCountAndMethod!.$2
+      );
+    }
+    if (block.fullContentTokenCountAndMethod != null) {
+      return (
+        content,
+        block.fullContentTokenCountAndMethod!.$1,
+        block.fullContentTokenCountAndMethod!.$2
+      );
+    }
+    final count = await content?.let(provider.countTokens);
+    if (mounted) {
+      context.db.updateBlock(
+        block.id,
+        fullContentTokenCountAndMethod: preferSummary ? null : count,
+        summaryTokenCountAndMethod: preferSummary ? count : null,
+      );
+    }
+    return (content, count?.$1, count?.$2);
+  }
+
+  void _upsertContents(List<PromptBlock> newBlocks) {
     Future.wait(
       newBlocks.map((block) async {
+        final countingNotifier = context.countingNotifier;
         final provider = context.read<ValueNotifier<LLMProvider>>().value;
-        final text = block.copyToPrompt();
-        final textTokenCount = await text?.let(provider.countTokens);
-        final summary = block.copyToPrompt(preferSummary: true);
-        final summaryTokenCount = await summary?.let(provider.countTokens);
+        final fullContent =
+            await _extractContentAndCountTokens(provider, block);
+        countingNotifier.value = countingNotifier.value.increment();
         return _PromptBlockContent(
           id: block.id,
-          text: text,
-          summary: summary,
-          textTokenCount: textTokenCount?.$1,
-          summaryTokenCount: summaryTokenCount?.$1,
-          textTokenCountMethod: textTokenCount?.$2,
-          summaryTokenCountMethod: summaryTokenCount?.$2,
+          text: fullContent.$1,
+          textTokenCount: fullContent.$2,
+          textTokenCountMethod: fullContent.$3,
         );
       }),
     ).then(
@@ -73,21 +87,48 @@ mixin _BlockChangesHandler on State<_PPBlockContentScope> {
     super.didChangeDependencies();
     final blocks = context.watch<_PromptBlockList>();
     // Remove blocks that are no longer in the list
-    _contents =
-        _contents.removeWhere((id, _) => !blocks.any((b) => b.id == id));
-    // Add new blocks
-    final diff = blocks.where((b) {
-      final prevBlock = _contents[b.id];
-      return prevBlock == null ||
-          (prevBlock.text != b.textContent && b.textContent != null) ||
-          (prevBlock.text != b.transcript && b.transcript != null) ||
-          (prevBlock.text != b.caption && b.caption != null) ||
-          (prevBlock.summary != b.summary && b.summary != null);
-    });
+    int numRemoved = 0;
+    for (final id in _contents.keys) {
+      if (!blocks.any((b) => b.id == id)) {
+        _contents = _contents.remove(id);
+        numRemoved++;
+      }
+    }
+    // Add new and update changed blocks
+    int numChanged = 0;
+    final diff = <PromptBlock>[];
+    for (final block in blocks) {
+      final prevBlock = _contents[block.id];
+      if (prevBlock == null) {
+        diff.add(block);
+      } else if (prevBlock.text != block.copyToPrompt()) {
+        diff.add(block);
+        numChanged++;
+      }
+    }
     if (diff.isNotEmpty) {
-      _addContents(diff.toList());
+      final countingNotifier = context.countingNotifier;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        countingNotifier.value = _TokenCountingState(
+          countingNotifier.value.count - numChanged - numRemoved,
+        );
+      });
+      _upsertContents(diff.toList());
     }
   }
+
+  @override
+  Widget build(BuildContext context) => MultiProvider(
+        providers: [
+          Provider<_PromptBlockContents>.value(value: _contents),
+          ProxyProvider<_PromptBlockContents, _PromptCopiableContent>(
+            update: (context, contents, _) => _PromptCopiableContent(
+              contents.values.map((e) => e.text).nonNulls.join('\n\n'),
+            ),
+          ),
+        ],
+        child: widget.child,
+      );
 }
 
 // -----------------------------------------------------------------------------
@@ -95,17 +136,24 @@ mixin _BlockChangesHandler on State<_PPBlockContentScope> {
 // -----------------------------------------------------------------------------
 
 typedef _PromptBlockContents = IMap<int, _PromptBlockContent>;
-typedef _NodeSelectionCallback = void Function(IndexedFileTree, bool);
 
+/// A state that holds the # of blocks completed for the token counting process.
 @immutable
 class _TokenCountingState {
-  const _TokenCountingState(this.percentage);
-  final double percentage;
+  const _TokenCountingState(this.count);
+  final int count;
+
+  _TokenCountingState increment() => _TokenCountingState(count + 1);
+
   @override
   bool operator ==(Object other) =>
-      other is _TokenCountingState && percentage == other.percentage;
+      other is _TokenCountingState && count == other.count;
+
   @override
-  int get hashCode => percentage.hashCode;
+  int get hashCode => count.hashCode;
+
+  @override
+  String toString() => 'TokenCountingState(count: $count)';
 }
 
 @immutable
@@ -113,62 +161,44 @@ class _PromptBlockContent {
   const _PromptBlockContent({
     required this.id,
     required this.text,
-    required this.summary,
     required this.textTokenCount,
-    required this.summaryTokenCount,
     required this.textTokenCountMethod,
-    required this.summaryTokenCountMethod,
   });
 
   final int id;
   final String? text;
-  final String? summary;
   final int? textTokenCount;
-  final int? summaryTokenCount;
   final String? textTokenCountMethod;
-  final String? summaryTokenCountMethod;
 
   @override
   bool operator ==(Object other) =>
       other is _PromptBlockContent &&
       id == other.id &&
       text == other.text &&
-      summary == other.summary &&
       textTokenCount == other.textTokenCount &&
-      summaryTokenCount == other.summaryTokenCount &&
-      textTokenCountMethod == other.textTokenCountMethod &&
-      summaryTokenCountMethod == other.summaryTokenCountMethod;
+      textTokenCountMethod == other.textTokenCountMethod;
 
   @override
   int get hashCode => Object.hash(
         id,
         text,
-        summary,
         textTokenCount,
-        summaryTokenCount,
         textTokenCountMethod,
-        summaryTokenCountMethod,
       );
 }
 
 @immutable
 class _PromptCopiableContent {
-  const _PromptCopiableContent({
-    required this.text,
-    required this.summary,
-  });
+  const _PromptCopiableContent(this.text);
 
   final String text;
-  final String summary;
 
   @override
   bool operator ==(Object other) =>
-      other is _PromptCopiableContent &&
-      text == other.text &&
-      summary == other.summary;
+      other is _PromptCopiableContent && text == other.text;
 
   @override
-  int get hashCode => Object.hash(text, summary);
+  int get hashCode => text.hashCode;
 }
 
 // -----------------------------------------------------------------------------
@@ -176,11 +206,11 @@ class _PromptCopiableContent {
 // -----------------------------------------------------------------------------
 
 extension _PromptBlockContentExtension on BuildContext {
-  String getContent({
-    bool listen = false,
-    bool preferSummary = false,
-  }) {
+  ValueNotifier<_TokenCountingState> get countingNotifier =>
+      read<ValueNotifier<_TokenCountingState>>();
+
+  String getContent({bool listen = false}) {
     final content = Provider.of<_PromptCopiableContent>(this, listen: listen);
-    return preferSummary ? content.summary : content.text;
+    return content.text;
   }
 }

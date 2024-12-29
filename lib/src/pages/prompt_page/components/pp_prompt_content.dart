@@ -10,7 +10,8 @@ class _PPPromptContent extends StatelessWidget {
             _PromptContentViewState.edit;
     final theme = context.theme;
     final color = theme.colorScheme.background;
-    final resolvedColor = theme.resolveColor(color.shade(.1), color.tint(.035));
+    final resolvedColor =
+        theme.resolveColor(color.shade(.01), color.tint(.035));
     return Container(
       decoration: BoxDecoration(
         color: resolvedColor,
@@ -50,30 +51,36 @@ class _PromptContentEditMode extends StatelessWidget {
     final widgets = blocks
         .indexedExpand(
           (i, e) => [
-            Padding(
-              padding: k16H8VPadding,
+            AnimatedTo(
+              globalKey: e.$2,
               child: Builder(
-                key: e.$2,
-                builder: (context) => BlockRouterWidget(
+                builder: (context) => PromptBlockCard(
+                  padding: k32HPadding + k24VPadding,
                   database: context.db,
+                  prompt: context.watch<Prompt?>(),
                   block: context.watchBlock(e.$1)!,
                 ),
               ),
             ),
-            if (i < blocks.length - 1) const Divider(thickness: .75),
+            if (i < blocks.length - 1)
+              const Divider(
+                height: .75,
+                thickness: .75,
+                indent: 16.0,
+                endIndent: 16.0,
+              ),
           ],
         )
         .toList();
 
-    return CustomScrollView(
-      slivers: [
-        const SliverGap(24.0),
-        SliverPadding(
-          padding: k16HPadding,
-          sliver: SuperSliverList.list(children: widgets),
-        ),
-        const SliverGap(64.0),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const Gap(12.0),
+          ...widgets,
+          const Gap(64.0),
+        ],
+      ),
     );
   }
 }
