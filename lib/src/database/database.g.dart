@@ -513,11 +513,11 @@ class $PromptBlocksTable extends PromptBlocks
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant(''));
-  static const VerificationMeta _textContentTokenCountMeta =
-      const VerificationMeta('textContentTokenCount');
+  static const VerificationMeta _fullContentTokenCountMeta =
+      const VerificationMeta('fullContentTokenCount');
   @override
-  late final GeneratedColumn<int> textContentTokenCount = GeneratedColumn<int>(
-      'text_content_token_count', aliasedName, true,
+  late final GeneratedColumn<int> fullContentTokenCount = GeneratedColumn<int>(
+      'full_content_token_count', aliasedName, true,
       type: DriftSqlType.int, requiredDuringInsert: false);
   static const VerificationMeta _summaryTokenCountMeta =
       const VerificationMeta('summaryTokenCount');
@@ -525,18 +525,29 @@ class $PromptBlocksTable extends PromptBlocks
   late final GeneratedColumn<int> summaryTokenCount = GeneratedColumn<int>(
       'summary_token_count', aliasedName, true,
       type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _transcriptTokenCountMeta =
-      const VerificationMeta('transcriptTokenCount');
+  static const VerificationMeta _fullContentTokenCountMethodMeta =
+      const VerificationMeta('fullContentTokenCountMethod');
   @override
-  late final GeneratedColumn<int> transcriptTokenCount = GeneratedColumn<int>(
-      'transcript_token_count', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _captionTokenCountMeta =
-      const VerificationMeta('captionTokenCount');
+  late final GeneratedColumn<String> fullContentTokenCountMethod =
+      GeneratedColumn<String>(
+          'full_content_token_count_method', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _summaryTokenCountMethodMeta =
+      const VerificationMeta('summaryTokenCountMethod');
   @override
-  late final GeneratedColumn<int> captionTokenCount = GeneratedColumn<int>(
-      'caption_token_count', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
+  late final GeneratedColumn<String> summaryTokenCountMethod =
+      GeneratedColumn<String>('summary_token_count_method', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _preferSummaryMeta =
+      const VerificationMeta('preferSummary');
+  @override
+  late final GeneratedColumn<bool> preferSummary = GeneratedColumn<bool>(
+      'prefer_summary', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("prefer_summary" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _textContentMeta =
       const VerificationMeta('textContent');
   @override
@@ -605,10 +616,11 @@ class $PromptBlocksTable extends PromptBlocks
         sortOrder,
         blockType,
         displayName,
-        textContentTokenCount,
+        fullContentTokenCount,
         summaryTokenCount,
-        transcriptTokenCount,
-        captionTokenCount,
+        fullContentTokenCountMethod,
+        summaryTokenCountMethod,
+        preferSummary,
         textContent,
         filePath,
         mimeType,
@@ -655,11 +667,11 @@ class $PromptBlocksTable extends PromptBlocks
           displayName.isAcceptableOrUnknown(
               data['display_name']!, _displayNameMeta));
     }
-    if (data.containsKey('text_content_token_count')) {
+    if (data.containsKey('full_content_token_count')) {
       context.handle(
-          _textContentTokenCountMeta,
-          textContentTokenCount.isAcceptableOrUnknown(
-              data['text_content_token_count']!, _textContentTokenCountMeta));
+          _fullContentTokenCountMeta,
+          fullContentTokenCount.isAcceptableOrUnknown(
+              data['full_content_token_count']!, _fullContentTokenCountMeta));
     }
     if (data.containsKey('summary_token_count')) {
       context.handle(
@@ -667,17 +679,25 @@ class $PromptBlocksTable extends PromptBlocks
           summaryTokenCount.isAcceptableOrUnknown(
               data['summary_token_count']!, _summaryTokenCountMeta));
     }
-    if (data.containsKey('transcript_token_count')) {
+    if (data.containsKey('full_content_token_count_method')) {
       context.handle(
-          _transcriptTokenCountMeta,
-          transcriptTokenCount.isAcceptableOrUnknown(
-              data['transcript_token_count']!, _transcriptTokenCountMeta));
+          _fullContentTokenCountMethodMeta,
+          fullContentTokenCountMethod.isAcceptableOrUnknown(
+              data['full_content_token_count_method']!,
+              _fullContentTokenCountMethodMeta));
     }
-    if (data.containsKey('caption_token_count')) {
+    if (data.containsKey('summary_token_count_method')) {
       context.handle(
-          _captionTokenCountMeta,
-          captionTokenCount.isAcceptableOrUnknown(
-              data['caption_token_count']!, _captionTokenCountMeta));
+          _summaryTokenCountMethodMeta,
+          summaryTokenCountMethod.isAcceptableOrUnknown(
+              data['summary_token_count_method']!,
+              _summaryTokenCountMethodMeta));
+    }
+    if (data.containsKey('prefer_summary')) {
+      context.handle(
+          _preferSummaryMeta,
+          preferSummary.isAcceptableOrUnknown(
+              data['prefer_summary']!, _preferSummaryMeta));
     }
     if (data.containsKey('text_content')) {
       context.handle(
@@ -742,14 +762,18 @@ class $PromptBlocksTable extends PromptBlocks
           .read(DriftSqlType.string, data['${effectivePrefix}block_type'])!,
       displayName: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}display_name'])!,
-      textContentTokenCount: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}text_content_token_count']),
+      fullContentTokenCount: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}full_content_token_count']),
       summaryTokenCount: attachedDatabase.typeMapping.read(
           DriftSqlType.int, data['${effectivePrefix}summary_token_count']),
-      transcriptTokenCount: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}transcript_token_count']),
-      captionTokenCount: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}caption_token_count']),
+      fullContentTokenCountMethod: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}full_content_token_count_method']),
+      summaryTokenCountMethod: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}summary_token_count_method']),
+      preferSummary: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}prefer_summary'])!,
       textContent: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}text_content']),
       filePath: attachedDatabase.typeMapping
@@ -780,65 +804,70 @@ class $PromptBlocksTable extends PromptBlocks
 }
 
 class PromptBlock extends DataClass implements Insertable<PromptBlock> {
-  /// Unique identifier for each block
+  /// Unique identifier for each block.
   final int id;
 
-  /// Reference to the parent prompt this block belongs to
+  /// Reference to the parent prompt this block belongs to.
   final int promptId;
 
-  /// Position of this block within the prompt's sequence of blocks
-  /// Defaults to 0 if not specified
+  /// Position of this block within the prompt's sequence of blocks.
+  /// Defaults to 0 if not specified.
   final double sortOrder;
 
   /// The type of content in this block, stored as a string representation
-  /// of the [BlockType] enum
+  /// of the [BlockType] enum.
   final String blockType;
 
-  /// User-facing name/title for this block
+  /// User-facing name/title for this block.
   final String displayName;
 
-  /// Number of tokens in this block's content, used for API limits
-  final int? textContentTokenCount;
+  /// Number of tokens in this block's copiable full content ([copyToPrompt]
+  /// without [preferSummary] set to false).
+  final int? fullContentTokenCount;
 
-  /// Number of tokens in this block's summary, used for API limits
+  /// Number of tokens in this block's summary content ([copyToPrompt] with
+  /// [preferSummary] set to true).
   final int? summaryTokenCount;
 
-  /// Number of tokens in this block's transcript, used for API limits
-  final int? transcriptTokenCount;
+  /// Method used to count tokens in this block's full content.
+  final String? fullContentTokenCountMethod;
 
-  /// Number of tokens in this block's caption, used for API limits
-  final int? captionTokenCount;
+  /// Method used to count tokens in this block's summary content.
+  final String? summaryTokenCountMethod;
 
-  /// Main text content for text-based blocks
-  /// Nullable since not all block types contain text
+  /// Whether this block, when copied, should prefer the summary content.
+  final bool preferSummary;
+
+  /// Main text content for text-based blocks.
+  /// Nullable since not all block types contain text.
   final String? textContent;
 
-  /// Local filesystem path or app directory path for file-backed content
+  /// Local filesystem path or app directory path for file-backed content.
   final String? filePath;
 
-  /// MIME type of the content (e.g. 'application/pdf', 'audio/wav')
-  /// Used for proper handling of different file formats
+  /// MIME type of the content (e.g. 'application/pdf', 'audio/wav').
+  /// Used for proper handling of different file formats.
   final String? mimeType;
 
   /// Size of the file in bytes, if applicable
   final int? fileSize;
 
-  /// URL for web-based content (YouTube videos, web pages, remote media)
+  /// URL for web-based content (YouTube videos, web pages, remote media).
   final String? url;
 
-  /// Transcribed text content for audio/video content
+  /// Transcribed text content for audio/video content.
   final String? transcript;
 
-  /// Caption or alt text for image content
+  /// Caption or alt text for image content.
   final String? caption;
 
-  /// Condensed version of large text content or transcripts
+  /// Condensed version of large text content or transcripts.
   final String? summary;
 
-  /// Timestamp when this block was created
+  /// Timestamp when this block was created.
   final DateTime createdAt;
 
-  /// Timestamp when this block was last modified
+  /// Timestamp when this block was last modified.
   final DateTime? updatedAt;
   const PromptBlock(
       {required this.id,
@@ -846,10 +875,11 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
       required this.sortOrder,
       required this.blockType,
       required this.displayName,
-      this.textContentTokenCount,
+      this.fullContentTokenCount,
       this.summaryTokenCount,
-      this.transcriptTokenCount,
-      this.captionTokenCount,
+      this.fullContentTokenCountMethod,
+      this.summaryTokenCountMethod,
+      required this.preferSummary,
       this.textContent,
       this.filePath,
       this.mimeType,
@@ -868,18 +898,21 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
     map['sort_order'] = Variable<double>(sortOrder);
     map['block_type'] = Variable<String>(blockType);
     map['display_name'] = Variable<String>(displayName);
-    if (!nullToAbsent || textContentTokenCount != null) {
-      map['text_content_token_count'] = Variable<int>(textContentTokenCount);
+    if (!nullToAbsent || fullContentTokenCount != null) {
+      map['full_content_token_count'] = Variable<int>(fullContentTokenCount);
     }
     if (!nullToAbsent || summaryTokenCount != null) {
       map['summary_token_count'] = Variable<int>(summaryTokenCount);
     }
-    if (!nullToAbsent || transcriptTokenCount != null) {
-      map['transcript_token_count'] = Variable<int>(transcriptTokenCount);
+    if (!nullToAbsent || fullContentTokenCountMethod != null) {
+      map['full_content_token_count_method'] =
+          Variable<String>(fullContentTokenCountMethod);
     }
-    if (!nullToAbsent || captionTokenCount != null) {
-      map['caption_token_count'] = Variable<int>(captionTokenCount);
+    if (!nullToAbsent || summaryTokenCountMethod != null) {
+      map['summary_token_count_method'] =
+          Variable<String>(summaryTokenCountMethod);
     }
+    map['prefer_summary'] = Variable<bool>(preferSummary);
     if (!nullToAbsent || textContent != null) {
       map['text_content'] = Variable<String>(textContent);
     }
@@ -918,18 +951,20 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
       sortOrder: Value(sortOrder),
       blockType: Value(blockType),
       displayName: Value(displayName),
-      textContentTokenCount: textContentTokenCount == null && nullToAbsent
+      fullContentTokenCount: fullContentTokenCount == null && nullToAbsent
           ? const Value.absent()
-          : Value(textContentTokenCount),
+          : Value(fullContentTokenCount),
       summaryTokenCount: summaryTokenCount == null && nullToAbsent
           ? const Value.absent()
           : Value(summaryTokenCount),
-      transcriptTokenCount: transcriptTokenCount == null && nullToAbsent
+      fullContentTokenCountMethod:
+          fullContentTokenCountMethod == null && nullToAbsent
+              ? const Value.absent()
+              : Value(fullContentTokenCountMethod),
+      summaryTokenCountMethod: summaryTokenCountMethod == null && nullToAbsent
           ? const Value.absent()
-          : Value(transcriptTokenCount),
-      captionTokenCount: captionTokenCount == null && nullToAbsent
-          ? const Value.absent()
-          : Value(captionTokenCount),
+          : Value(summaryTokenCountMethod),
+      preferSummary: Value(preferSummary),
       textContent: textContent == null && nullToAbsent
           ? const Value.absent()
           : Value(textContent),
@@ -968,12 +1003,14 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
       sortOrder: serializer.fromJson<double>(json['sortOrder']),
       blockType: serializer.fromJson<String>(json['blockType']),
       displayName: serializer.fromJson<String>(json['displayName']),
-      textContentTokenCount:
-          serializer.fromJson<int?>(json['textContentTokenCount']),
+      fullContentTokenCount:
+          serializer.fromJson<int?>(json['fullContentTokenCount']),
       summaryTokenCount: serializer.fromJson<int?>(json['summaryTokenCount']),
-      transcriptTokenCount:
-          serializer.fromJson<int?>(json['transcriptTokenCount']),
-      captionTokenCount: serializer.fromJson<int?>(json['captionTokenCount']),
+      fullContentTokenCountMethod:
+          serializer.fromJson<String?>(json['fullContentTokenCountMethod']),
+      summaryTokenCountMethod:
+          serializer.fromJson<String?>(json['summaryTokenCountMethod']),
+      preferSummary: serializer.fromJson<bool>(json['preferSummary']),
       textContent: serializer.fromJson<String?>(json['textContent']),
       filePath: serializer.fromJson<String?>(json['filePath']),
       mimeType: serializer.fromJson<String?>(json['mimeType']),
@@ -995,10 +1032,13 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
       'sortOrder': serializer.toJson<double>(sortOrder),
       'blockType': serializer.toJson<String>(blockType),
       'displayName': serializer.toJson<String>(displayName),
-      'textContentTokenCount': serializer.toJson<int?>(textContentTokenCount),
+      'fullContentTokenCount': serializer.toJson<int?>(fullContentTokenCount),
       'summaryTokenCount': serializer.toJson<int?>(summaryTokenCount),
-      'transcriptTokenCount': serializer.toJson<int?>(transcriptTokenCount),
-      'captionTokenCount': serializer.toJson<int?>(captionTokenCount),
+      'fullContentTokenCountMethod':
+          serializer.toJson<String?>(fullContentTokenCountMethod),
+      'summaryTokenCountMethod':
+          serializer.toJson<String?>(summaryTokenCountMethod),
+      'preferSummary': serializer.toJson<bool>(preferSummary),
       'textContent': serializer.toJson<String?>(textContent),
       'filePath': serializer.toJson<String?>(filePath),
       'mimeType': serializer.toJson<String?>(mimeType),
@@ -1018,10 +1058,11 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
           double? sortOrder,
           String? blockType,
           String? displayName,
-          Value<int?> textContentTokenCount = const Value.absent(),
+          Value<int?> fullContentTokenCount = const Value.absent(),
           Value<int?> summaryTokenCount = const Value.absent(),
-          Value<int?> transcriptTokenCount = const Value.absent(),
-          Value<int?> captionTokenCount = const Value.absent(),
+          Value<String?> fullContentTokenCountMethod = const Value.absent(),
+          Value<String?> summaryTokenCountMethod = const Value.absent(),
+          bool? preferSummary,
           Value<String?> textContent = const Value.absent(),
           Value<String?> filePath = const Value.absent(),
           Value<String?> mimeType = const Value.absent(),
@@ -1038,18 +1079,19 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
         sortOrder: sortOrder ?? this.sortOrder,
         blockType: blockType ?? this.blockType,
         displayName: displayName ?? this.displayName,
-        textContentTokenCount: textContentTokenCount.present
-            ? textContentTokenCount.value
-            : this.textContentTokenCount,
+        fullContentTokenCount: fullContentTokenCount.present
+            ? fullContentTokenCount.value
+            : this.fullContentTokenCount,
         summaryTokenCount: summaryTokenCount.present
             ? summaryTokenCount.value
             : this.summaryTokenCount,
-        transcriptTokenCount: transcriptTokenCount.present
-            ? transcriptTokenCount.value
-            : this.transcriptTokenCount,
-        captionTokenCount: captionTokenCount.present
-            ? captionTokenCount.value
-            : this.captionTokenCount,
+        fullContentTokenCountMethod: fullContentTokenCountMethod.present
+            ? fullContentTokenCountMethod.value
+            : this.fullContentTokenCountMethod,
+        summaryTokenCountMethod: summaryTokenCountMethod.present
+            ? summaryTokenCountMethod.value
+            : this.summaryTokenCountMethod,
+        preferSummary: preferSummary ?? this.preferSummary,
         textContent: textContent.present ? textContent.value : this.textContent,
         filePath: filePath.present ? filePath.value : this.filePath,
         mimeType: mimeType.present ? mimeType.value : this.mimeType,
@@ -1069,18 +1111,21 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
       blockType: data.blockType.present ? data.blockType.value : this.blockType,
       displayName:
           data.displayName.present ? data.displayName.value : this.displayName,
-      textContentTokenCount: data.textContentTokenCount.present
-          ? data.textContentTokenCount.value
-          : this.textContentTokenCount,
+      fullContentTokenCount: data.fullContentTokenCount.present
+          ? data.fullContentTokenCount.value
+          : this.fullContentTokenCount,
       summaryTokenCount: data.summaryTokenCount.present
           ? data.summaryTokenCount.value
           : this.summaryTokenCount,
-      transcriptTokenCount: data.transcriptTokenCount.present
-          ? data.transcriptTokenCount.value
-          : this.transcriptTokenCount,
-      captionTokenCount: data.captionTokenCount.present
-          ? data.captionTokenCount.value
-          : this.captionTokenCount,
+      fullContentTokenCountMethod: data.fullContentTokenCountMethod.present
+          ? data.fullContentTokenCountMethod.value
+          : this.fullContentTokenCountMethod,
+      summaryTokenCountMethod: data.summaryTokenCountMethod.present
+          ? data.summaryTokenCountMethod.value
+          : this.summaryTokenCountMethod,
+      preferSummary: data.preferSummary.present
+          ? data.preferSummary.value
+          : this.preferSummary,
       textContent:
           data.textContent.present ? data.textContent.value : this.textContent,
       filePath: data.filePath.present ? data.filePath.value : this.filePath,
@@ -1104,10 +1149,11 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
           ..write('sortOrder: $sortOrder, ')
           ..write('blockType: $blockType, ')
           ..write('displayName: $displayName, ')
-          ..write('textContentTokenCount: $textContentTokenCount, ')
+          ..write('fullContentTokenCount: $fullContentTokenCount, ')
           ..write('summaryTokenCount: $summaryTokenCount, ')
-          ..write('transcriptTokenCount: $transcriptTokenCount, ')
-          ..write('captionTokenCount: $captionTokenCount, ')
+          ..write('fullContentTokenCountMethod: $fullContentTokenCountMethod, ')
+          ..write('summaryTokenCountMethod: $summaryTokenCountMethod, ')
+          ..write('preferSummary: $preferSummary, ')
           ..write('textContent: $textContent, ')
           ..write('filePath: $filePath, ')
           ..write('mimeType: $mimeType, ')
@@ -1129,10 +1175,11 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
       sortOrder,
       blockType,
       displayName,
-      textContentTokenCount,
+      fullContentTokenCount,
       summaryTokenCount,
-      transcriptTokenCount,
-      captionTokenCount,
+      fullContentTokenCountMethod,
+      summaryTokenCountMethod,
+      preferSummary,
       textContent,
       filePath,
       mimeType,
@@ -1152,10 +1199,12 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
           other.sortOrder == this.sortOrder &&
           other.blockType == this.blockType &&
           other.displayName == this.displayName &&
-          other.textContentTokenCount == this.textContentTokenCount &&
+          other.fullContentTokenCount == this.fullContentTokenCount &&
           other.summaryTokenCount == this.summaryTokenCount &&
-          other.transcriptTokenCount == this.transcriptTokenCount &&
-          other.captionTokenCount == this.captionTokenCount &&
+          other.fullContentTokenCountMethod ==
+              this.fullContentTokenCountMethod &&
+          other.summaryTokenCountMethod == this.summaryTokenCountMethod &&
+          other.preferSummary == this.preferSummary &&
           other.textContent == this.textContent &&
           other.filePath == this.filePath &&
           other.mimeType == this.mimeType &&
@@ -1174,10 +1223,11 @@ class PromptBlocksCompanion extends UpdateCompanion<PromptBlock> {
   final Value<double> sortOrder;
   final Value<String> blockType;
   final Value<String> displayName;
-  final Value<int?> textContentTokenCount;
+  final Value<int?> fullContentTokenCount;
   final Value<int?> summaryTokenCount;
-  final Value<int?> transcriptTokenCount;
-  final Value<int?> captionTokenCount;
+  final Value<String?> fullContentTokenCountMethod;
+  final Value<String?> summaryTokenCountMethod;
+  final Value<bool> preferSummary;
   final Value<String?> textContent;
   final Value<String?> filePath;
   final Value<String?> mimeType;
@@ -1194,10 +1244,11 @@ class PromptBlocksCompanion extends UpdateCompanion<PromptBlock> {
     this.sortOrder = const Value.absent(),
     this.blockType = const Value.absent(),
     this.displayName = const Value.absent(),
-    this.textContentTokenCount = const Value.absent(),
+    this.fullContentTokenCount = const Value.absent(),
     this.summaryTokenCount = const Value.absent(),
-    this.transcriptTokenCount = const Value.absent(),
-    this.captionTokenCount = const Value.absent(),
+    this.fullContentTokenCountMethod = const Value.absent(),
+    this.summaryTokenCountMethod = const Value.absent(),
+    this.preferSummary = const Value.absent(),
     this.textContent = const Value.absent(),
     this.filePath = const Value.absent(),
     this.mimeType = const Value.absent(),
@@ -1215,10 +1266,11 @@ class PromptBlocksCompanion extends UpdateCompanion<PromptBlock> {
     this.sortOrder = const Value.absent(),
     required String blockType,
     this.displayName = const Value.absent(),
-    this.textContentTokenCount = const Value.absent(),
+    this.fullContentTokenCount = const Value.absent(),
     this.summaryTokenCount = const Value.absent(),
-    this.transcriptTokenCount = const Value.absent(),
-    this.captionTokenCount = const Value.absent(),
+    this.fullContentTokenCountMethod = const Value.absent(),
+    this.summaryTokenCountMethod = const Value.absent(),
+    this.preferSummary = const Value.absent(),
     this.textContent = const Value.absent(),
     this.filePath = const Value.absent(),
     this.mimeType = const Value.absent(),
@@ -1237,10 +1289,11 @@ class PromptBlocksCompanion extends UpdateCompanion<PromptBlock> {
     Expression<double>? sortOrder,
     Expression<String>? blockType,
     Expression<String>? displayName,
-    Expression<int>? textContentTokenCount,
+    Expression<int>? fullContentTokenCount,
     Expression<int>? summaryTokenCount,
-    Expression<int>? transcriptTokenCount,
-    Expression<int>? captionTokenCount,
+    Expression<String>? fullContentTokenCountMethod,
+    Expression<String>? summaryTokenCountMethod,
+    Expression<bool>? preferSummary,
     Expression<String>? textContent,
     Expression<String>? filePath,
     Expression<String>? mimeType,
@@ -1258,12 +1311,14 @@ class PromptBlocksCompanion extends UpdateCompanion<PromptBlock> {
       if (sortOrder != null) 'sort_order': sortOrder,
       if (blockType != null) 'block_type': blockType,
       if (displayName != null) 'display_name': displayName,
-      if (textContentTokenCount != null)
-        'text_content_token_count': textContentTokenCount,
+      if (fullContentTokenCount != null)
+        'full_content_token_count': fullContentTokenCount,
       if (summaryTokenCount != null) 'summary_token_count': summaryTokenCount,
-      if (transcriptTokenCount != null)
-        'transcript_token_count': transcriptTokenCount,
-      if (captionTokenCount != null) 'caption_token_count': captionTokenCount,
+      if (fullContentTokenCountMethod != null)
+        'full_content_token_count_method': fullContentTokenCountMethod,
+      if (summaryTokenCountMethod != null)
+        'summary_token_count_method': summaryTokenCountMethod,
+      if (preferSummary != null) 'prefer_summary': preferSummary,
       if (textContent != null) 'text_content': textContent,
       if (filePath != null) 'file_path': filePath,
       if (mimeType != null) 'mime_type': mimeType,
@@ -1283,10 +1338,11 @@ class PromptBlocksCompanion extends UpdateCompanion<PromptBlock> {
       Value<double>? sortOrder,
       Value<String>? blockType,
       Value<String>? displayName,
-      Value<int?>? textContentTokenCount,
+      Value<int?>? fullContentTokenCount,
       Value<int?>? summaryTokenCount,
-      Value<int?>? transcriptTokenCount,
-      Value<int?>? captionTokenCount,
+      Value<String?>? fullContentTokenCountMethod,
+      Value<String?>? summaryTokenCountMethod,
+      Value<bool>? preferSummary,
       Value<String?>? textContent,
       Value<String?>? filePath,
       Value<String?>? mimeType,
@@ -1303,11 +1359,14 @@ class PromptBlocksCompanion extends UpdateCompanion<PromptBlock> {
       sortOrder: sortOrder ?? this.sortOrder,
       blockType: blockType ?? this.blockType,
       displayName: displayName ?? this.displayName,
-      textContentTokenCount:
-          textContentTokenCount ?? this.textContentTokenCount,
+      fullContentTokenCount:
+          fullContentTokenCount ?? this.fullContentTokenCount,
       summaryTokenCount: summaryTokenCount ?? this.summaryTokenCount,
-      transcriptTokenCount: transcriptTokenCount ?? this.transcriptTokenCount,
-      captionTokenCount: captionTokenCount ?? this.captionTokenCount,
+      fullContentTokenCountMethod:
+          fullContentTokenCountMethod ?? this.fullContentTokenCountMethod,
+      summaryTokenCountMethod:
+          summaryTokenCountMethod ?? this.summaryTokenCountMethod,
+      preferSummary: preferSummary ?? this.preferSummary,
       textContent: textContent ?? this.textContent,
       filePath: filePath ?? this.filePath,
       mimeType: mimeType ?? this.mimeType,
@@ -1339,18 +1398,23 @@ class PromptBlocksCompanion extends UpdateCompanion<PromptBlock> {
     if (displayName.present) {
       map['display_name'] = Variable<String>(displayName.value);
     }
-    if (textContentTokenCount.present) {
-      map['text_content_token_count'] =
-          Variable<int>(textContentTokenCount.value);
+    if (fullContentTokenCount.present) {
+      map['full_content_token_count'] =
+          Variable<int>(fullContentTokenCount.value);
     }
     if (summaryTokenCount.present) {
       map['summary_token_count'] = Variable<int>(summaryTokenCount.value);
     }
-    if (transcriptTokenCount.present) {
-      map['transcript_token_count'] = Variable<int>(transcriptTokenCount.value);
+    if (fullContentTokenCountMethod.present) {
+      map['full_content_token_count_method'] =
+          Variable<String>(fullContentTokenCountMethod.value);
     }
-    if (captionTokenCount.present) {
-      map['caption_token_count'] = Variable<int>(captionTokenCount.value);
+    if (summaryTokenCountMethod.present) {
+      map['summary_token_count_method'] =
+          Variable<String>(summaryTokenCountMethod.value);
+    }
+    if (preferSummary.present) {
+      map['prefer_summary'] = Variable<bool>(preferSummary.value);
     }
     if (textContent.present) {
       map['text_content'] = Variable<String>(textContent.value);
@@ -1393,10 +1457,11 @@ class PromptBlocksCompanion extends UpdateCompanion<PromptBlock> {
           ..write('sortOrder: $sortOrder, ')
           ..write('blockType: $blockType, ')
           ..write('displayName: $displayName, ')
-          ..write('textContentTokenCount: $textContentTokenCount, ')
+          ..write('fullContentTokenCount: $fullContentTokenCount, ')
           ..write('summaryTokenCount: $summaryTokenCount, ')
-          ..write('transcriptTokenCount: $transcriptTokenCount, ')
-          ..write('captionTokenCount: $captionTokenCount, ')
+          ..write('fullContentTokenCountMethod: $fullContentTokenCountMethod, ')
+          ..write('summaryTokenCountMethod: $summaryTokenCountMethod, ')
+          ..write('preferSummary: $preferSummary, ')
           ..write('textContent: $textContent, ')
           ..write('filePath: $filePath, ')
           ..write('mimeType: $mimeType, ')
@@ -2388,10 +2453,11 @@ typedef $$PromptBlocksTableCreateCompanionBuilder = PromptBlocksCompanion
   Value<double> sortOrder,
   required String blockType,
   Value<String> displayName,
-  Value<int?> textContentTokenCount,
+  Value<int?> fullContentTokenCount,
   Value<int?> summaryTokenCount,
-  Value<int?> transcriptTokenCount,
-  Value<int?> captionTokenCount,
+  Value<String?> fullContentTokenCountMethod,
+  Value<String?> summaryTokenCountMethod,
+  Value<bool> preferSummary,
   Value<String?> textContent,
   Value<String?> filePath,
   Value<String?> mimeType,
@@ -2410,10 +2476,11 @@ typedef $$PromptBlocksTableUpdateCompanionBuilder = PromptBlocksCompanion
   Value<double> sortOrder,
   Value<String> blockType,
   Value<String> displayName,
-  Value<int?> textContentTokenCount,
+  Value<int?> fullContentTokenCount,
   Value<int?> summaryTokenCount,
-  Value<int?> transcriptTokenCount,
-  Value<int?> captionTokenCount,
+  Value<String?> fullContentTokenCountMethod,
+  Value<String?> summaryTokenCountMethod,
+  Value<bool> preferSummary,
   Value<String?> textContent,
   Value<String?> filePath,
   Value<String?> mimeType,
@@ -2479,21 +2546,24 @@ class $$PromptBlocksTableFilterComposer
   ColumnFilters<String> get displayName => $composableBuilder(
       column: $table.displayName, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get textContentTokenCount => $composableBuilder(
-      column: $table.textContentTokenCount,
+  ColumnFilters<int> get fullContentTokenCount => $composableBuilder(
+      column: $table.fullContentTokenCount,
       builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get summaryTokenCount => $composableBuilder(
       column: $table.summaryTokenCount,
       builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get transcriptTokenCount => $composableBuilder(
-      column: $table.transcriptTokenCount,
+  ColumnFilters<String> get fullContentTokenCountMethod => $composableBuilder(
+      column: $table.fullContentTokenCountMethod,
       builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get captionTokenCount => $composableBuilder(
-      column: $table.captionTokenCount,
+  ColumnFilters<String> get summaryTokenCountMethod => $composableBuilder(
+      column: $table.summaryTokenCountMethod,
       builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get preferSummary => $composableBuilder(
+      column: $table.preferSummary, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get textContent => $composableBuilder(
       column: $table.textContent, builder: (column) => ColumnFilters(column));
@@ -2588,20 +2658,24 @@ class $$PromptBlocksTableOrderingComposer
   ColumnOrderings<String> get displayName => $composableBuilder(
       column: $table.displayName, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get textContentTokenCount => $composableBuilder(
-      column: $table.textContentTokenCount,
+  ColumnOrderings<int> get fullContentTokenCount => $composableBuilder(
+      column: $table.fullContentTokenCount,
       builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<int> get summaryTokenCount => $composableBuilder(
       column: $table.summaryTokenCount,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get transcriptTokenCount => $composableBuilder(
-      column: $table.transcriptTokenCount,
+  ColumnOrderings<String> get fullContentTokenCountMethod => $composableBuilder(
+      column: $table.fullContentTokenCountMethod,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get captionTokenCount => $composableBuilder(
-      column: $table.captionTokenCount,
+  ColumnOrderings<String> get summaryTokenCountMethod => $composableBuilder(
+      column: $table.summaryTokenCountMethod,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get preferSummary => $composableBuilder(
+      column: $table.preferSummary,
       builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get textContent => $composableBuilder(
@@ -2676,17 +2750,20 @@ class $$PromptBlocksTableAnnotationComposer
   GeneratedColumn<String> get displayName => $composableBuilder(
       column: $table.displayName, builder: (column) => column);
 
-  GeneratedColumn<int> get textContentTokenCount => $composableBuilder(
-      column: $table.textContentTokenCount, builder: (column) => column);
+  GeneratedColumn<int> get fullContentTokenCount => $composableBuilder(
+      column: $table.fullContentTokenCount, builder: (column) => column);
 
   GeneratedColumn<int> get summaryTokenCount => $composableBuilder(
       column: $table.summaryTokenCount, builder: (column) => column);
 
-  GeneratedColumn<int> get transcriptTokenCount => $composableBuilder(
-      column: $table.transcriptTokenCount, builder: (column) => column);
+  GeneratedColumn<String> get fullContentTokenCountMethod => $composableBuilder(
+      column: $table.fullContentTokenCountMethod, builder: (column) => column);
 
-  GeneratedColumn<int> get captionTokenCount => $composableBuilder(
-      column: $table.captionTokenCount, builder: (column) => column);
+  GeneratedColumn<String> get summaryTokenCountMethod => $composableBuilder(
+      column: $table.summaryTokenCountMethod, builder: (column) => column);
+
+  GeneratedColumn<bool> get preferSummary => $composableBuilder(
+      column: $table.preferSummary, builder: (column) => column);
 
   GeneratedColumn<String> get textContent => $composableBuilder(
       column: $table.textContent, builder: (column) => column);
@@ -2788,10 +2865,11 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
             Value<double> sortOrder = const Value.absent(),
             Value<String> blockType = const Value.absent(),
             Value<String> displayName = const Value.absent(),
-            Value<int?> textContentTokenCount = const Value.absent(),
+            Value<int?> fullContentTokenCount = const Value.absent(),
             Value<int?> summaryTokenCount = const Value.absent(),
-            Value<int?> transcriptTokenCount = const Value.absent(),
-            Value<int?> captionTokenCount = const Value.absent(),
+            Value<String?> fullContentTokenCountMethod = const Value.absent(),
+            Value<String?> summaryTokenCountMethod = const Value.absent(),
+            Value<bool> preferSummary = const Value.absent(),
             Value<String?> textContent = const Value.absent(),
             Value<String?> filePath = const Value.absent(),
             Value<String?> mimeType = const Value.absent(),
@@ -2809,10 +2887,11 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
             sortOrder: sortOrder,
             blockType: blockType,
             displayName: displayName,
-            textContentTokenCount: textContentTokenCount,
+            fullContentTokenCount: fullContentTokenCount,
             summaryTokenCount: summaryTokenCount,
-            transcriptTokenCount: transcriptTokenCount,
-            captionTokenCount: captionTokenCount,
+            fullContentTokenCountMethod: fullContentTokenCountMethod,
+            summaryTokenCountMethod: summaryTokenCountMethod,
+            preferSummary: preferSummary,
             textContent: textContent,
             filePath: filePath,
             mimeType: mimeType,
@@ -2830,10 +2909,11 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
             Value<double> sortOrder = const Value.absent(),
             required String blockType,
             Value<String> displayName = const Value.absent(),
-            Value<int?> textContentTokenCount = const Value.absent(),
+            Value<int?> fullContentTokenCount = const Value.absent(),
             Value<int?> summaryTokenCount = const Value.absent(),
-            Value<int?> transcriptTokenCount = const Value.absent(),
-            Value<int?> captionTokenCount = const Value.absent(),
+            Value<String?> fullContentTokenCountMethod = const Value.absent(),
+            Value<String?> summaryTokenCountMethod = const Value.absent(),
+            Value<bool> preferSummary = const Value.absent(),
             Value<String?> textContent = const Value.absent(),
             Value<String?> filePath = const Value.absent(),
             Value<String?> mimeType = const Value.absent(),
@@ -2851,10 +2931,11 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
             sortOrder: sortOrder,
             blockType: blockType,
             displayName: displayName,
-            textContentTokenCount: textContentTokenCount,
+            fullContentTokenCount: fullContentTokenCount,
             summaryTokenCount: summaryTokenCount,
-            transcriptTokenCount: transcriptTokenCount,
-            captionTokenCount: captionTokenCount,
+            fullContentTokenCountMethod: fullContentTokenCountMethod,
+            summaryTokenCountMethod: summaryTokenCountMethod,
+            preferSummary: preferSummary,
             textContent: textContent,
             filePath: filePath,
             mimeType: mimeType,

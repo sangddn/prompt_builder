@@ -18,7 +18,7 @@ final class Database extends _$Database {
   factory Database() => instance;
   Database.custom(String name) : super(_openConnection(name));
 
-  static final instance = Database.custom('app_db');
+  static final instance = Database.custom('pbdb');
 
   @override
   int get schemaVersion => 1;
@@ -81,7 +81,7 @@ final class MockDatabase extends Database {
 
     debugPrint('Initializing MockDatabase...');
 
-    boolRef = await Hive.openBox<bool>('mockBoolMap', path: '.'); 
+    boolRef = await Hive.openBox<bool>('mockBoolMap', path: '.');
     stringRef = await Hive.openBox<String>('mockStringMap', path: '.');
     intRef = await Hive.openBox<int>('mockIntMap', path: '.');
     doubleRef = await Hive.openBox<double>('mockDoubleMap', path: '.');
