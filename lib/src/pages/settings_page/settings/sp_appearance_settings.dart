@@ -102,23 +102,7 @@ class _ThemeAccentItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = switch (accent) {
-      ThemeAccent.blue => Colors.blue,
-      ThemeAccent.gray => Colors.grey,
-      ThemeAccent.green => Colors.green,
-      ThemeAccent.neutral =>
-        context.theme.resolveColor(Colors.white, Colors.black),
-      ThemeAccent.orange => Colors.orange,
-      ThemeAccent.red => Colors.red,
-      ThemeAccent.rose => Colors.pink,
-      ThemeAccent.slate => Colors.blueGrey,
-      ThemeAccent.stone => context.theme
-          .resolveColor(const Color(0xfff5f5f4), const Color(0xff292524)),
-      ThemeAccent.violet => Colors.purple,
-      ThemeAccent.yellow => Colors.yellow,
-      ThemeAccent.zinc => context.theme
-          .resolveColor(const Color(0xfff4f4f5), const Color(0xff27272a)),
-    };
+    final color = accent.representativeColor.resolveFrom(context);
     final selectedBorderColor = color.replaceOpacity(0.7);
 
     final colorCircle = AnimatedContainer(

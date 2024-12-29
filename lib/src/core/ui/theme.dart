@@ -2,15 +2,17 @@ part of 'ui.dart';
 
 const kThemeModeKey = 'theme-mode';
 const kInitialThemeMode = ThemeMode.system;
+ThemeMode _themeModeFromName(String? name) =>
+    ThemeMode.values.firstWhere(
+      (element) => element.toString() == name,
+      orElse: () => kInitialThemeMode,
+    );
 Stream<ThemeMode> streamThemeMode() => Database()
     .stringRef //
     .watch(key: kThemeModeKey)
-    .map(
-      (event) => ThemeMode.values.firstWhere(
-        (element) => element.toString() == event.value,
-        orElse: () => kInitialThemeMode,
-      ),
-    );
+    .map((event) => event.value as String?)
+    .startsWith(Database().stringRef.get(kThemeModeKey))
+    .map(_themeModeFromName);
 void setThemeMode(ThemeMode themeMode) =>
     Database().stringRef.put(kThemeModeKey, themeMode.toString());
 
@@ -27,6 +29,13 @@ enum ThemeAccent {
   violet,
   yellow,
   zinc,
+  ;
+
+  static ThemeAccent _fromName(String? name) =>
+      ThemeAccent.values.firstWhere(
+        (element) => element.name == name,
+        orElse: () => kInitialThemeAccent,
+      );
 }
 
 const kThemeAccentKey = 'theme-accent';
@@ -34,14 +43,11 @@ const kInitialThemeAccent = ThemeAccent.zinc;
 Stream<ThemeAccent> streamThemeAccent() => Database()
     .stringRef //
     .watch(key: kThemeAccentKey)
-    .map(
-      (event) => ThemeAccent.values.firstWhere(
-        (element) => element.toString() == event.value,
-        orElse: () => kInitialThemeAccent,
-      ),
-    );
+    .map((event) => event.value as String?)
+    .startsWith(Database().stringRef.get(kThemeAccentKey))
+    .map(ThemeAccent._fromName);
 void setThemeAccent(ThemeAccent themeAccent) =>
-    Database().stringRef.put(kThemeAccentKey, themeAccent.toString());
+    Database().stringRef.put(kThemeAccentKey, themeAccent.name);
 
 ShadThemeData getTheme(ThemeAccent themeAccent, Brightness brightness) =>
     ShadThemeData(
@@ -52,6 +58,27 @@ ShadThemeData getTheme(ThemeAccent themeAccent, Brightness brightness) =>
           ShadSwitchTheme(margin: brightness == Brightness.light ? 0.0 : 1.0),
       radius: BorderRadius.circular(8.0),
     );
+
+extension ThemeAccentRepresentativeColor on ThemeAccent {
+  CupertinoDynamicColor _color(Color light, Color dark) =>
+      CupertinoDynamicColor.withBrightness(color: light, darkColor: dark);
+  CupertinoDynamicColor get representativeColor => switch (this) {
+        ThemeAccent.blue => _color(Colors.blue, Colors.blue.tint(.1)),
+        ThemeAccent.gray => _color(Colors.grey, Colors.grey.tint(.1)),
+        ThemeAccent.green => _color(Colors.green, Colors.green.tint(.1)),
+        ThemeAccent.neutral => _color(Colors.white, Colors.black),
+        ThemeAccent.orange => _color(Colors.orange, Colors.orange.tint(.1)),
+        ThemeAccent.red => _color(Colors.red, Colors.red.tint(.1)),
+        ThemeAccent.rose => _color(Colors.pink, Colors.pink.tint(.1)),
+        ThemeAccent.slate => _color(Colors.blueGrey, Colors.blueGrey.tint(.1)),
+        ThemeAccent.stone =>
+          _color(const Color(0xfff5f5f4), const Color(0xff292524)),
+        ThemeAccent.violet => _color(Colors.purple, Colors.purple.tint(.1)),
+        ThemeAccent.yellow => _color(Colors.yellow, Colors.yellow.tint(.1)),
+        ThemeAccent.zinc =>
+          _color(const Color(0xff27272a), const Color(0xfff4f4f5)),
+      };
+}
 
 extension TextStyleUtils on TextStyle {
   TextStyle get w300 =>

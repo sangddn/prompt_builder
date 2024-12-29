@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'core/core.dart';
@@ -15,8 +16,6 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   final _appRouter = AppRouter();
-  final _themeModeStream = streamThemeMode();
-  final _themeAccentStream = streamThemeAccent();
 
   @override
   void dispose() {
@@ -26,14 +25,20 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder2(
-      initialValue1: kInitialThemeMode,
-      initialValue2: kInitialThemeAccent,
-      stream1: _themeModeStream,
-      stream2: _themeAccentStream,
-      builder: (context, snapshot1, snapshot2) {
-        final mode = snapshot1.data ?? kInitialThemeMode;
-        final accent = snapshot2.data ?? kInitialThemeAccent;
+    return MultiProvider(
+      providers: [
+        StreamProvider<ThemeMode>(
+          initialData: kInitialThemeMode,
+          create: (context) => streamThemeMode(),
+        ),
+        StreamProvider<ThemeAccent>(
+          initialData: kInitialThemeAccent,
+          create: (context) => streamThemeAccent(),
+        ),
+      ],
+      builder: (context, _) {
+        final mode = context.watch<ThemeMode>();
+        final accent = context.watch<ThemeAccent>();
         return ShadApp.materialRouter(
           title: 'Prompt Builder',
           debugShowCheckedModeBanner: false,
@@ -46,63 +51,5 @@ class _AppState extends State<App> {
         );
       },
     );
-  }
-}
-
-/// A parent widget that re-themes its child based on the user's theme preference
-/// and the system's platform brightness.
-///
-/// Typically used for spawned windows or dialogs.
-///
-class ReTheme extends StatefulWidget {
-  const ReTheme({
-    this.includeNewScaffoldMessenger = false,
-    required this.builder,
-    super.key,
-  });
-
-  /// Whether to include a new [ScaffoldMessenger] in the [builder]'s context.
-  ///
-  /// Including a new [ScaffoldMessenger] may be useful for spawned windows or
-  /// dialogs when we don't want SnackBar messages to be displayed in the main
-  /// Navigator and the dialog at the same time.
-  ///
-  final bool includeNewScaffoldMessenger;
-  final WidgetBuilder builder;
-
-  @override
-  State<ReTheme> createState() => _ReThemeState();
-}
-
-class _ReThemeState extends State<ReTheme> {
-  final _themeModeStream = streamThemeMode();
-  final _themeAccentStream = streamThemeAccent();
-
-  @override
-  Widget build(BuildContext context) {
-    final themedChild = StreamBuilder2(
-      initialValue1: kInitialThemeMode,
-      initialValue2: kInitialThemeAccent,
-      stream1: _themeModeStream,
-      stream2: _themeAccentStream,
-      builder: (context, snapshot1, snapshot2) {
-        final mode = snapshot1.data ?? kInitialThemeMode;
-        final accent = snapshot2.data ?? kInitialThemeAccent;
-        final brightness = mode == ThemeMode.dark ||
-                (mode == ThemeMode.system &&
-                    MediaQuery.platformBrightnessOf(context) == Brightness.dark)
-            ? Brightness.dark
-            : Brightness.light;
-        final theme = getTheme(accent, brightness);
-        return ShadAnimatedTheme(
-          data: theme,
-          child: Builder(builder: widget.builder),
-        );
-      },
-    );
-    if (widget.includeNewScaffoldMessenger) {
-      return ScaffoldMessenger(child: themedChild);
-    }
-    return themedChild;
   }
 }
