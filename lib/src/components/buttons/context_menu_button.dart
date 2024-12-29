@@ -192,7 +192,13 @@ class _ContextMenuButtonState extends State<ContextMenuButton>
                 child: Container(
                   decoration: ShapeDecoration(
                     color: overlayContext.colorScheme.card,
-                    shape: Superellipse.border12,
+                    shape: Superellipse(
+                      cornerRadius: 12.0,
+                      side: BorderSide(
+                        color: PColors.gray.resolveFrom(context),
+                        width: .75,
+                      ),
+                    ),
                     shadows: broadShadows(context),
                   ),
                   padding: const EdgeInsets.all(4.0),

@@ -54,6 +54,7 @@ class _HoverTapBuilderState extends State<HoverTapBuilder> {
         onTapUp: (_) => _isMouse ? null : _onHoverOrTapExit(),
         onTapCancel: () => _isMouse ? null : _onHoverOrTapExit(),
         highlightShape: BoxShape.rectangle,
+        splashFactory: NoSplash.splashFactory,
         child: widget.builder(context, _isHovering),
       ),
     );

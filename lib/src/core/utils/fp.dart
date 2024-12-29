@@ -4,6 +4,13 @@ extension FP<T> on T {
   R let<R>(R Function(T) fn) => fn(this);
 }
 
+extension StreamExtension<T> on Stream<T> {
+  Stream<T> startsWith(T value) async* {
+    yield value;
+    yield* this;
+  }
+}
+
 extension MinMax<T extends Comparable<T>> on Iterable<T> {
   T? minOrNull() {
     if (isEmpty) {

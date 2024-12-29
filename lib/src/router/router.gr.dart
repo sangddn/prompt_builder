@@ -10,7 +10,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i8;
 import 'package:flutter/cupertino.dart' as _i10;
-import 'package:flutter/material.dart' as _i11;
 import 'package:prompt_builder/src/database/database.dart' as _i9;
 import 'package:prompt_builder/src/pages/library_page/library_page.dart' as _i1;
 import 'package:prompt_builder/src/pages/prompt_page/prompt_page.dart' as _i3;
@@ -95,7 +94,7 @@ class PromptRoute extends _i8.PageRouteInfo<PromptRouteArgs> {
   PromptRoute({
     _i9.Database? database,
     required int id,
-    _i11.Key? key,
+    _i10.Key? key,
     List<_i8.PageRouteInfo>? children,
   }) : super(
           PromptRoute.name,
@@ -133,7 +132,7 @@ class PromptRouteArgs {
 
   final int id;
 
-  final _i11.Key? key;
+  final _i10.Key? key;
 
   @override
   String toString() {

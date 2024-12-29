@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../core.dart';
+
 extension SafeSetState on State {
   void maybeSetState([VoidCallback? fn]) {
     if (mounted) {
@@ -578,23 +580,35 @@ class StateProvider<T> extends ChangeNotifierProvider<ValueNotifier<T>> {
   StateProvider({
     required T Function(BuildContext context) createInitialValue,
     void Function(BuildContext context, ValueNotifier<T> notifier)? initState,
+    void Function(BuildContext context, T value)? onValueChanged,
     UpdateShouldNotify<T>? updateShouldNotify,
     Dispose<T>? dispose,
     TransitionBuilder? builder,
+    Widget Function(BuildContext context, T value, Widget? child)? valueBuilder,
     super.lazy,
     Widget? child,
     super.key,
-  }) : super(
+  })  : assert(
+          valueBuilder == null || builder == null,
+          'Cannot use both valueBuilder and builder',
+        ),
+        super(
           create: (context) {
             final notifier = ValueNotifier(createInitialValue(context));
             initState?.call(context, notifier);
+            if (onValueChanged != null) {
+              notifier
+                  .addListener(() => onValueChanged(context, notifier.value));
+            }
             return notifier;
           },
           child: ProxyProvider<ValueNotifier<T>, T>(
             update: (context, notifier, previous) => notifier.value,
             updateShouldNotify: updateShouldNotify,
             dispose: dispose,
-            builder: builder,
+            builder: builder ??
+                valueBuilder
+                    ?.let((b) => (c, child) => b(c, c.watch<T>(), child)),
             child: child,
           ),
         );
@@ -607,13 +621,21 @@ class StateProvider<T> extends ChangeNotifierProvider<ValueNotifier<T>> {
 /// disposed.
 class ValueProvider<T extends ChangeNotifier> extends ListenableProvider<T> {
   ValueProvider({
-    required super.create,
+    required T Function(BuildContext context) create,
+    void Function(BuildContext context, T? notifier)? onNotified,
     void Function(BuildContext context, T? notifier)? onDisposed,
     super.lazy,
     super.builder,
     super.child,
     super.key,
   }) : super(
+          create: (context) {
+            final notifier = create(context);
+            if (onNotified != null) {
+              notifier.addListener(() => onNotified(context, notifier));
+            }
+            return notifier;
+          },
           dispose: (BuildContext context, T? notifier) {
             onDisposed?.call(context, notifier);
             notifier?.dispose();

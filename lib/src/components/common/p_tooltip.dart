@@ -60,9 +60,11 @@ class _PTooltipState extends State<PTooltip> {
           ],
         ),
         padding: k16H12VPadding,
-        textStyle: context.theme.textTheme.small.copyWith(
-          color: context.colorScheme.mutedForeground,
-        ),
+        textStyle: widget.richMessage != null
+            ? null
+            : context.theme.textTheme.small.copyWith(
+                color: context.colorScheme.mutedForeground,
+              ),
         child: widget.child,
       ),
     );

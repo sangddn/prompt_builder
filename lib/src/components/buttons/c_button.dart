@@ -17,11 +17,12 @@ class CButton extends StatelessWidget {
     this.tooltipPreferBelow,
     this.focusNode,
     this.addFeedback = false,
+    this.mouseCursor = SystemMouseCursors.basic,
     required this.tooltip,
     required this.onTap,
     required this.child,
     super.key,
-  });
+  }) : assert(tooltip is String? || tooltip is InlineSpan?);
 
   final EdgeInsetsGeometry padding;
   final BorderSide side;
@@ -32,7 +33,12 @@ class CButton extends StatelessWidget {
   final bool? tooltipPreferBelow;
   final FocusNode? focusNode;
   final bool addFeedback;
-  final String? tooltip;
+  /// The tooltip to show when the button is pressed.
+  ///
+  /// Can be a [String]? or an [InlineSpan]?.
+  ///
+  final dynamic tooltip;
+  final MouseCursor? mouseCursor;
   final Clip clipBehavior;
   final VoidCallback? onTap;
   final Widget child;
@@ -62,26 +68,41 @@ class CButton extends StatelessWidget {
           ),
           padding: EdgeInsets.all(extraPadding),
           clipBehavior: clipBehavior,
-          child: CupertinoButton(
-            color: color,
-            focusNode: context.read(),
-            focusColor: context.colorScheme.selection,
-            padding: padding,
-            minSize: 0.0,
-            pressedOpacity: pressedOpacity,
-            borderRadius: BorderRadius.circular(cornerRadius),
-            onPressed: onTap == null
-                ? null
-                : addFeedback
-                    ? () {
-                        Feedback.wrapForTap(_callback, context)?.call();
-                      }
-                    : _callback,
-            child: PTooltip(
-              message: tooltip,
-              triggerMode: tooltipTriggerMode,
-              preferBelow: tooltipPreferBelow,
-              child: child!,
+          child: Material(
+            color: Colors.transparent,
+            shape: Superellipse(cornerRadius: cornerRadius),
+            clipBehavior: clipBehavior,
+            child: InkResponse(
+              mouseCursor: mouseCursor,
+              onTap: onTap == null ? null : () {},
+              splashColor: Colors.transparent,
+              highlightShape: BoxShape.rectangle,
+              hoverColor: PColors.lightGray.resolveFrom(context),
+              canRequestFocus: false,
+              child: CupertinoButton(
+                color: color,
+                padding: padding,
+                minSize: 0.0,
+                pressedOpacity: pressedOpacity,
+                borderRadius: BorderRadius.circular(cornerRadius),
+                focusNode: context.read(),
+                focusColor: context.colorScheme.selection,
+                onPressed: onTap == null
+                    ? null
+                    : addFeedback
+                        ? () {
+                            Feedback.wrapForTap(_callback, context)?.call();
+                          }
+                        : _callback,
+                child: PTooltip(
+                  message: tooltip is String? ? tooltip as String? : null,
+                  richMessage:
+                      tooltip is InlineSpan? ? tooltip as InlineSpan? : null,
+                  triggerMode: tooltipTriggerMode,
+                  preferBelow: tooltipPreferBelow,
+                  child: child!,
+                ),
+              ),
             ),
           ),
         );
