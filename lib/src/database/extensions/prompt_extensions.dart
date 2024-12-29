@@ -56,6 +56,11 @@ extension PromptsExtension on Database {
     return (select(prompts)..where((t) => t.id.equals(id))).getSingle();
   }
 
+  /// Streams a single prompt by its ID.
+  Stream<Prompt> streamPrompt(int id) {
+    return (select(prompts)..where((t) => t.id.equals(id))).watchSingle();
+  }
+
   /// Queries prompts with flexible sorting and filtering options.
   ///
   /// Parameters:
@@ -151,6 +156,7 @@ extension PromptsExtension on Database {
     bool? isLibrary,
     List<String>? tags,
     DateTime? lastOpenedAt,
+    bool? preferSummaries,
   }) async {
     final now = DateTime.now();
     await (update(prompts)..where((tbl) => tbl.id.equals(promptId))).write(

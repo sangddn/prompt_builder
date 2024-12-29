@@ -64,10 +64,9 @@ extension PromptBlocksExtension on Database {
     String? transcript,
     String? caption,
     String? summary,
-    int? textContentTokenCount,
-    int? summaryTokenCount,
-    int? transcriptTokenCount,
-    int? captionTokenCount,
+    (int, String)? fullContentTokenCountAndMethod,
+    (int, String)? summaryTokenCountAndMethod,
+    bool? preferSummary,
   }) async {
     final now = DateTime.now();
     await (update(promptBlocks)..where((tbl) => tbl.id.equals(blockId))).write(
@@ -87,17 +86,20 @@ extension PromptBlocksExtension on Database {
             transcript != null ? Value(transcript) : const Value.absent(),
         caption: caption != null ? Value(caption) : const Value.absent(),
         summary: summary != null ? Value(summary) : const Value.absent(),
-        textContentTokenCount: textContentTokenCount != null
-            ? Value(textContentTokenCount)
+        fullContentTokenCount: fullContentTokenCountAndMethod != null
+            ? Value(fullContentTokenCountAndMethod.$1)
             : const Value.absent(),
-        summaryTokenCount: summaryTokenCount != null
-            ? Value(summaryTokenCount)
+        fullContentTokenCountMethod: fullContentTokenCountAndMethod != null
+            ? Value(fullContentTokenCountAndMethod.$2)
             : const Value.absent(),
-        transcriptTokenCount: transcriptTokenCount != null
-            ? Value(transcriptTokenCount)
+        summaryTokenCount: summaryTokenCountAndMethod != null
+            ? Value(summaryTokenCountAndMethod.$1)
             : const Value.absent(),
-        captionTokenCount: captionTokenCount != null
-            ? Value(captionTokenCount)
+        summaryTokenCountMethod: summaryTokenCountAndMethod != null
+            ? Value(summaryTokenCountAndMethod.$2)
+            : const Value.absent(),
+        preferSummary: preferSummary != null
+            ? Value(preferSummary)
             : const Value.absent(),
         updatedAt: Value(now),
       ),
@@ -253,6 +255,26 @@ extension PromptBlockExtension on PromptBlock {
       transcript != null ||
       caption != null;
 
+  (int, String)? get fullContentTokenCountAndMethod {
+    if (fullContentTokenCount != null && fullContentTokenCountMethod != null) {
+      return (fullContentTokenCount!, fullContentTokenCountMethod!);
+    }
+    return null;
+  }
+
+  (int, String)? get summaryTokenCountAndMethod {
+    if (summaryTokenCount != null && summaryTokenCountMethod != null) {
+      return (summaryTokenCount!, summaryTokenCountMethod!);
+    }
+    return null;
+  }
+
+  String? getSummarizableContent() => switch (type) {
+        BlockType.text || BlockType.localFile || BlockType.webUrl => textContent,
+        BlockType.youtube || BlockType.audio || BlockType.video => transcript,
+        _ => null,
+      };
+
   /// Returns a string representation of this block in a format suitable for prompts.
   ///
   /// The returned string is formatted as an XML-like tag with the block's content.
@@ -270,12 +292,12 @@ extension PromptBlockExtension on PromptBlock {
   /// instead of the full content version.
   ///
   /// Returns null if the block cannot be copied (no content) or is an unsupported type.
-  String? copyToPrompt({bool preferSummary = false}) {
+  String? copyToPrompt() {
     final type = this.type;
     if (type == BlockType.unsupported || !canBeCopied) {
       return null;
     }
-    preferSummary = summary != null && preferSummary;
+    final preferSummary = summary != null && this.preferSummary;
     final (tag, info) = switch ((type, preferSummary)) {
       (BlockType.text, _) => ('instructions', 'label="$displayName"'),
       (BlockType.localFile, false) => ('file', 'path="$filePath"'),
