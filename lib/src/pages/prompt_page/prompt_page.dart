@@ -3,6 +3,7 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
@@ -20,6 +21,8 @@ part 'states/pp_prompt_extensions.dart';
 part 'states/pp_llm_scope.dart';
 part 'states/pp_block_scope.dart';
 part 'states/pp_block_content_scope.dart';
+part 'states/pp_file_tree_scope.dart';
+part 'states/pp_keyboard_listener.dart';
 
 part 'components/pp_app_bar.dart';
 part 'components/pp_main_body.dart';
@@ -28,6 +31,7 @@ part 'components/pp_search_section.dart';
 part 'components/pp_prompt_content.dart';
 part 'components/pp_right_sidebar.dart';
 part 'components/pp_copy_section.dart';
+part 'components/pp_file_search_dialog.dart';
 
 @RoutePage()
 class PromptPage extends StatelessWidget {
