@@ -19,6 +19,9 @@ class SelectableFileTreeItem extends StatelessWidget {
     return MultiProvider(
       providers: [
         ListenableProvider<IndexedTreeNode<FileTreeItem>>.value(value: node),
+        ChangeNotifierProvider<ValueNotifier<bool>>.value(
+          value: node.expansionNotifier,
+        ),
         Provider<ValueChanged<bool>?>.value(value: onItemSelected),
         Provider<int>.value(value: selectionCount),
       ],
@@ -31,6 +34,24 @@ class SelectableFileTreeItem extends StatelessWidget {
 
 extension _FileTreeItemContext on BuildContext {
   T selectNode<T>(T Function(IndexedFileTree node) fn) => select(fn);
+  FileTreeItem item() => selectNode((node) => node.data!);
+  bool isDirectory() => selectNode((node) => node.data!.isDirectory);
+  bool isExpanded() => watch<ValueNotifier<bool>>().value;
+
+  int countAllFilesContained() {
+    final thisPath = item().path;
+    return select(
+      ((IList<String>, IList<String>) paths) => paths.$1.where((p) {
+        return p.startsWith(thisPath) && path.extension(p).trim().isNotEmpty;
+      }).length,
+    );
+  }
+
+  void selectOrDeselect() {
+    final count = read<int>();
+    final shouldSelect = count == 0;
+    read<ValueChanged<bool>?>()?.call(shouldSelect);
+  }
 }
 
 class _ItemContent extends StatelessWidget {
@@ -38,8 +59,7 @@ class _ItemContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (item, isExpanded) =
-        context.selectNode((node) => (node.data!, node.isExpanded));
+    final item = context.item();
     final isDirectory = item.isDirectory;
     return ListTile(
       splashColor: Colors.transparent,
@@ -47,18 +67,15 @@ class _ItemContent extends StatelessWidget {
       // For directory, avoids chevron on the right
       contentPadding:
           EdgeInsets.only(left: 12.0, right: isDirectory ? 26.0 : 6.0),
-      leading: Icon(
-        isDirectory
-            ? isExpanded
-                ? HugeIcons.strokeRoundedFolder03
-                : HugeIcons.strokeRoundedFolder01
-            : HugeIcons.strokeRoundedFile01,
-        size: 18.0,
-      ),
+      leading: const _ItemIcon(),
       onTap: () {
-        context
-            .read<FileTreeController?>()
-            ?.toggleExpansion(context.read<IndexedFileTree>());
+        if (isDirectory) {
+          context
+              .read<FileTreeController?>()
+              ?.toggleExpansion(context.read<IndexedFileTree>());
+        } else {
+          peekFile(context, item.path);
+        }
       },
       title: Text(
         item.name,
@@ -66,7 +83,55 @@ class _ItemContent extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       dense: true,
-      trailing: context.isSimpleOrLongHovered() ? const _AddButton() : null,
+      trailing: const _ItemTrailing(),
+    );
+  }
+}
+
+class _ItemIcon extends StatelessWidget {
+  const _ItemIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    final isDirectory = context.isDirectory();
+    final isExpanded = context.isExpanded();
+    final isSelected = context.select((int count) => count > 0);
+    return Icon(
+      isDirectory
+          ? isExpanded
+              ? HugeIcons.strokeRoundedFolder03
+              : isSelected
+                  ? HugeIcons.strokeRoundedFolderCheck
+                  : HugeIcons.strokeRoundedFolder01
+          : isSelected
+              ? HugeIcons.strokeRoundedFileVerified
+              : HugeIcons.strokeRoundedFile01,
+      color: isSelected ? context.colorScheme.primary : null,
+      size: 18.0,
+    );
+  }
+}
+
+class _ItemTrailing extends StatelessWidget {
+  const _ItemTrailing();
+
+  @override
+  Widget build(BuildContext context) {
+    final isHovered = context.isSimpleOrLongHovered();
+    if (isHovered) return const _AddButton();
+    final count = context.watch<int>();
+    if (count == 0) return const SizedBox.shrink();
+    if (context.isDirectory()) {
+      return ShadBadge(
+        backgroundColor: context.colorScheme.accent,
+        foregroundColor: context.colorScheme.accentForeground,
+        child: Text('$count'),
+      );
+    }
+    return ShadImage.square(
+      CupertinoIcons.checkmark_alt_circle,
+      size: 20.0,
+      color: context.colorScheme.accentForeground,
     );
   }
 }
@@ -76,7 +141,7 @@ class _AddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDirectory = context.selectNode((n) => n.data!.isDirectory);
+    final isDirectory = context.isDirectory();
     final selectionCount = context.watch<int>();
     final isSelected = selectionCount > 0;
     final theme = context.theme;
@@ -86,14 +151,11 @@ class _AddButton extends StatelessWidget {
       shape: Superellipse.border8,
       clipBehavior: Clip.antiAlias,
       child: HoverTapBuilder(
-        onClicked: () {
-          final shouldSelect = selectionCount == 0;
-          context.read<ValueChanged<bool>?>()?.call(shouldSelect);
-        },
+        onClicked: context.selectOrDeselect,
         builder: (context, isHovered) {
           return Container(
             color: isHovered
-                ? theme.resolveColor(color.tint(.4), color.tint(.1))
+                ? theme.resolveColor(color.tint(.7), color.tint(.1))
                 : color,
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
             child: DefaultTextStyle(
@@ -144,7 +206,10 @@ class _ItemContextMenu extends StatelessWidget {
     } catch (e) {
       debugPrint('Could not reveal file: $e');
       toaster.show(
-        const ShadToast.destructive(title: Text('Could not reveal file')),
+        ShadToast.destructive(
+          title: const Text('Could not reveal file'),
+          description: Text(absolutePath),
+        ),
       );
     }
   }
@@ -156,6 +221,25 @@ class _ItemContextMenu extends StatelessWidget {
     return ShadContextMenuRegion(
       constraints: const BoxConstraints(minWidth: 200),
       items: [
+        Builder(
+          builder: (context) {
+            final selectionCount = context.watch<int>();
+            return ShadContextMenuItem(
+              onPressed: context.selectOrDeselect,
+              trailing: ShadImage.square(
+                selectionCount == 0
+                    ? HugeIcons.strokeRoundedAdd01
+                    : HugeIcons.strokeRoundedRemove01,
+                size: 16.0,
+              ),
+              child: Text(
+                selectionCount == 0
+                    ? 'Add ${context.countAllFilesContained()} files'
+                    : 'Remove $selectionCount files',
+              ),
+            );
+          },
+        ),
         if (!isDirectory)
           ShadContextMenuItem(
             onPressed: () => peekFile(context, path),

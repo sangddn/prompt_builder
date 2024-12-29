@@ -31,6 +31,7 @@ class FileTree extends StatefulWidget {
     this.ignorePatterns = const IList.empty(),
     this.sortPreferences = const FileTreeSortPreferences(),
     this.curve = Effects.engagingCurve,
+    this.onTreeReady,
     this.builder,
     super.key,
   });
@@ -64,24 +65,36 @@ class FileTree extends StatefulWidget {
   /// Custom builder for the node.
   final Widget Function(BuildContext, IndexedFileTree)? builder;
 
+  /// Callback to handle tree ready. The first argument is the tree representation,
+  /// the second is the list of file paths, and the third is the list of folder paths.
+  final void Function(IndexedFileTree, List<String>, List<String>)? onTreeReady;
+
   @override
   State<FileTree> createState() => _FileTreeState();
 }
 
 class _FileTreeState extends State<FileTree> {
   FileTreeController? _controller;
-  late Future<IndexedFileTree?> _treeFuture = _getFileTree();
+  // Tree - File paths - Folder paths
+  late Future<(IndexedFileTree, List<String>, List<String>)?> _treeFuture =
+      _getFileTree();
 
   /// Builds the file tree in a separate isolate to avoid blocking the UI
-  Future<IndexedFileTree?> _getFileTree() => compute(
-        _buildFileTree,
-        _BuildFileTreeParams(
-          dirPath: widget.dirPath,
-          skipHidden: widget.skipHiddenFoldersAndFiles,
-          ignorePatterns: widget.ignorePatterns,
-          sortPreferences: widget.sortPreferences,
-        ),
-      );
+  Future<(IndexedFileTree, List<String>, List<String>)?> _getFileTree() async {
+    final result = await compute(
+      _buildFileTree,
+      _BuildFileTreeParams(
+        dirPath: widget.dirPath,
+        skipHidden: widget.skipHiddenFoldersAndFiles,
+        ignorePatterns: widget.ignorePatterns,
+        sortPreferences: widget.sortPreferences,
+      ),
+    );
+    if (result != null) {
+      widget.onTreeReady?.call(result.$1, result.$2, result.$3);
+    }
+    return result;
+  }
 
   @override
   void didUpdateWidget(FileTree oldWidget) {
@@ -112,14 +125,19 @@ class _FileTreeState extends State<FileTree> {
           layoutBuilder: alignedLayoutBuilder(Alignment.topCenter),
         );
 
-        return Provider<FileTreeController?>.value(
-          value: _controller,
+        return MultiProvider(
+          providers: [
+            Provider<FileTreeController?>.value(value: _controller),
+            Provider<(IList<String>, IList<String>)>.value(
+              value: (IList(tree?.$2), IList(tree?.$3)),
+            ),
+          ],
           child: SliverMainAxisGroup(
             slivers: [
               SliverToBoxAdapter(child: loadingIndicator),
               if (tree != null)
                 SliverTreeView.indexed(
-                  tree: tree,
+                  tree: tree.$1,
                   showRootNode: widget.showRootNode,
                   animation: (animation) => CurvedAnimation(
                     parent: animation,

@@ -121,8 +121,13 @@ class _BuildFileTreeParams {
 ///
 /// This method runs in a separate isolate to prevent UI blocking during
 /// file system operations.
-IndexedFileTree? _buildFileTree(_BuildFileTreeParams params) {
+(IndexedFileTree, List<String>, List<String>)? _buildFileTree(
+  _BuildFileTreeParams params,
+) {
   final dirPath = params.dirPath;
+  final filePaths = <String>[];
+  final folderPaths = <String>[];
+
   if (dirPath == null) return null;
 
   final root = IndexedTreeNode.root(
@@ -166,6 +171,12 @@ IndexedFileTree? _buildFileTree(_BuildFileTreeParams params) {
     final isDirectory = entity is Directory;
 
     if (shouldIgnorePath(absolutePath, isDirectory)) return;
+
+    if (isDirectory) {
+      folderPaths.add(absolutePath);
+    } else {
+      filePaths.add(absolutePath);
+    }
 
     final stat = entity.statSync();
     final extension = isDirectory ? null : path.extension(absolutePath);
@@ -238,7 +249,7 @@ IndexedFileTree? _buildFileTree(_BuildFileTreeParams params) {
     addFileSystemEntity(root, entity);
   }
 
-  return root;
+  return (root, filePaths, folderPaths);
 }
 
 /// Compares two file system entities based on the provided sort preferences
