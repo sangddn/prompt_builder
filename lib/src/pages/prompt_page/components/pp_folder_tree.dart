@@ -118,13 +118,14 @@ class _SelectFolderButton extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const _SearchFolderButton(),
             Expanded(
               child: ColoredBox(
                 color: lightGray,
                 child: CButton(
                   tooltip: 'Change Folder',
                   onTap: () => _pickFolder(context),
-                  cornerRadius: 0.0,
+                  cornerRadius: 12.0,
                   padding: k16H8VPadding,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -162,6 +163,39 @@ class _SelectFolderButton extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SearchFolderButton extends StatelessWidget {
+  const _SearchFolderButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final lightGray = PColors.opaqueLightGray.resolveFrom(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ColoredBox(
+          color: lightGray,
+          child: CButton(
+            tooltip: _shortcutSpan(context, true, false, 'F'),
+            onTap: () => _showFileSearchDialog(context),
+            cornerRadius: 12.0,
+            padding: k12HPadding,
+            child: Icon(
+              HugeIcons.strokeRoundedSearch01,
+              size: 18.0,
+              color: PColors.textGray.resolveFrom(context),
+            ),
+          ),
+        ),
+        VerticalDivider(
+          width: 1.0,
+          thickness: 1.0,
+          color: lightGray.withOpacityFactor(.5),
+        ),
+      ],
     );
   }
 }
@@ -204,7 +238,7 @@ class _RefreshFolderButton extends AnimatedStatelessWidget {
                 notifier.value = folderPath;
               });
             },
-            cornerRadius: 0.0,
+            cornerRadius: 12.0,
             padding: k12HPadding,
             child: Icon(
               HugeIcons.strokeRoundedFolderSync,
@@ -229,6 +263,7 @@ class _FileTree extends StatelessWidget {
       countSelection: (context, item) => context.countSelection(item.path),
       onNodeSelected: (context, node, isSelected) =>
           context.handleNodeSelection(node, isSelected),
+      onTreeReady: context.read<_TreeReadyCallback>(),
     );
   }
 }
