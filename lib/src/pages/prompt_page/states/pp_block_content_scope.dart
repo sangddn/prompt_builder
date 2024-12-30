@@ -100,7 +100,9 @@ class _BlockChangesHandlerState extends State<_BlockChangesHandler> {
       final prevBlock = _contents[block.id];
       if (prevBlock == null) {
         diff.add(block);
-      } else if (prevBlock.text != block.copyToPrompt()) {
+      } else if (prevBlock.text != block.copyToPrompt() ||
+          (!block.preferSummary && block.fullContentTokenCount == null) ||
+          (block.preferSummary && block.summaryTokenCount == null)) {
         diff.add(block);
         numChanged++;
       }

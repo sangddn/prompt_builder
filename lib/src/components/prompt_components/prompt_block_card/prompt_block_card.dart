@@ -409,6 +409,22 @@ class _BlockContextMenu extends StatelessWidget {
             );
           },
         ),
+        if (context.selectBlock(
+          (b) => b.fullContentTokenCount != null || b.summaryTokenCount != null,
+        )) ...[
+          const Divider(height: 8),
+          _ContextMenuAction(
+            LucideIcons.refreshCcw,
+            'Re-estimate Token Count',
+            () => context.db.removeFields(
+              context.block.id,
+              fullContentTokenCount: true,
+              summaryTokenCount: true,
+              fullContentTokenCountMethod: true,
+              summaryTokenCountMethod: true,
+            ),
+          ),
+        ],
       ],
       child: child,
     );
