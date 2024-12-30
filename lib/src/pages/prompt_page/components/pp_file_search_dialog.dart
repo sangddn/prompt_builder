@@ -114,7 +114,7 @@ class _FileSearchField extends StatelessWidget {
         prefixIcon: const Padding(
           padding: EdgeInsets.only(left: 8.0),
           child: Icon(
-            HugeIcons.strokeRoundedAppleFinder,
+            HugeIcons.strokeRoundedFolderSearch,
             size: 20.0,
           ),
         ),
@@ -207,7 +207,7 @@ class _FileSearchResult extends StatelessWidget {
             ShadContextMenuItem(
               onPressed: () => revealInFinder(fullPath),
               trailing: const ShadImage.square(
-                HugeIcons.strokeRoundedFolderSearch,
+                HugeIcons.strokeRoundedAppleFinder,
                 size: 16.0,
               ),
               child: const Text('Reveal in Finder'),
