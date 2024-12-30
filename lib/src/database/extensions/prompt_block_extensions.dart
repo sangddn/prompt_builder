@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:mime/mime.dart';
+import 'package:super_clipboard/super_clipboard.dart';
 import '../../core/core.dart';
 import '../../services/other_services/mime_utils.dart';
 import '../database.dart';
@@ -98,9 +99,38 @@ extension PromptBlocksExtension on Database {
         summaryTokenCountMethod: summaryTokenCountAndMethod != null
             ? Value(summaryTokenCountAndMethod.$2)
             : const Value.absent(),
-        preferSummary: preferSummary != null
-            ? Value(preferSummary)
+        preferSummary:
+            preferSummary != null ? Value(preferSummary) : const Value.absent(),
+        updatedAt: Value(now),
+      ),
+    );
+  }
+
+  Future<void> removeFields(
+    int blockId, {
+    bool transcript = false,
+    bool caption = false,
+    bool summary = false,
+    bool fullContentTokenCount = false,
+    bool fullContentTokenCountMethod = false,
+    bool summaryTokenCount = false,
+    bool summaryTokenCountMethod = false,
+  }) async {
+    final now = DateTime.now();
+    await (update(promptBlocks)..where((tbl) => tbl.id.equals(blockId))).write(
+      PromptBlocksCompanion(
+        transcript: transcript ? const Value(null) : const Value.absent(),
+        caption: caption ? const Value(null) : const Value.absent(),
+        summary: summary ? const Value(null) : const Value.absent(),
+        fullContentTokenCount:
+            fullContentTokenCount ? const Value(null) : const Value.absent(),
+        fullContentTokenCountMethod: fullContentTokenCountMethod
+            ? const Value(null)
             : const Value.absent(),
+        summaryTokenCount:
+            summaryTokenCount ? const Value(null) : const Value.absent(),
+        summaryTokenCountMethod:
+            summaryTokenCountMethod ? const Value(null) : const Value.absent(),
         updatedAt: Value(now),
       ),
     );
@@ -270,7 +300,10 @@ extension PromptBlockExtension on PromptBlock {
   }
 
   String? getSummarizableContent() => switch (type) {
-        BlockType.text || BlockType.localFile || BlockType.webUrl => textContent,
+        BlockType.text ||
+        BlockType.localFile ||
+        BlockType.webUrl =>
+          textContent,
         BlockType.youtube || BlockType.audio || BlockType.video => transcript,
         _ => null,
       };
@@ -340,6 +373,33 @@ extension PromptBlockExtension on PromptBlock {
 $content
 </$tag>
 ''';
+  }
+
+  dynamic copyToPromptOrData() async {
+    final asPrompt = copyToPrompt();
+    if (asPrompt != null) return asPrompt;
+    final filePath = this.filePath;
+    if (filePath != null) {
+      final encoded = await getDataFormat(filePath)
+          ?.call(await File(filePath).readAsBytes());
+      if (encoded != null) {
+        final item = DataWriterItem();
+        item.add(encoded);
+        return item;
+      }
+      return filePath;
+    }
+    return url;
+  }
+
+  Future<DataWriterItem?> copyData() async {
+    final filePath = this.filePath;
+    if (filePath == null) return null;
+    final encoded =
+        await getDataFormat(filePath)?.call(await File(filePath).readAsBytes());
+    if (encoded == null) return null;
+    final item = DataWriterItem()..add(encoded);
+    return item;
   }
 }
 
