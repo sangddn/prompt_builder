@@ -51,8 +51,14 @@ abstract final class ModelPreferences {
       _getProvider(imageCaptionProviderKey);
   static (LLMProvider, String)? getPromptGenerationProviderAndModel() =>
       _getProvider(promptGenerationProviderKey);
-  static (LLMProvider, String)? getAudioTranscriptionProviderAndModel() =>
-      _getProvider(audioTranscriptionProviderKey);
+  static (LLMProvider, String)? getAudioTranscriptionProviderAndModel() {
+    final pm = _getProvider(audioTranscriptionProviderKey);
+    // Anthropic does not support audio transcription.
+    if (pm?.$1 is Anthropic) return null;
+    // OpenAI only has whisper-1.
+    if (pm?.$1 is OpenAI) return (OpenAI(), 'whisper-1');
+    return pm;
+  }
 
   static void _setProvider(LLMProvider provider, String model, String key) =>
       Database().stringRef.put(
@@ -64,13 +70,17 @@ abstract final class ModelPreferences {
             },
           );
 
-  static void setSummarizationProviderAndModel(LLMProvider provider, String model) =>
+  static void setSummarizationProviderAndModel(
+          LLMProvider provider, String model) =>
       _setProvider(provider, model, summarizationProviderKey);
-  static void setImageCaptionProviderAndModel(LLMProvider provider, String model) =>
+  static void setImageCaptionProviderAndModel(
+          LLMProvider provider, String model) =>
       _setProvider(provider, model, imageCaptionProviderKey);
-  static void setPromptGenerationProviderAndModel(LLMProvider provider, String model) =>
+  static void setPromptGenerationProviderAndModel(
+          LLMProvider provider, String model) =>
       _setProvider(provider, model, promptGenerationProviderKey);
-  static void setAudioTranscriptionProviderAndModel(LLMProvider provider, String model) =>
+  static void setAudioTranscriptionProviderAndModel(
+          LLMProvider provider, String model) =>
       _setProvider(provider, model, audioTranscriptionProviderKey);
 
   static String getSummarizationPrompt() =>

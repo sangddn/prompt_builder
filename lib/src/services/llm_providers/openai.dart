@@ -46,11 +46,11 @@ final class OpenAI extends LLMProvider {
         },
       );
 
-      if (response.statusCode != 200) {
-        throw Exception('Failed to list models: ${response.body}');
-      }
-
       final data = jsonDecode(response.body);
+
+      if (response.statusCode != 200) {
+        throw Exception(data['error']['message'] as String);
+      }
 
       final models = (data['data'] as List)
           .map((model) => model['id'] as String)
@@ -101,11 +101,10 @@ final class OpenAI extends LLMProvider {
       }),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to caption image: ${response.body}');
-    }
-
     final data = jsonDecode(response.body);
+    if (response.statusCode != 200) {
+      throw Exception(data['error']['message'] as String);
+    }
 
     return data['choices'][0]['message']['content'] as String;
   }
@@ -191,11 +190,11 @@ final class OpenAI extends LLMProvider {
       }),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to generate prompt: ${response.body}');
-    }
-
     final data = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      throw Exception(data['error']['message'] as String);
+    }
 
     return data['choices'][0]['message']['content'] as String;
   }
@@ -224,12 +223,11 @@ final class OpenAI extends LLMProvider {
         ],
       }),
     );
+    final data = jsonDecode(response.body);
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to summarize content: ${response.body}');
+      throw Exception(data['error']['message'] as String);
     }
-
-    final data = jsonDecode(response.body);
 
     return data['choices'][0]['message']['content'] as String;
   }
@@ -257,18 +255,18 @@ final class OpenAI extends LLMProvider {
       http.MultipartFile.fromBytes(
         'file',
         audio,
+        filename: 'file',
         contentType: MediaType.parse(mimeType),
       ),
     );
 
     final response = await request.send();
     final responseBody = await response.stream.bytesToString();
+    final data = jsonDecode(responseBody);
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to transcribe audio: $responseBody');
+      throw Exception(data['error']['message'] as String);
     }
-
-    final data = jsonDecode(responseBody);
 
     return data['text'] as String;
   }

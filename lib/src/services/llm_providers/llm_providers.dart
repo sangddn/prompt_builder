@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -210,10 +211,45 @@ mixin _TokenCountingPreferencesMixin {
 // Exceptions
 // -----------------------------------------------------------------------------
 
-final class ApiKeyNotSetException implements Exception {
+sealed class LLMException implements Exception {
+  const LLMException();
+}
+
+final class ApiKeyNotSetException implements LLMException {
   const ApiKeyNotSetException(this.provider);
   final String provider;
 
   @override
   String toString() => 'API key not set for $provider.';
+}
+
+final class MissingProviderException implements LLMException {
+  const MissingProviderException(this.useCase);
+  final String useCase;
+  @override
+  String toString() => 'LLM provider has not been set up for $useCase.';
+}
+
+/// Thrown by [SummarizeContentUseCase] when a transcript is not found for a
+/// given audio, video, or YouTube block that user would like to summarize.
+final class MissingTranscriptException implements LLMException {
+  const MissingTranscriptException();
+  @override
+  String toString() =>
+      'No transcript found for the block. Please transcribe the content first.';
+}
+
+/// Thrown when a local file is not found for a given block.
+final class MissingLocalFileException implements LLMException {
+  const MissingLocalFileException();
+  @override
+  String toString() => 'Local file not found.';
+}
+
+/// Thrown when a custom prompt is not provided for [PromptGenerationUseCase].
+/// This use case requires specific instructions at "runtime".
+final class MissingInstructionsException implements LLMException {
+  const MissingInstructionsException();
+  @override
+  String toString() => 'Please provide instructions for the prompt generation.';
 }
