@@ -7,6 +7,7 @@ class _TextBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final style = context.textTheme.p;
     final textContent = context.selectBlock((b) => b.textContent);
+    final isExpanded = context.isExpanded();
     return Column(
       children: [
         TextFormField(
@@ -17,8 +18,8 @@ class _TextBlock extends StatelessWidget {
                 style.copyWith(color: PColors.textGray.resolveFrom(context)),
             border: InputBorder.none,
           ),
-          minLines: 3,
-          maxLines: null,
+          minLines: 2,
+          maxLines: isExpanded ? null : 3,
           style: style,
           onChanged: (value) =>
               context.db.updateBlock(context.block.id, textContent: value),
