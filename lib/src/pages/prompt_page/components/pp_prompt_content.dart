@@ -51,15 +51,23 @@ class _PromptContentEditMode extends StatelessWidget {
     final widgets = blocks
         .indexedExpand(
           (i, e) => [
-            AnimatedTo(
-              globalKey: e.$2,
-              child: Builder(
-                builder: (context) => PromptBlockCard(
-                  padding: k32HPadding + k24VPadding,
-                  database: context.db,
-                  prompt: context.watch<Prompt?>(),
-                  block: context.watchBlock(e.$1)!,
-                ),
+            Builder(
+              key: e.$2,
+              builder: (context) => PromptBlockCard(
+                padding: k32HPadding + const EdgeInsets.only(top: 16.0),
+                database: context.db,
+                prompt: context.watch<Prompt?>(),
+                block: context.watchBlock(e.$1)!,
+                onMovedUp: i == 0
+                    ? null
+                    : () {
+                        context.read<_BlockReorderCallback>()(i, i - 1);
+                      },
+                onMovedDown: i == blocks.length - 1
+                    ? null
+                    : () {
+                        context.read<_BlockReorderCallback>()(i, i + 1);
+                      },
               ),
             ),
             if (i < blocks.length - 1)
@@ -73,14 +81,12 @@ class _PromptContentEditMode extends StatelessWidget {
         )
         .toList();
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          const Gap(12.0),
-          ...widgets,
-          const Gap(64.0),
-        ],
-      ),
+    return CustomScrollView(
+      slivers: [
+        const SliverGap(12.0),
+        SuperSliverList.list(children: widgets),
+        const SliverGap(64.0),
+      ],
     );
   }
 }
