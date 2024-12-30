@@ -38,7 +38,6 @@ class LibraryPage extends StatelessWidget {
         body: ConstrainedCustomScrollView(
           slivers: [
             _LPAppBar(),
-            SliverGap(8.0),
             SliverPadding(padding: k16HPadding, sliver: _LPSearchBar()),
             SliverGap(16.0),
             _LPFilterBar(),

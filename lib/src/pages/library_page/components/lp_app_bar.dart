@@ -48,17 +48,12 @@ class _SortButton extends StatelessWidget {
         const Gap(8.0),
       ],
       overlayPosition: (_, __) => FeedbackOverlayPosition.start,
-      builder: (context, open) => CButton(
-        tooltip: 'Sort',
-        onTap: open,
-        child: Row(
-          children: [
-            Icon(
-              ascending ? CupertinoIcons.sort_up : CupertinoIcons.sort_down,
-              size: 16.0,
-            ),
-            const Gap(12.0),
-          ],
+      builder: (context, open) => ShadButton.ghost(
+        onPressed: open,
+        size: ShadButtonSize.sm,
+        icon: Icon(
+          ascending ? CupertinoIcons.sort_up : CupertinoIcons.sort_down,
+          size: 16.0,
         ),
       ),
     );
