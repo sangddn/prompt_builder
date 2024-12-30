@@ -44,7 +44,7 @@ class _LLMUseCase extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6.0),
-          child: Text(useCase.name, style: textTheme.lead),
+          child: Text(useCase.name, style: textTheme.large),
         ),
         const Gap(8.0),
         Padding(
