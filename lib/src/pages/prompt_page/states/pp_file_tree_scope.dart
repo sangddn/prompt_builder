@@ -42,30 +42,6 @@ class _PPFileTreeScopeState extends State<_PPFileTreeScope> {
     }).toList();
   }
 
-  /// Handles file/folder de-/selection
-  _NodeSelectionCallback _getNodeSelectionHandler(BuildContext context) => (
-        String fullPath,
-        bool isSelected,
-      ) async {
-        // Deselect the file, or all files in the folder (recursively)
-        if (!isSelected) {
-          final blocks = context.promptBlocks;
-          final blocksToRemove = blocks
-              .where((b) => b.filePath?.startsWith(fullPath) ?? false)
-              .map((b) => b.id)
-              .toList();
-          await context.db.deleteBlocks(blocksToRemove);
-          return;
-        }
-        // Select the file, or all files in the folder (recursively)
-        final allFilePaths =
-            _tree?.$2.where((e) => e.startsWith(fullPath)).toList() ?? [];
-        await context.db.createBlocksFromFiles(
-          allFilePaths,
-          promptId: context.prompt!.id,
-        );
-      };
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -74,7 +50,9 @@ class _PPFileTreeScopeState extends State<_PPFileTreeScope> {
           update: (context, blocks, _) =>
               blocks.map((b) => b.filePath).nonNulls.toISet(),
         ),
-        Provider<_NodeSelectionCallback>(create: _getNodeSelectionHandler),
+        Provider<_NodeSelectionCallback>.value(
+          value: _getNodeSelectionHandler(context, filePaths: _tree?.$2),
+        ),
         Provider<_TreeReadyCallback>.value(value: _onTreeReady),
         Provider<_FileAndFolderPaths>.value(
           value: (ISet(_tree?.$2), ISet(_tree?.$3)),
@@ -91,7 +69,10 @@ class _PPFileTreeScopeState extends State<_PPFileTreeScope> {
 // -----------------------------------------------------------------------------
 
 typedef _SelectedFilePaths = ISet<String>;
-typedef _NodeSelectionCallback = void Function(String fullPath, bool isSelected);
+typedef _NodeSelectionCallback = void Function(
+  String fullPath,
+  bool isSelected,
+);
 typedef _TreeReadyCallback = void Function(
   IndexedFileTree tree,
   List<String> filePaths,
@@ -125,4 +106,51 @@ extension _PPFileTreeScopeExtension on BuildContext {
   /// Handles the selection of a file or folder
   void handleNodeSelection(IndexedFileTree node, bool isSelected) =>
       read<_NodeSelectionCallback>()(node.data!.path, isSelected);
+}
+
+// -----------------------------------------------------------------------------
+// Utils
+// -----------------------------------------------------------------------------
+
+/// Handles file/folder de-/selection
+_NodeSelectionCallback _getNodeSelectionHandler(
+  BuildContext context, {
+  bool reloadNode = false,
+  List<String>? filePaths,
+}) =>
+    (
+      String fullPath,
+      bool isSelected,
+    ) async {
+      // Deselect the file, or all files in the folder (recursively)
+      if (!isSelected) {
+        final blocks = context.promptBlocks;
+        final blocksToRemove = blocks
+            .where((b) => b.filePath?.startsWith(fullPath) ?? false)
+            .map((b) => b.id)
+            .toList();
+        await context.db.deleteBlocks(blocksToRemove);
+        return;
+      }
+      var allFilePaths = <String>[];
+      // Select the file, or all files in the folder (recursively)
+      if (reloadNode) {
+        allFilePaths = await compute(_loadFilePaths, fullPath);
+      } else {
+        allFilePaths =
+            filePaths?.where((e) => e.startsWith(fullPath)).toList() ?? [];
+      }
+      if (!context.mounted) return;
+      await context.db.createBlocksFromFiles(
+        allFilePaths,
+        promptId: context.prompt!.id,
+      );
+    };
+
+/// Loads all file paths that are children of the given file path
+List<String> _loadFilePaths(String givenPath) {
+  final isDirectory = FileSystemEntity.isDirectorySync(givenPath);
+  if (!isDirectory) return [givenPath];
+  final dir = Directory(givenPath);
+  return dir.listSync().map((e) => e.path).toList();
 }
