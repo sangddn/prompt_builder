@@ -307,4 +307,5 @@ extension ThemeUtils on BuildContext {
   ShadTextTheme get textTheme => theme.textTheme;
   ShadColorScheme get colorScheme => theme.colorScheme;
   ShadToasterState get toaster => ShadToaster.of(this);
+  ThemeAccent get themeAccent => watch<ThemeAccent>();
 }

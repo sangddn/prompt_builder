@@ -5,6 +5,7 @@ const k24APadding = EdgeInsets.all(24.0);
 const k16APadding = EdgeInsets.all(16.0);
 const k12APadding = EdgeInsets.all(12.0);
 const k8APadding = EdgeInsets.all(8.0);
+const k6APadding = EdgeInsets.all(6.0);
 const k4APadding = EdgeInsets.all(4.0);
 
 const k32HPadding = EdgeInsets.symmetric(horizontal: 32.0);
