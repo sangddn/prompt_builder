@@ -74,4 +74,23 @@ class StateAnimations {
         layoutBuilder: layoutBuilder,
         child: child,
       );
+
+  static Widget fade(
+    Widget child, {
+    Duration duration = Effects.shortDuration,
+    Curve switchInCurve = Curves.easeOut,
+    Curve switchOutCurve = Curves.easeIn,
+    AnimatedSwitcherLayoutBuilder? layoutBuilder,
+  }) =>
+      AnimatedSwitcher(
+        duration: duration,
+        switchInCurve: switchInCurve,
+        switchOutCurve: switchOutCurve,
+        layoutBuilder: layoutBuilder ?? AnimatedSwitcher.defaultLayoutBuilder,
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: child,
+        ),
+        child: child,
+      );
 }
