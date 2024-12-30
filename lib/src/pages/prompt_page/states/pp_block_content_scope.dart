@@ -41,7 +41,7 @@ class _BlockChangesHandlerState extends State<_BlockChangesHandler> {
         block.summaryTokenCountAndMethod!.$2
       );
     }
-    if (block.fullContentTokenCountAndMethod != null) {
+    if (!preferSummary && block.fullContentTokenCountAndMethod != null) {
       return (
         content,
         block.fullContentTokenCountAndMethod!.$1,
@@ -59,19 +59,18 @@ class _BlockChangesHandlerState extends State<_BlockChangesHandler> {
     return (content, count?.$1, count?.$2);
   }
 
-  void _upsertContents(List<PromptBlock> newBlocks) {
-    Future.wait(
+  Future<void> _upsertContents(List<PromptBlock> newBlocks) async {
+    await Future.wait(
       newBlocks.map((block) async {
         final countingNotifier = context.countingNotifier;
         final provider = context.read<ValueNotifier<LLMProvider>>().value;
-        final fullContent =
-            await _extractContentAndCountTokens(provider, block);
+        final text = await _extractContentAndCountTokens(provider, block);
         countingNotifier.value = countingNotifier.value.increment();
         return _PromptBlockContent(
           id: block.id,
-          text: fullContent.$1,
-          textTokenCount: fullContent.$2,
-          textTokenCountMethod: fullContent.$3,
+          text: text.$1,
+          textTokenCount: text.$2,
+          textTokenCountMethod: text.$3,
         );
       }),
     ).then(
