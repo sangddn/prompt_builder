@@ -139,7 +139,7 @@ class _CopyButton extends StatelessWidget {
     final copySpan = _shortcutSpan(context, true, true, 'C');
     return CopyButton.builder(
       data: () => context.getContent(),
-      builder: (context, show) {
+      builder: (context, show, copy) {
         if (context.watch<ValueNotifier<_PromptCopiedEvent?>>().value != null) {
           // Side effect
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -151,10 +151,7 @@ class _CopyButton extends StatelessWidget {
           tooltipTriggerMode: TooltipTriggerMode.tap,
           padding: k16H8VPadding,
           color: theme.colorScheme.primary,
-          onTap: () {
-            Clipboard.setData(ClipboardData(text: context.getContent()));
-            show(true);
-          },
+          onTap: copy,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

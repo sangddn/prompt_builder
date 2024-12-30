@@ -13,6 +13,8 @@ class _PPRightSidebar extends StatelessWidget {
           Gap(12.0),
           _PromptDescription(),
           Spacer(),
+          _PPUnsupportedBlockSection(),
+          Gap(16.0),
           _PPCopySection(),
           Gap(16.0),
         ],
