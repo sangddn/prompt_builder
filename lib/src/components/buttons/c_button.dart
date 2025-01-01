@@ -18,6 +18,7 @@ class CButton extends StatelessWidget {
     this.focusNode,
     this.addFeedback = false,
     this.mouseCursor = SystemMouseCursors.basic,
+    this.highlightColor,
     required this.tooltip,
     required this.onTap,
     required this.child,
@@ -28,11 +29,12 @@ class CButton extends StatelessWidget {
   final BorderSide side;
   final double cornerRadius;
   final double pressedOpacity;
-  final Color? color;
+  final Color? color, highlightColor;
   final TooltipTriggerMode tooltipTriggerMode;
   final bool? tooltipPreferBelow;
   final FocusNode? focusNode;
   final bool addFeedback;
+
   /// The tooltip to show when the button is pressed.
   ///
   /// Can be a [String]? or an [InlineSpan]?.
@@ -77,7 +79,8 @@ class CButton extends StatelessWidget {
               onTap: onTap == null ? null : () {},
               splashColor: Colors.transparent,
               highlightShape: BoxShape.rectangle,
-              hoverColor: PColors.lightGray.resolveFrom(context),
+              hoverColor:
+                  highlightColor ?? PColors.lightGray.resolveFrom(context),
               canRequestFocus: false,
               child: CupertinoButton(
                 color: color,
