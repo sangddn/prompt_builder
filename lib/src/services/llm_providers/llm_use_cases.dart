@@ -118,18 +118,18 @@ class SummarizeContentUseCase extends LLMUseCase {
   String? get defaultPrompt => ModelPreferences.defaultSummarizationPrompt;
 
   @override
-  List<LLMProvider> get providers => [OpenAI(), Anthropic(), Gemini()];
+  List<LLMProvider> get providers => kAllLLMProviders;
 
   @override
   bool supports(PromptBlock block) =>
       block.summary == null &&
-          ((block.type == BlockType.webUrl ||
+          (((block.type == BlockType.webUrl ||
                   block.type == BlockType.localFile) &&
               block.textContent != null) ||
       ((block.type == BlockType.audio ||
               block.type == BlockType.video ||
               block.type == BlockType.youtube) &&
-          block.transcript != null);
+          block.transcript != null));
 
   @override
   (LLMProvider provider, String model)? getProviderAndModel() =>
@@ -187,7 +187,7 @@ class DescribeImagesUseCase extends LLMUseCase {
   String? get defaultPrompt => ModelPreferences.defaultImageCaptionPrompt;
 
   @override
-  List<LLMProvider> get providers => [OpenAI(), Anthropic(), Gemini()];
+  List<LLMProvider> get providers => kAllLLMProviders;
 
   @override
   bool supports(PromptBlock block) =>
@@ -256,10 +256,12 @@ class GeneratePromptUseCase extends LLMUseCase {
   String? get defaultPrompt => ModelPreferences.defaultPromptGenerationPrompt;
 
   @override
-  List<LLMProvider> get providers => [OpenAI(), Anthropic(), Gemini()];
+  List<LLMProvider> get providers => kAllLLMProviders;
 
+  /// [GeneratePromptUseCase] is not supported for any block type. It is only
+  /// used to generate a new block.
   @override
-  bool supports(PromptBlock block) => block.type == BlockType.text;
+  bool supports(PromptBlock block) => false;
 
   @override
   (LLMProvider provider, String model)? getProviderAndModel() =>
@@ -285,12 +287,15 @@ class GeneratePromptUseCase extends LLMUseCase {
     String? model,
     String? customPrompt,
   ) async {
+    throw UnsupportedError('Cannot apply GeneratePromptUseCase to a block');
+  }
+
+  Future<String?> generatePrompt(String prompt) async {
     final metaPrompt = getPrompt();
-    if (metaPrompt == null) return;
-    if (customPrompt == null) throw const MissingInstructionsException();
-    final generatedPrompt =
-        await provider.generatePrompt(customPrompt, metaPrompt, model);
-    return db.updateBlock(block.id, textContent: generatedPrompt);
+    if (metaPrompt == null) return null;
+    final (provider, model) = getProviderAndModel() ?? (null, null);
+    if (provider == null) throw MissingProviderException(name);
+    return provider.generatePrompt(prompt, metaPrompt, model);
   }
 }
 

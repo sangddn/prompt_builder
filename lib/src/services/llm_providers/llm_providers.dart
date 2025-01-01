@@ -20,13 +20,19 @@ part 'openai.dart';
 part 'model_preferences.dart';
 part 'llm_use_cases.dart';
 
+final kAllLLMProviders = [
+  OpenAI(),
+  Anthropic(),
+  Gemini(),
+];
+
 /// Base class for LLM (Large Language Model) providers.
 ///
 /// This abstract class defines the common interface that all LLM providers must implement.
 /// Each provider (OpenAI, Anthropic, Gemini etc.) will extend this class and provide
 /// their own implementations of these methods.
 sealed class LLMProvider
-    with _ApiKeySettingsMixin, _TokenCountingPreferencesMixin {
+    with ProviderWithApiKey, _TokenCountingPreferencesMixin {
   /// Creates a new LLM provider instance.
   const LLMProvider({this.apiKey});
 
@@ -47,22 +53,24 @@ sealed class LLMProvider
   /// Different providers may use different tokenization approaches, so the token
   /// count may vary between providers for the same input text.
   Future<(int, String)> countTokens(String text, [String? model]) {
-    try {
-      getApiKey();
-    } on ApiKeyNotSetException catch (e) {
-      debugPrint(
-        'API key not set for ${e.provider}. Falling back to token estimation.',
-      );
-      return _estimateTokensFallback(text, model);
-    }
-    try {
-      return _countTokens(text, model);
-    } on Exception catch (e) {
-      debugPrint(
-        'Failed to count tokens: $e. Falling back to token estimation.',
-      );
-      return _estimateTokensFallback(text, model);
-    }
+    // ! Just use the 1/4 method for now.
+    return _estimateTokensFallback(text, model);
+    // try {
+    //   getApiKey();
+    // } on ApiKeyNotSetException catch (e) {
+    //   debugPrint(
+    //     'API key not set for ${e.provider}. Falling back to token estimation.',
+    //   );
+    //   return _estimateTokensFallback(text, model);
+    // }
+    // try {
+    //   return _countTokens(text, model);
+    // } on Exception catch (e) {
+    //   debugPrint(
+    //     'Failed to count tokens: $e. Falling back to token estimation.',
+    //   );
+    //   return _estimateTokensFallback(text, model);
+    // }
   }
 
   /// Private implementation of [countTokens] by subclasses.
@@ -124,7 +132,50 @@ sealed class LLMProvider
     String? metaPrompt,
     String? model,
   ]);
+
+  Map<String, String> get _info => _llmProviderInfo[this]!;
+
+  @override
+  String get name => _info['name']!;
+  @override
+  String get docsUrl => _info['docs_page']!;
+  @override
+  String get consoleUrl => _info['api_key_page']!;
+  @override
+  String get logoPath => _info['light_logo_path']!;
+  @override
+  String get darkLogoPath => _info['dark_logo_path']!;
+  @override
+  String? get description => null;
 }
+
+// -----------------------------------------------------------------------------
+// General Info
+// -----------------------------------------------------------------------------
+
+Map<LLMProvider, Map<String, String>> _llmProviderInfo = {
+  OpenAI(): {
+    'name': 'OpenAI',
+    'docs_page': 'https://platform.openai.com/docs/introduction',
+    'api_key_page': 'https://platform.openai.com/api-keys',
+    'light_logo_path': 'assets/images/openai_light.svg',
+    'dark_logo_path': 'assets/images/openai_dark.svg',
+  },
+  Anthropic(): {
+    'name': 'Anthropic',
+    'docs_page': 'https://docs.anthropic.com/en/home',
+    'api_key_page': 'https://console.anthropic.com/settings/keys',
+    'light_logo_path': 'assets/images/anthropic_light.svg',
+    'dark_logo_path': 'assets/images/anthropic_dark.png',
+  },
+  Gemini(): {
+    'name': 'Gemini',
+    'docs_page': 'https://ai.google.dev/gemini-api/docs',
+    'api_key_page': 'https://aistudio.google.com/apikey',
+    'light_logo_path': 'assets/images/google.svg',
+    'dark_logo_path': 'assets/images/google.svg',
+  },
+};
 
 // -----------------------------------------------------------------------------
 // Utils
@@ -148,33 +199,42 @@ sealed class LLMProvider
 // Preferences Mixin
 // -----------------------------------------------------------------------------
 
-mixin _ApiKeySettingsMixin {
+mixin ProviderWithApiKey {
   String? get apiKey;
-
   String get apiKeyKey;
+  String get name;
+  String get logoPath;
+  String get darkLogoPath;
+  String get docsUrl;
+  String get consoleUrl;
+  String? get description;
 
   String getApiKey() {
     if (this.apiKey != null) {
       return this.apiKey!;
     }
     final apiKey = Database().stringRef.get(apiKeyKey);
-    if (apiKey == null) {
+    if (apiKey == null || apiKey.isEmpty) {
       throw ApiKeyNotSetException(runtimeType.toString());
     }
     return apiKey;
   }
 
   Stream<bool> isSetUp() async* {
-    try {
-      getApiKey();
-      yield true;
-    } on ApiKeyNotSetException {
-      yield false;
-    }
+    yield hasSetUp();
     yield* Database()
         .stringRef
         .watch(key: apiKeyKey)
         .map((e) => e.value != null);
+  }
+
+  bool hasSetUp() {
+    try {
+      getApiKey();
+      return true;
+    } on ApiKeyNotSetException {
+      return false;
+    }
   }
 
   void setApiKey(String apiKey) {
@@ -220,7 +280,7 @@ final class ApiKeyNotSetException implements LLMException {
   final String provider;
 
   @override
-  String toString() => 'API key not set for $provider.';
+  String toString() => 'API key not set for ${provider.runtimeType}.';
 }
 
 final class MissingProviderException implements LLMException {
