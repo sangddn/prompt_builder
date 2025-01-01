@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart' hide TreeViewController;
 
 import '../../core/core.dart';
-import '../../pages/local_file_viewer/local_file_viewer.dart';
+import '../../pages/block_content_viewer/block_content_viewer.dart';
 import '../../services/services.dart';
 import '../components.dart';
 
@@ -30,7 +30,7 @@ class FileTree extends StatefulWidget {
     this.skipHiddenFoldersAndFiles = true,
     this.ignorePatterns = const IList.empty(),
     this.sortPreferences = const FileTreeSortPreferences(),
-    this.curve = Effects.engagingCurve,
+    this.curve = Effects.snappyOutCurve,
     this.onTreeReady,
     this.builder,
     super.key,
@@ -60,7 +60,8 @@ class FileTree extends StatefulWidget {
   final int Function(BuildContext, FileTreeItem)? countSelection;
 
   /// Callback to handle node selection.
-  final void Function(BuildContext, IndexedFileTree, bool)? onNodeSelected;
+  final Future<void> Function(BuildContext, IndexedFileTree, bool)?
+      onNodeSelected;
 
   /// Custom builder for the node.
   final Widget Function(BuildContext, IndexedFileTree)? builder;
@@ -81,19 +82,30 @@ class _FileTreeState extends State<FileTree> {
 
   /// Builds the file tree in a separate isolate to avoid blocking the UI
   Future<(IndexedFileTree, List<String>, List<String>)?> _getFileTree() async {
-    final result = await compute(
-      _buildFileTree,
-      _BuildFileTreeParams(
-        dirPath: widget.dirPath,
-        skipHidden: widget.skipHiddenFoldersAndFiles,
-        ignorePatterns: widget.ignorePatterns,
-        sortPreferences: widget.sortPreferences,
-      ),
-    );
-    if (result != null) {
-      widget.onTreeReady?.call(result.$1, result.$2, result.$3);
+    final toaster = context.toaster;
+    try {
+      final result = await compute(
+        _buildFileTree,
+        _BuildFileTreeParams(
+          dirPath: widget.dirPath,
+          skipHidden: widget.skipHiddenFoldersAndFiles,
+          ignorePatterns: widget.ignorePatterns,
+          sortPreferences: widget.sortPreferences,
+        ),
+      );
+      if (result != null) {
+        widget.onTreeReady?.call(result.$1, result.$2, result.$3);
+      }
+      return result;
+    } catch (e) {
+      toaster.show(
+        ShadToast.destructive(
+          title: const Text('Error loading file tree'),
+          description: Text(e.toString()),
+        ),
+      );
+      return null;
     }
-    return result;
   }
 
   @override
@@ -150,8 +162,8 @@ class _FileTreeState extends State<FileTree> {
                           selectionCount: widget.countSelection
                                   ?.call(context, node.data!) ??
                               0,
-                          onItemSelected: (isSelected) =>
-                              widget.onNodeSelected?.call(
+                          onItemSelected: (isSelected) async =>
+                              await widget.onNodeSelected?.call(
                             context,
                             node,
                             isSelected,

@@ -5,8 +5,10 @@ Future<void> peekFile(BuildContext context, String filePath) => showShadSheet(
       side: ShadSheetSide.right,
       barrierColor: Colors.transparent,
       context: context,
-      builder: (context) => LocalFileViewer(filePath: filePath),
+      builder: (context) => BCVLocal(filePath: filePath),
     );
+
+typedef OnItemSelectedCallback = Future<void> Function(bool);
 
 /// Defines sorting options for the file tree
 enum FileTreeSortOption {
@@ -21,6 +23,14 @@ enum FileTreeSortOption {
 
   /// Sort by file size
   size,
+  ;
+
+  String get label => switch (this) {
+        name => 'Name',
+        dateCreated => 'Creation Date',
+        dateModified => 'Modified Date',
+        size => 'Size',
+      };
 }
 
 /// Preferences for sorting the file tree
@@ -50,6 +60,17 @@ class FileTreeSortPreferences {
 
   @override
   int get hashCode => Object.hash(sortOption, foldersFirst, ascending);
+
+  FileTreeSortPreferences copyWith({
+    FileTreeSortOption? sortOption,
+    bool? foldersFirst,
+    bool? ascending,
+  }) =>
+      FileTreeSortPreferences(
+        sortOption: sortOption ?? this.sortOption,
+        foldersFirst: foldersFirst ?? this.foldersFirst,
+        ascending: ascending ?? this.ascending,
+      );
 }
 
 /// Represents an item in the file tree
@@ -214,9 +235,9 @@ class _BuildFileTreeParams {
             totalFiles++;
           } else {
             // Add files from subdirectories to total
-            final subDirFiles = (node.children.last as IndexedFileTree)
-                    .data!
-                    .numFilesRecursive ??
+            final subDirFiles = (node.children.lastOrNull as IndexedFileTree?)
+                    ?.data
+                    ?.numFilesRecursive ??
                 0;
             totalFiles += subDirFiles;
           }
@@ -234,8 +255,9 @@ class _BuildFileTreeParams {
           numFilesRecursive: totalFiles,
           numDirectFiles: directFiles,
         );
-      } catch (e) {
-        debugPrint('Error accessing directory $basename: $e');
+      } catch (e, s) {
+        debugPrint('Error accessing directory $basename: $e. Stack: $s');
+        rethrow;
       }
     }
 
