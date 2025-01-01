@@ -127,7 +127,7 @@ abstract interface class InfinityController<T> {
   void dispose();
 }
 
-const _defaultEmptyWidget = Text('No results.');
+const _defaultEmptyWidget = Text('Nothing here yet.');
 const _defaultErrorWidget = Text('Failed to load the requested data.');
 
 Widget _defaultBuildEmpty(BuildContext context) => Align(

@@ -94,7 +94,7 @@ const _tCurveOut = Curves.easeInOut;
 class TranslationSwitcher extends AnimatedSwitcher {
   /// Switcher with translation transition toward left
   TranslationSwitcher.left({
-    required super.duration,
+    super.duration = Effects.shortDuration,
     double offset = 1.0,
     super.reverseDuration,
     Curve? switchInCurve,
@@ -113,7 +113,7 @@ class TranslationSwitcher extends AnimatedSwitcher {
 
   /// Switcher with translation transition toward right
   TranslationSwitcher.right({
-    required super.duration,
+    super.duration = Effects.shortDuration,
     double offset = 1.0,
     super.reverseDuration,
     Curve? switchInCurve,
@@ -132,7 +132,7 @@ class TranslationSwitcher extends AnimatedSwitcher {
 
   /// Switcher with translation transition toward top
   TranslationSwitcher.top({
-    required super.duration,
+    super.duration = Effects.shortDuration,
     double offset = 1.0,
     super.reverseDuration,
     Curve? switchInCurve,
@@ -151,7 +151,7 @@ class TranslationSwitcher extends AnimatedSwitcher {
 
   /// Switcher with translation transition toward bottom
   TranslationSwitcher.bottom({
-    required super.duration,
+    super.duration = Effects.shortDuration,
     double offset = 1.0,
     super.reverseDuration,
     Curve? switchInCurve,

@@ -9,8 +9,6 @@ class GrayShimmer extends StatelessWidget {
     this.enableShimmer = true,
     this.baseOpacity = 0.9,
     this.highlightOpacity = 0.5,
-    this.baseShade = 300,
-    this.highlightShade = 200,
     required this.child,
     super.key,
   });
@@ -20,8 +18,6 @@ class GrayShimmer extends StatelessWidget {
   final Widget child;
   final double baseOpacity;
   final double highlightOpacity;
-  final int baseShade;
-  final int highlightShade;
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +28,17 @@ class GrayShimmer extends StatelessWidget {
       );
     }
 
+    final theme = context.theme;
+
     final child = !enableShimmer
         ? this.child
         : shimmer.Shimmer.fromColors(
-            baseColor: Colors.grey[baseShade]!.replaceOpacity(baseOpacity),
-            highlightColor:
-                Colors.grey[highlightShade]!.replaceOpacity(highlightOpacity),
+            baseColor: theme
+                .resolveColor(Colors.grey.shade700, Colors.grey.shade400)
+                .replaceOpacity(baseOpacity),
+            highlightColor: theme
+                .resolveColor(Colors.grey.shade500, Colors.grey.shade200)
+                .replaceOpacity(highlightOpacity),
             period: Duration(milliseconds: milliseconds),
             child: this.child,
           );
