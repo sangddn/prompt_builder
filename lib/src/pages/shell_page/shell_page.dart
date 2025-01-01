@@ -18,7 +18,7 @@ class ShellPage extends StatelessWidget {
       homeIndex: 0,
       routes: [
         LibraryRoute(),
-        const SnippetsRoute(),
+        SnippetsRoute(),
         const SettingsRoute(),
         const ResourcesRoute(),
       ],
@@ -69,11 +69,7 @@ class _Sidebar extends StatelessWidget {
         children: [
           _NewPromptButton(),
           _NavButton(HugeIcons.strokeRoundedHome09, 'Library', 0),
-          _NavButton(
-            HugeIcons.strokeRoundedParagraphBulletsPoint02,
-            'Snippets',
-            1,
-          ),
+          _NavButton(HugeIcons.strokeRoundedQuoteDown, 'Snippets', 1),
           _NavButton(HugeIcons.strokeRoundedSettings01, 'Settings', 2),
           _NavButton(CupertinoIcons.question_circle, 'Resources', 3),
         ],

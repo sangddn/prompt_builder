@@ -199,10 +199,17 @@ class ShellRoute extends _i8.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i7.SnippetsPage]
-class SnippetsRoute extends _i8.PageRouteInfo<void> {
-  const SnippetsRoute({List<_i8.PageRouteInfo>? children})
-      : super(
+class SnippetsRoute extends _i8.PageRouteInfo<SnippetsRouteArgs> {
+  SnippetsRoute({
+    _i9.Database? db,
+    _i10.Key? key,
+    List<_i8.PageRouteInfo>? children,
+  }) : super(
           SnippetsRoute.name,
+          args: SnippetsRouteArgs(
+            db: db,
+            key: key,
+          ),
           initialChildren: children,
         );
 
@@ -211,7 +218,28 @@ class SnippetsRoute extends _i8.PageRouteInfo<void> {
   static _i8.PageInfo page = _i8.PageInfo(
     name,
     builder: (data) {
-      return const _i7.SnippetsPage();
+      final args = data.argsAs<SnippetsRouteArgs>(
+          orElse: () => const SnippetsRouteArgs());
+      return _i7.SnippetsPage(
+        db: args.db,
+        key: args.key,
+      );
     },
   );
+}
+
+class SnippetsRouteArgs {
+  const SnippetsRouteArgs({
+    this.db,
+    this.key,
+  });
+
+  final _i9.Database? db;
+
+  final _i10.Key? key;
+
+  @override
+  String toString() {
+    return 'SnippetsRouteArgs{db: $db, key: $key}';
+  }
 }
