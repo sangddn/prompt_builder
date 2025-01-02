@@ -5,7 +5,6 @@
 ![Stars](https://img.shields.io/github/stars/sangddn/prompt_builder?style=social)
 ![Open Issues](https://img.shields.io/github/issues/sangddn/prompt_builder)
 [![Follow @sangddn](https://img.shields.io/twitter/follow/sangddn?style=social)](https://twitter.com/sangddn)
-[![Buy me a coffee](https://img.buymeacoffee.com/button-api/?text=Buy+me+a+coffee&emoji=&slug=sangd&button_colour=FFDD00&font_colour=000000&font_family=Poppins&outline_colour=000000&coffee_colour=ffffff)](https://www.buymeacoffee.com/sangd)
 
 > **Status**: v0.0.1 (Alpha). This is a very early release, so things will be changing rapidly!
 
@@ -88,3 +87,5 @@ Currently, **test coverage is at 0%**. PRs for even basic tests are **hugely** a
 - Please see the `analysis_options.yaml` for linting rules.
 
 For any questions, feel free to open an issue or ping me on Twitter [@sangddn](https://twitter.com/sangddn).
+
+[![Buy me a coffee](https://img.buymeacoffee.com/button-api/?text=Buy+me+a+coffee&emoji=&slug=sangd&button_colour=FFDD00&font_colour=000000&font_family=Poppins&outline_colour=000000&coffee_colour=ffffff)](https://www.buymeacoffee.com/sangd)
