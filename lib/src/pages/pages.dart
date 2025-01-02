@@ -1,4 +1,4 @@
-export 'local_file_viewer/local_file_viewer.dart';
+export 'block_content_viewer/block_content_viewer.dart';
 export 'library_page/library_page.dart';
 export 'prompt_page/prompt_page.dart';
 export 'resources_page/resources_page.dart';
