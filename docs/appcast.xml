@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Prompt Builder</title>
+    <description>Most recent updates for Prompt Builder</description>
+    <language>en</language>
+    
+    <item>
+      <title>Version 0.0.1+1</title>
+      <sparkle:version>1</sparkle:version>
+      <sparkle:shortVersionString>0.0.1+1</sparkle:shortVersionString>
+      <sparkle:releaseNotesLink>
+        https://github.com/sangddn/prompt_builder/releases/tag/v0.0.1
+      </sparkle:releaseNotesLink>
+      <pubDate>Wed, 01 Jan 2025 12:00:00 +0000</pubDate>
+
+      <enclosure
+        url="https://github.com/sangddn/prompt_builder/releases/download/v0.0.1/prompt_builder-0.0.1+1-macos.zip"
+        sparkle:edSignature="pbdyPt92pnPkzLfQ7BhS9hbjcV9/ndkzSIlWjFQIUMcaCNbAF..."
+        sparkle:os="macos"
+        length="12345678"
+        type="application/octet-stream" />
+    </item>
+  </channel>
+</rss>

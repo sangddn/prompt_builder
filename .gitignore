@@ -30,3 +30,5 @@ doc/api/
 .DS_Store
 *.iml
 .metadata
+distribute_options.yaml
+/dist
