@@ -6,9 +6,7 @@
 ![Open Issues](https://img.shields.io/github/issues/sangddn/prompt_builder)
 [![Follow @sangddn](https://img.shields.io/twitter/follow/sangddn?style=social)](https://twitter.com/sangddn)
 
-> **Status**: v0.0.1 (Alpha). This is a very early release, so things will be changing rapidly!
-
-[![Download for macOS](https://badgen.net/badge/Download%20for/macOS/black?icon=apple)](https://github.com/sangddn/prompt_builder/releases/download/v0.0.1/prompt-builder-macos-universal-v0.0.1+2.zip)
+[Website](https://promptbuilder.site). [Download for macOS](https://github.com/sangddn/prompt_builder/releases/download/v0.0.1/prompt-builder-macos-universal-v0.0.1+2.zip).
 
 ## What is Prompt Builder?
 
