@@ -27,7 +27,10 @@ class _PPFolderTree extends AnimatedStatelessWidget {
         child: const _FileTreeContextMenu(
           child: CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(child: _WebSearchButton()),
+              SliverGap(4.0),
+              SliverToBoxAdapter(
+                child: Padding(padding: k4HPadding, child: _WebSearchButton()),
+              ),
               SliverGap(8.0),
               PinnedHeaderSliver(
                 child: Padding(
@@ -36,10 +39,7 @@ class _PPFolderTree extends AnimatedStatelessWidget {
                   child: _SelectFolderButton(),
                 ),
               ),
-              SliverPadding(
-                padding: EdgeInsets.symmetric(horizontal: 4.0),
-                sliver: _FileTree(),
-              ),
+              SliverPadding(padding: k4HPadding, sliver: _FileTree()),
               // SliverGap(32.0),
               // SliverToBoxAdapter(child: _AddOtherFilesButton()),
               SliverGap(64.0),
