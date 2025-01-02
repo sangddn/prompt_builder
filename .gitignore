@@ -30,5 +30,5 @@ doc/api/
 .DS_Store
 *.iml
 .metadata
-distribute_options.yaml
 /dist
+build_and_sign.sh

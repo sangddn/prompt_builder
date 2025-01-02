@@ -8,6 +8,9 @@
 
 > **Status**: v0.0.1 (Alpha). This is a very early release, so things will be changing rapidly!
 
+[![Download for macOS](https://img.shields.io/badge/Download-macOS-blue?style=for-the-badge&logo=apple)]
+(https://github.com/sangddn/prompt_builder/releases/download/v0.0.1/prompt-builder-macos-universal-v0.0.1+2.zip)
+
 ## What is Prompt Builder?
 
 Prompt Builder is an ergonomic tool for creating **long, complex prompts** for LLMs. Whether you're coding, journaling, or writing a novel, Prompt Builder helps you **pull together multiple files, transcripts, images, and snippets** all in one prompt—without the headache of manually copying and pasting content or worrying about token counts.

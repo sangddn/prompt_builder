@@ -4,21 +4,20 @@
     <title>Prompt Builder</title>
     <description>Most recent updates for Prompt Builder</description>
     <language>en</language>
-    
     <item>
-      <title>Version 0.0.1+1</title>
+      <title>Version 0.0.1+2</title>
       <sparkle:version>1</sparkle:version>
-      <sparkle:shortVersionString>0.0.1+1</sparkle:shortVersionString>
+      <sparkle:shortVersionString>0.0.1+2</sparkle:shortVersionString>
       <sparkle:releaseNotesLink>
         https://github.com/sangddn/prompt_builder/releases/tag/v0.0.1
       </sparkle:releaseNotesLink>
       <pubDate>Wed, 01 Jan 2025 12:00:00 +0000</pubDate>
 
       <enclosure
-        url="https://github.com/sangddn/prompt_builder/releases/download/v0.0.1/prompt_builder-0.0.1+1-macos.zip"
-        sparkle:edSignature="8qLcTikyXBGijtxRwxFoDd/DQZfGHhTmnpI8Zm3079iEZ2myGbDse5UcTmNjdM5vyFtgMYOQAaxwIdsimiPrBw=="
+        url="https://github.com/sangddn/prompt_builder/releases/download/v0.0.1/prompt-builder-macos-universal-v0.0.1+2.zip"
+        sparkle:edSignature="fRwesxIc7lXDKIK4OUcZQpzmKBm5Vglu+K8N8jgTYbPuntVL2CFCT+7+bnVOHGBxbiO86Hv6BJxoZSJqMccPAA=="
         sparkle:os="macos"
-        length="44526930"
+        length="46221776"
         type="application/octet-stream" />
     </item>
   </channel>
