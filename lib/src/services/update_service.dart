@@ -10,6 +10,6 @@ abstract final class UpdateService {
   }
 
   static Future<void> checkForUpdates() async {
-    await autoUpdater.checkForUpdates();
+    await autoUpdater.checkForUpdates(inBackground: true);
   }
 }
