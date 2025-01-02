@@ -28,15 +28,31 @@ class SnippetsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return _SNPProviders(
       db: db ?? Database(),
-      child: const Scaffold(
-        body: ConstrainedCustomScrollView(
-          slivers: [
-            _SNPAppBar(),
-            SliverPadding(padding: k16HPadding, sliver: _SNPSearchBar()),
-            SliverGap(16.0),
-            _SNPSnippetList(),
-            SliverGap(64.0),
-          ],
+      child: ShadContextMenuRegion(
+        items: [
+          Builder(
+            builder: (context) {
+              return ShadContextMenuItem(
+                onPressed: () => context.read<_SnippetsController>()._refresh(),
+                trailing: const ShadImage.square(
+                  LucideIcons.refreshCcw,
+                  size: 16.0,
+                ),
+                child: const Text('Refresh'),
+              );
+            },
+          ),
+        ],
+        child: const Scaffold(
+          body: ConstrainedCustomScrollView(
+            slivers: [
+              _SNPAppBar(),
+              SliverPadding(padding: k16HPadding, sliver: _SNPSearchBar()),
+              SliverGap(16.0),
+              _SNPSnippetList(),
+              SliverGap(64.0),
+            ],
+          ),
         ),
       ),
     );
