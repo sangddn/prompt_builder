@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../core/core.dart';
 import '../../../database/database.dart';
@@ -9,59 +10,34 @@ import '../../components.dart';
 class PromptTile extends StatelessWidget {
   const PromptTile({
     this.onTap,
+    this.onDeleted,
+    required this.db,
     required this.prompt,
     super.key,
   });
 
   final VoidCallback? onTap;
+  final VoidCallback? onDeleted;
+  final Database db;
   final Prompt prompt;
 
   @override
   Widget build(BuildContext context) {
-    return ListenableProvider<FocusNode>(
-      create: (_) => FocusNode(),
-      builder: (context, child) {
-        final focusNode = context.read<FocusNode>();
-        final hasFocus = context.watch<FocusNode>().hasFocus;
-        return FocusableActionDetector(
-          focusNode: focusNode,
-          actions: {
-            ActivateIntent: CallbackAction<ActivateIntent>(
-              onInvoke: (_) {
-                onTap?.call();
-                return null;
-              },
-            ),
-          },
-          child: DisambiguatedHoverTapBuilder(
-            onTap: onTap,
-            builder: (context, isHovering, isPressing) {
-              return AnimatedContainer(
-                duration: Effects.shortDuration,
-                curve: Curves.ease,
-                decoration: ShapeDecoration(
-                  shape: Superellipse(
-                    cornerRadius: 16.0,
-                    side: hasFocus
-                        ? BorderSide(
-                            color:
-                                CupertinoColors.activeBlue.resolveFrom(context),
-                          )
-                        : BorderSide.none,
-                  ),
-                  color: isPressing
-                      ? PColors.darkGray.resolveFrom(context)
-                      : isHovering
-                          ? PColors.lightGray.resolveFrom(context)
-                          : null,
-                ),
-                padding: k16H12VPadding,
-                child: _PromptTileContent(prompt),
-              );
-            },
-          ),
-        );
-      },
+    return MultiProvider(
+      providers: [
+        Provider<Database>.value(value: db),
+        Provider<Prompt>.value(value: prompt),
+      ],
+      child: _PromptContextMenu(
+        onDeleted: onDeleted,
+        child: CButton(
+          tooltip: 'Open Prompt',
+          onTap: onTap,
+          padding: k16H12VPadding,
+          cornerRadius: 16.0,
+          child: _PromptTileContent(prompt),
+        ),
+      ),
     );
   }
 }
@@ -100,6 +76,67 @@ class _PromptTileContent extends StatelessWidget {
         ),
         const CupertinoListTileChevron(),
       ],
+    );
+  }
+}
+
+class _PromptContextMenu extends StatelessWidget {
+  const _PromptContextMenu({
+    required this.onDeleted,
+    required this.child,
+  });
+
+  final VoidCallback? onDeleted;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadContextMenuRegion(
+      items: [
+        ShadContextMenuItem(
+          onPressed: () async {
+            final toaster = context.toaster;
+            try {
+              final content = await context
+                  .read<Prompt>()
+                  .getContent(context.read<Database>());
+              await Clipboard.setData(ClipboardData(text: content));
+              toaster.show(
+                const ShadToast(
+                  title: Text('Prompt Copied!'),
+                  description: Text('Prompt content copied to clipboard.'),
+                ),
+              );
+            } catch (e, s) {
+              debugPrint('Error getting prompt content: $e. Stack: $s');
+              toaster.show(
+                ShadToast.destructive(
+                  title: const Text('Error Copying Prompt'),
+                  description:
+                      Text('Failed to copy prompt content to clipboard. $e'),
+                ),
+              );
+            }
+          },
+          trailing: const ShadImage.square(
+            LucideIcons.copy,
+            size: 16.0,
+          ),
+          child: const Text('Copy Prompt'),
+        ),
+        ShadContextMenuItem(
+          onPressed: () {
+            context.read<Database>().deletePrompt(context.read<Prompt>().id);
+            onDeleted?.call();
+          },
+          trailing: const ShadImage.square(
+            LucideIcons.trash,
+            size: 16.0,
+          ),
+          child: const Text('Delete Prompt'),
+        ),
+      ],
+      child: child,
     );
   }
 }
