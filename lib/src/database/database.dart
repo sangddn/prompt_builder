@@ -18,7 +18,7 @@ final class Database extends _$Database {
   factory Database() => instance;
   Database.custom(String name) : super(_openConnection(name));
 
-  static final instance = Database.custom('pbdb');
+  static final instance = Database.custom('prompt_builder');
 
   @override
   int get schemaVersion => 1;
@@ -26,14 +26,18 @@ final class Database extends _$Database {
   static QueryExecutor _openConnection(String name) {
     // `driftDatabase` from `package:drift_flutter` stores the database in
     // `getApplicationDocumentsDirectory()`.
-    return driftDatabase(name: name);
+    return driftDatabase(
+      name: name,
+      native: DriftNativeOptions(
+        databasePath: () async => '${await _getPath()}/$name.sqlite',
+      ),
+    );
   }
 
   bool isInitialized = false;
 
   late final Box<bool> boolRef;
   late final Box<String> stringRef;
-  late final Box<int> intRef;
   late final Box<double> doubleRef;
   late final Box<DateTime> dateTimeRef;
 
@@ -44,12 +48,9 @@ final class Database extends _$Database {
 
     debugPrint('Initializing AppDatabase...');
 
-    final dir = await getApplicationDocumentsDirectory();
-
-    Hive.init(dir.path);
+    Hive.init(await _getPath());
     boolRef = await Hive.openBox<bool>('boolMap');
     stringRef = await Hive.openBox<String>('stringMap');
-    intRef = await Hive.openBox<int>('intMap');
     doubleRef = await Hive.openBox<double>('doubleMap');
     dateTimeRef = await Hive.openBox<DateTime>('dateTimeMap');
 
@@ -63,7 +64,6 @@ final class Database extends _$Database {
   void closeBoxes() {
     boolRef.close();
     stringRef.close();
-    intRef.close();
     doubleRef.close();
     dateTimeRef.close();
   }
@@ -83,7 +83,6 @@ final class MockDatabase extends Database {
 
     boolRef = await Hive.openBox<bool>('mockBoolMap', path: '.');
     stringRef = await Hive.openBox<String>('mockStringMap', path: '.');
-    intRef = await Hive.openBox<int>('mockIntMap', path: '.');
     doubleRef = await Hive.openBox<double>('mockDoubleMap', path: '.');
     dateTimeRef = await Hive.openBox<DateTime>('mockDateTimeMap', path: '.');
 
@@ -94,3 +93,6 @@ final class MockDatabase extends Database {
     return;
   }
 }
+
+Future<String> _getPath() async =>
+    '${(await getApplicationDocumentsDirectory()).path}/${kDebugMode ? 'Prompt Builder (Debug)' : 'Prompt Builder'}';

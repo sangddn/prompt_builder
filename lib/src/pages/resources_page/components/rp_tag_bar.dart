@@ -45,8 +45,6 @@ class _RPTagBar extends StatelessWidget {
               child: const Column(
                 children: [
                   _TagSearchField(),
-                  Divider(height: 1.0, thickness: 1.0),
-                  Gap(8.0),
                   Expanded(child: _Tags()),
                   _RPSubmitButton(),
                 ],
@@ -64,20 +62,29 @@ class _TagSearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: context.read(),
-      decoration: InputDecoration(
-        prefixIcon: const Padding(
-          padding: EdgeInsets.only(left: 8.0),
-          child: Icon(LucideIcons.search, size: 20.0),
+    return Column(
+      children: [
+        TextField(
+          controller: context.read(),
+          decoration: InputDecoration(
+            prefixIcon: const Padding(
+              padding: EdgeInsets.only(left: 8.0),
+              child: Icon(LucideIcons.search, size: 20.0),
+            ),
+            hintText: 'Search',
+            border: InputBorder.none,
+            filled: true,
+            fillColor: context.brightSurface,
+            contentPadding: k16APadding,
+          ),
+          style: context.textTheme.list,
         ),
-        hintText: 'Search',
-        border: InputBorder.none,
-        filled: true,
-        fillColor: context.colorScheme.popover,
-        contentPadding: k16APadding,
-      ),
-      style: context.textTheme.list,
+        Divider(
+          height: 1.0,
+          thickness: 1.0,
+          color: PColors.gray.resolveFrom(context),
+        ),
+      ],
     );
   }
 }

@@ -290,7 +290,7 @@ extension ThemeUtils on BuildContext {
   ShadToasterState get toaster => ShadToaster.of(this);
   ThemeAccent get themeAccent => watch<ThemeAccent>();
   Color get brightSurface => theme.resolveColor(
-        const Color(0xffF2F0EF),
-        const Color(0xff171719),
+        const Color.fromARGB(255, 252, 252, 252),
+        const Color(0xff222222),
       );
 }

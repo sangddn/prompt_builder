@@ -44,26 +44,27 @@ class _SelectFolderButton extends StatelessWidget {
     final folderPath = context.watchFolderPath();
     final noneSelected = folderPath == null;
     final lightGray = PColors.opaqueLightGray.resolveFrom(context);
-    return ClipPath(
-      clipper: const ShapeBorderClipper(shape: Superellipse.border8),
+    return Material(
+      color: Colors.transparent,
+      shape: Superellipse.border8,
+      clipBehavior: Clip.hardEdge,
       child: SizedBox(
         height: 40.0,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: Stack(
-                alignment: AlignmentDirectional.centerEnd,
-                children: [
-                  ColoredBox(
-                    color: lightGray,
-                    child: CButton(
-                      tooltip: 'Change Folder',
-                      onTap: context.pickFolder,
-                      cornerRadius: 12.0,
-                      padding: k16H8VPadding,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+              child: ColoredBox(
+                color: lightGray,
+                child: CButton(
+                  tooltip: 'Change Folder',
+                  onTap: context.pickFolder,
+                  padding: k16H8VPadding,
+                  child: Stack(
+                    alignment: AlignmentDirectional.centerEnd,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             HugeIcons.strokeRoundedFolder02,
@@ -91,25 +92,25 @@ class _SelectFolderButton extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ),
+                      TranslationSwitcher.right(
+                        layoutBuilder: alignedLayoutBuilder(
+                          AlignmentDirectional.centerEnd,
+                        ),
+                        child: noneSelected
+                            ? Text.rich(
+                                keyboardShortcutSpan(
+                                  context,
+                                  true,
+                                  false,
+                                  'O',
+                                  PColors.darkGray.resolveFrom(context),
+                                ),
+                              )
+                            : null,
+                      ),
+                    ],
                   ),
-                  TranslationSwitcher.right(
-                    layoutBuilder: alignedLayoutBuilder(
-                      AlignmentDirectional.centerEnd,
-                    ),
-                    child: noneSelected
-                        ? Text.rich(
-                            keyboardShortcutSpan(
-                              context,
-                              true,
-                              false,
-                              'O',
-                              PColors.darkGray.resolveFrom(context),
-                            ),
-                          )
-                        : null,
-                  ),
-                ],
+                ),
               ),
             ),
             const _SearchFolderButton(),

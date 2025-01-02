@@ -162,6 +162,7 @@ class _MenuButtonState extends State<MenuButton> {
               // hoverColor: Colors.transparent,
               // splashColor: Colors.transparent,
               // overlayColor: const MaterialStatePropertyAll(Colors.transparent),
+              splashFactory: NoSplash.splashFactory,
               child: Padding(
                 padding: padding,
                 child: Row(
