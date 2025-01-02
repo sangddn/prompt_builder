@@ -114,6 +114,51 @@ class FileTreeItem {
 
   /// Number of files in the folder, not including subfolders (null for files)
   final int? numDirectFiles;
+
+  @override
+  bool operator ==(Object other) =>
+      other is FileTreeItem &&
+      other.name == name &&
+      other.path == path &&
+      other.isDirectory == isDirectory &&
+      other.extension == extension &&
+      other.dateCreated == dateCreated &&
+      other.dateModified == dateModified &&
+      other.size == size;
+
+  @override
+  int get hashCode => Object.hash(
+        name,
+        path,
+        isDirectory,
+        extension,
+        dateCreated,
+        dateModified,
+        size,
+      );
+
+  FileTreeItem copyWith({
+    String? name,
+    String? path,
+    bool? isDirectory,
+    String? extension,
+    DateTime? dateCreated,
+    DateTime? dateModified,
+    int? size,
+    int? numFilesRecursive,
+    int? numDirectFiles,
+  }) =>
+      FileTreeItem(
+        name: name ?? this.name,
+        path: path ?? this.path,
+        isDirectory: isDirectory ?? this.isDirectory,
+        extension: extension ?? this.extension,
+        dateCreated: dateCreated ?? this.dateCreated,
+        dateModified: dateModified ?? this.dateModified,
+        size: size ?? this.size,
+        numFilesRecursive: numFilesRecursive ?? this.numFilesRecursive,
+        numDirectFiles: numDirectFiles ?? this.numDirectFiles,
+      );
 }
 
 /// Type alias for a tree node containing file information
@@ -156,7 +201,7 @@ class _BuildFileTreeParams {
       name: path.basename(dirPath),
       path: dirPath,
       isDirectory: true,
-      extension: '',
+      extension: null,
     ),
   );
 
@@ -274,7 +319,6 @@ class _BuildFileTreeParams {
   return (root, filePaths, folderPaths);
 }
 
-/// Compares two file system entities based on the provided sort preferences
 int _compareEntities(
   FileSystemEntity a,
   FileSystemEntity b,
@@ -289,6 +333,7 @@ int _compareEntities(
 
   final aStat = a.statSync();
   final bStat = b.statSync();
+
   final multiplier = prefs.ascending ? 1 : -1;
 
   switch (prefs.sortOption) {
@@ -302,4 +347,250 @@ int _compareEntities(
     case FileTreeSortOption.size:
       return multiplier * aStat.size.compareTo(bStat.size);
   }
+}
+
+// -----------------------------------------------------------------------------
+// File system event handlers
+// -----------------------------------------------------------------------------
+
+void _handleCreateEvent(
+  IndexedFileTree root,
+  FileSystemCreateEvent event,
+  FileTreeSortPreferences prefs,
+) {
+  // Skip if the node already exists
+  if (_findNodeByPath(root, event.path) != null) return;
+
+  // Find parent directory node
+  final parentPath = path.dirname(event.path);
+  final parentNode = _findNodeByPath(root, parentPath);
+  if (parentNode == null) return;
+
+  // Create new node
+  final entity = event.isDirectory ? Directory(event.path) : File(event.path);
+
+  try {
+    final stat = entity.statSync();
+    final basename = path.basename(event.path);
+    final isDirectory = event.isDirectory;
+    final extension = isDirectory ? null : path.extension(event.path);
+
+    final newNode = IndexedTreeNode(
+      parent: parentNode,
+      data: FileTreeItem(
+        name: basename,
+        path: event.path,
+        isDirectory: isDirectory,
+        extension: extension,
+        dateCreated: stat.changed,
+        dateModified: stat.modified,
+        size: stat.size,
+        numFilesRecursive: isDirectory ? 0 : null,
+        numDirectFiles: isDirectory ? 0 : null,
+      ),
+    );
+
+    // Insert node maintaining sort order
+    _insertNodeSorted(parentNode, newNode, prefs);
+
+    // Update parent directory counts if this is a file.
+    // If it's a directory that contains other files, it will be updated when
+    // the creation events for the files are processed.
+    if (!event.isDirectory) {
+      _deincrementFileCountForDir(
+        parentNode,
+        isDirect: true,
+        shouldIncrement: true,
+      );
+    }
+  } catch (e) {
+    debugPrint('Error handling create event: $e');
+  }
+}
+
+void _handleModifyEvent(IndexedFileTree root, FileSystemModifyEvent event) {
+  final node = _findNodeByPath(root, event.path);
+  if (node == null) return;
+  final item = node.data!;
+
+  try {
+    final stat = event.isDirectory
+        ? Directory(event.path).statSync()
+        : File(event.path).statSync();
+
+    // Update node metadata while preserving children
+    node.data = FileTreeItem(
+      name: item.name,
+      path: item.path,
+      isDirectory: item.isDirectory,
+      extension: item.extension,
+      dateCreated: stat.changed,
+      dateModified: stat.modified,
+      size: stat.size,
+      numFilesRecursive: item.numFilesRecursive,
+      numDirectFiles: item.numDirectFiles,
+    );
+  } catch (e) {
+    debugPrint('Error handling modify event: $e');
+  }
+}
+
+void _handleDeleteEvent(IndexedFileTree root, FileSystemDeleteEvent event) {
+  final node = _findNodeByPath(root, event.path);
+  if (node == null) return;
+
+  final parent = node.parent;
+  if (parent == null) return;
+
+  // Remove node
+  parent.remove(node);
+
+  // Update parent directory counts
+  _deincrementFileCountForDir(
+    parent as IndexedFileTree,
+    isDirect: true,
+    shouldIncrement: false,
+  );
+}
+
+void _handleMoveEvent(
+  IndexedFileTree root,
+  FileSystemMoveEvent event,
+  FileTreeSortPreferences prefs,
+) {
+  final sourceNode = _findNodeByPath(root, event.path);
+  if (sourceNode == null) return;
+
+  // If we have destination info, move the node
+  if (event.destination != null) {
+    final destParentPath = path.dirname(event.destination!);
+    final destParent = _findNodeByPath(root, destParentPath);
+
+    if (destParent != null) {
+      // Remove from old parent
+      sourceNode.parent?.children.remove(sourceNode);
+
+      // Update node path
+      sourceNode.data = sourceNode.data!.copyWith(
+        path: event.destination,
+        name: path.basename(event.destination!),
+      );
+
+      // Add to new parent
+      sourceNode.parent = destParent;
+      _insertNodeSorted(destParent, sourceNode, prefs);
+
+      // Update counts for both old and new parent
+      if (sourceNode.parent != null) {
+        _deincrementFileCountForDir(
+          sourceNode.parent! as IndexedFileTree,
+          isDirect: true,
+          shouldIncrement: false,
+        );
+      }
+      if (sourceNode.parent != destParent) {
+        _deincrementFileCountForDir(
+          destParent,
+          isDirect: true,
+          shouldIncrement: true,
+        );
+      }
+    }
+  }
+}
+
+// Helper to find a node by its path
+IndexedFileTree? _findNodeByPath(IndexedFileTree root, String searchPath) {
+  if (root.data?.path == searchPath) return root;
+
+  for (final child in root.children) {
+    final result = _findNodeByPath(child as IndexedFileTree, searchPath);
+    if (result != null) return result;
+  }
+
+  return null;
+}
+
+// Helper to insert a node while maintaining sort order
+void _insertNodeSorted(
+  IndexedFileTree parent,
+  IndexedFileTree newNode,
+  FileTreeSortPreferences prefs,
+) {
+  final index = parent.children.indexWhere((child) {
+    final childData = (child as IndexedFileTree).data!;
+    final newData = newNode.data!;
+
+    if (prefs.foldersFirst && childData.isDirectory != newData.isDirectory) {
+      return !childData.isDirectory;
+    }
+
+    final comparison = _compareEntities(
+      _getEntity(child),
+      _getEntity(newNode),
+      prefs,
+    );
+
+    return comparison > 0;
+  });
+
+  if (index == -1) {
+    parent.add(newNode);
+  } else {
+    parent.insert(index > 0 ? index - 1 : 0, newNode);
+  }
+}
+
+// Helper to update directory counts
+void _deincrementFileCountForDir(
+  IndexedFileTree directory, {
+  bool isDirect = false,
+  required bool shouldIncrement,
+}) {
+  final item = directory.data!;
+  if (!item.isDirectory) return;
+
+  directory.data = item.copyWith(
+    numFilesRecursive:
+        (item.numFilesRecursive ?? 0) + (shouldIncrement ? 1 : -1),
+    numDirectFiles: (item.numDirectFiles ?? 0) +
+        (shouldIncrement ? (isDirect ? 1 : 0) : -(isDirect ? 1 : 0)),
+  );
+
+  if (directory.parent case final parent?) {
+    _deincrementFileCountForDir(
+      parent as IndexedFileTree,
+      shouldIncrement: shouldIncrement,
+    );
+  }
+}
+
+FileSystemEntity _getEntity(IndexedFileTree node) =>
+    node.data!.isDirectory ? Directory(node.data!.path) : File(node.data!.path);
+
+// -----------------------------------------------------------------------------
+// Notifications
+// -----------------------------------------------------------------------------
+
+sealed class FileTreeNotification extends Notification {}
+
+class NodeSelectionNotification extends FileTreeNotification {
+  NodeSelectionNotification(this.path, this.isSelected);
+
+  final String path;
+  final bool isSelected;
+}
+
+class TreeReadyNotification extends FileTreeNotification {
+  TreeReadyNotification(this.tree, this.filePaths, this.folderPaths);
+
+  final IndexedFileTree tree;
+  final List<String> filePaths;
+  final List<String> folderPaths;
+}
+
+class EntityEventNotification extends FileTreeNotification {
+  EntityEventNotification(this.event);
+
+  final FileSystemEvent event;
 }

@@ -9,7 +9,7 @@ class SelectableFileTreeItem extends StatelessWidget {
   });
 
   final int selectionCount;
-  final ValueChanged<bool>? onItemSelected;
+  final OnItemSelectedCallback? onItemSelected;
   final IndexedFileTree node;
 
   @override
@@ -22,7 +22,7 @@ class SelectableFileTreeItem extends StatelessWidget {
         ChangeNotifierProvider<ValueNotifier<bool>>.value(
           value: node.expansionNotifier,
         ),
-        Provider<ValueChanged<bool>?>.value(value: onItemSelected),
+        Provider<OnItemSelectedCallback?>.value(value: onItemSelected),
         Provider<int>.value(value: selectionCount),
       ],
       child: const _ItemContextMenu(
@@ -47,10 +47,11 @@ extension _FileTreeItemContext on BuildContext {
     );
   }
 
-  void selectOrDeselect() {
+  Future<void> selectOrDeselect() async {
     final count = read<int>();
     final shouldSelect = count == 0;
-    read<ValueChanged<bool>?>()?.call(shouldSelect);
+    await read<OnItemSelectedCallback?>()?.call(shouldSelect);
+    return;
   }
 }
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:animated_tree_view/animated_tree_view.dart';
@@ -31,7 +32,6 @@ class FileTree extends StatefulWidget {
     this.ignorePatterns = const IList.empty(),
     this.sortPreferences = const FileTreeSortPreferences(),
     this.curve = Effects.snappyOutCurve,
-    this.onTreeReady,
     this.builder,
     super.key,
   });
@@ -66,16 +66,14 @@ class FileTree extends StatefulWidget {
   /// Custom builder for the node.
   final Widget Function(BuildContext, IndexedFileTree)? builder;
 
-  /// Callback to handle tree ready. The first argument is the tree representation,
-  /// the second is the list of file paths, and the third is the list of folder paths.
-  final void Function(IndexedFileTree, List<String>, List<String>)? onTreeReady;
-
   @override
   State<FileTree> createState() => _FileTreeState();
 }
 
-class _FileTreeState extends State<FileTree> {
+class _FileTreeState extends State<FileTree> with _WatchDirectoryMixin {
   FileTreeController? _controller;
+  @override
+  IndexedFileTree? _root;
   // Tree - File paths - Folder paths
   late Future<(IndexedFileTree, List<String>, List<String>)?> _treeFuture =
       _getFileTree();
@@ -83,6 +81,7 @@ class _FileTreeState extends State<FileTree> {
   /// Builds the file tree in a separate isolate to avoid blocking the UI
   Future<(IndexedFileTree, List<String>, List<String>)?> _getFileTree() async {
     final toaster = context.toaster;
+    _root = null;
     try {
       final result = await compute(
         _buildFileTree,
@@ -93,8 +92,10 @@ class _FileTreeState extends State<FileTree> {
           sortPreferences: widget.sortPreferences,
         ),
       );
-      if (result != null) {
-        widget.onTreeReady?.call(result.$1, result.$2, result.$3);
+      if (result != null && mounted) {
+        _root = result.$1;
+        TreeReadyNotification(result.$1, result.$2, result.$3)
+            .dispatch(context);
       }
       return result;
     } catch (e) {
@@ -191,5 +192,54 @@ class _FileTreeState extends State<FileTree> {
         );
       },
     );
+  }
+}
+
+mixin _WatchDirectoryMixin on State<FileTree> {
+  IndexedFileTree? get _root;
+  StreamSubscription<FileSystemEvent>? _eventSubscription;
+
+  void _onEvent(FileSystemEvent event) {
+    final root = _root;
+    if (root == null) return;
+    EntityEventNotification(event).dispatch(context);
+    switch (event) {
+      case FileSystemCreateEvent():
+        _handleCreateEvent(root, event, widget.sortPreferences);
+      case FileSystemModifyEvent():
+        _handleModifyEvent(root, event);
+      case FileSystemDeleteEvent():
+        _handleDeleteEvent(root, event);
+      case FileSystemMoveEvent():
+        _handleMoveEvent(root, event, widget.sortPreferences);
+    }
+  }
+
+  void _watch() {
+    _eventSubscription?.cancel();
+    if (widget.dirPath == null) return;
+    final dir = Directory(widget.dirPath!);
+    _eventSubscription = dir.watch(recursive: true).listen(_onEvent);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _watch();
+  }
+
+  @override
+  void didUpdateWidget(FileTree oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.dirPath != widget.dirPath ||
+        oldWidget.sortPreferences != widget.sortPreferences) {
+      _watch();
+    }
+  }
+
+  @override
+  void dispose() {
+    _eventSubscription?.cancel();
+    super.dispose();
   }
 }
