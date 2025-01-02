@@ -100,7 +100,8 @@ class _TitleField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
+      initialValue: context.snippet.title,
       decoration: InputDecoration.collapsed(
         hintText: 'Title',
         hintStyle: context.textTheme.muted,

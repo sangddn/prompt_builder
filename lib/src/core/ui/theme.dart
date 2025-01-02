@@ -83,21 +83,6 @@ extension ThemeAccentRepresentativeColor on ThemeAccent {
 }
 
 extension TextStyleUtils on TextStyle {
-  TextStyle get w300 =>
-      copyWith(fontVariations: const [FontVariation.weight(300)]);
-  TextStyle get w400 =>
-      copyWith(fontVariations: const [FontVariation.weight(400)]);
-  TextStyle get w500 =>
-      copyWith(fontVariations: const [FontVariation.weight(500)]);
-  TextStyle get w600 =>
-      copyWith(fontVariations: const [FontVariation.weight(600)]);
-  TextStyle get w700 =>
-      copyWith(fontVariations: const [FontVariation.weight(700)]);
-  TextStyle get w800 =>
-      copyWith(fontVariations: const [FontVariation.weight(800)]);
-  TextStyle get w900 =>
-      copyWith(fontVariations: const [FontVariation.weight(900)]);
-
   /// Modifies the weight of the font.
   ///
   /// Fractional weight deltas are only supported for variable fonts.
@@ -182,12 +167,6 @@ extension TextStyleUtils on TextStyle {
       ],
     );
   }
-
-  TextStyle get lightWeight => w300;
-  TextStyle get regularWeight => w400;
-  TextStyle get mediumWeight => w500;
-  TextStyle get tighterLetter => withLetterSpacing(-0.5);
-  TextStyle get looserLetter => withLetterSpacing(0.5);
 }
 
 extension BrightnessCheckData on ShadThemeData {
@@ -310,4 +289,8 @@ extension ThemeUtils on BuildContext {
   ShadColorScheme get colorScheme => theme.colorScheme;
   ShadToasterState get toaster => ShadToaster.of(this);
   ThemeAccent get themeAccent => watch<ThemeAccent>();
+  Color get brightSurface => theme.resolveColor(
+        const Color(0xffF2F0EF),
+        const Color(0xff171719),
+      );
 }

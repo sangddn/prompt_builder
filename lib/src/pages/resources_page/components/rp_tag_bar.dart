@@ -33,7 +33,7 @@ class _RPTagBar extends StatelessWidget {
             child: Container(
               constraints: const BoxConstraints(maxWidth: 400.0),
               decoration: BoxDecoration(
-                color: context.colorScheme.popover,
+                color: context.brightSurface,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(16.0),
                   topRight: Radius.circular(16.0),
