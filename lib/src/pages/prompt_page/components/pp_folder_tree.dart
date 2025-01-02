@@ -22,20 +22,30 @@ class _PPFolderTree extends AnimatedStatelessWidget {
           ),
         ),
       ],
-      child: const CustomScrollView(
-        slivers: [
-          PinnedHeaderSliver(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 12.0),
-              child: _SelectFolderButton(),
-            ),
+      child: StateProvider<FileTreeSortPreferences>(
+        createInitialValue: (_) => const FileTreeSortPreferences(),
+        child: const _FileTreeContextMenu(
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(child: _WebSearchButton()),
+              SliverGap(8.0),
+              PinnedHeaderSliver(
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 4.0, vertical: 12.0),
+                  child: _SelectFolderButton(),
+                ),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: 4.0),
+                sliver: _FileTree(),
+              ),
+              // SliverGap(32.0),
+              // SliverToBoxAdapter(child: _AddOtherFilesButton()),
+              SliverGap(64.0),
+            ],
           ),
-          SliverPadding(
-            padding: EdgeInsets.symmetric(horizontal: 4.0),
-            sliver: _FileTree(),
-          ),
-          SliverGap(64.0),
-        ],
+        ),
       ),
     );
   }
@@ -118,7 +128,6 @@ class _SelectFolderButton extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const _SearchFolderButton(),
             Expanded(
               child: ColoredBox(
                 color: lightGray,
@@ -159,7 +168,7 @@ class _SelectFolderButton extends StatelessWidget {
                 ),
               ),
             ),
-            const _RefreshFolderButton(),
+            const _SearchFolderButton(),
           ],
         ),
       ),
@@ -167,56 +176,21 @@ class _SelectFolderButton extends StatelessWidget {
   }
 }
 
-class _SearchFolderButton extends StatelessWidget {
+class _SearchFolderButton extends AnimatedStatelessWidget {
   const _SearchFolderButton();
-
-  @override
-  Widget build(BuildContext context) {
-    final lightGray = PColors.opaqueLightGray.resolveFrom(context);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ColoredBox(
-          color: lightGray,
-          child: CButton(
-            tooltip: _shortcutSpan(context, true, false, 'F'),
-            onTap: () => _showFileSearchDialog(context),
-            cornerRadius: 12.0,
-            padding: k12HPadding,
-            child: Icon(
-              HugeIcons.strokeRoundedSearch01,
-              size: 18.0,
-              color: PColors.textGray.resolveFrom(context),
-            ),
-          ),
-        ),
-        VerticalDivider(
-          width: 1.0,
-          thickness: 1.0,
-          color: lightGray.withOpacityFactor(.5),
-        ),
-      ],
-    );
-  }
-}
-
-class _RefreshFolderButton extends AnimatedStatelessWidget {
-  const _RefreshFolderButton();
 
   @override
   Widget buildAnimation(BuildContext context, Widget child) =>
       StateAnimations.sizeFade(
         child,
         axis: Axis.horizontal,
-        layoutBuilder: alignedLayoutBuilder(AlignmentDirectional.centerEnd),
+        layoutBuilder: alignedLayoutBuilder(AlignmentDirectional.centerStart),
       );
 
   @override
   Widget buildChild(BuildContext context) {
     final isAnyFolderSelected = context.isAnyFolderSelected();
-    if (!isAnyFolderSelected) {
-      return const SizedBox.shrink();
-    }
+    if (!isAnyFolderSelected) return const SizedBox.shrink();
     final lightGray = PColors.opaqueLightGray.resolveFrom(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -229,21 +203,28 @@ class _RefreshFolderButton extends AnimatedStatelessWidget {
         ColoredBox(
           color: lightGray,
           child: CButton(
-            tooltip: 'Sync',
-            onTap: () {
-              final notifier = context.folderNotifier;
-              final folderPath = notifier.value;
-              notifier.value = null;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                notifier.value = folderPath;
-              });
-            },
+            tooltip: _shortcutSpan(context, true, false, 'P'),
+            onTap: () => _showFileSearchDialog(context),
             cornerRadius: 12.0,
             padding: k12HPadding,
-            child: Icon(
-              HugeIcons.strokeRoundedFolderSync,
-              size: 18.0,
-              color: PColors.textGray.resolveFrom(context),
+            child: Row(
+              children: [
+                Icon(
+                  HugeIcons.strokeRoundedSearch01,
+                  size: 18.0,
+                  color: PColors.textGray.resolveFrom(context),
+                ),
+                const Gap(4.0),
+                Text.rich(
+                  _shortcutSpan(
+                    context,
+                    true,
+                    false,
+                    'P',
+                    PColors.darkGray.resolveFrom(context),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -261,9 +242,88 @@ class _FileTree extends StatelessWidget {
       dirPath: context.watchFolderPath(),
       ignorePatterns: context.watchIgnorePatterns(),
       countSelection: (context, item) => context.countSelection(item.path),
-      onNodeSelected: (context, node, isSelected) =>
-          context.handleNodeSelection(node, isSelected),
-      onTreeReady: context.read<_TreeReadyCallback>(),
+      sortPreferences: context.watch(),
+    );
+  }
+}
+
+class _FileTreeContextMenu extends StatelessWidget {
+  const _FileTreeContextMenu({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final sortPreferences = context.watch<FileTreeSortPreferences>();
+    final sortOption = sortPreferences.sortOption;
+
+    void update(FileTreeSortPreferences preferences) {
+      context.read<ValueNotifier<FileTreeSortPreferences>>().value =
+          preferences;
+    }
+
+    const check = ShadImage.square(LucideIcons.check, size: 16);
+
+    return ShadContextMenuRegion(
+      constraints: const BoxConstraints(minWidth: 200.0),
+      items: [
+        ShadContextMenuItem(
+          trailing: const ShadImage.square(
+            LucideIcons.chevronRight,
+            size: 16,
+          ),
+          items: [
+            ...FileTreeSortOption.values.map(
+              (option) => ShadContextMenuItem(
+                trailing: option == sortOption ? check : null,
+                onPressed: () => update(
+                  sortPreferences.copyWith(sortOption: option),
+                ),
+                child: Text(option.label),
+              ),
+            ),
+            const Divider(height: 8),
+            ShadContextMenuItem(
+              trailing: sortPreferences.ascending ? check : null,
+              onPressed: () => update(
+                sortPreferences.copyWith(ascending: !sortPreferences.ascending),
+              ),
+              child: const Text('Ascending'),
+            ),
+            ShadContextMenuItem(
+              trailing: sortPreferences.foldersFirst ? check : null,
+              onPressed: () => update(
+                sortPreferences.copyWith(
+                  foldersFirst: !sortPreferences.foldersFirst,
+                ),
+              ),
+              child: const Text('Folders First'),
+            ),
+          ],
+          child: const Text('Sort by'),
+        ),
+        ShadContextMenuItem(
+          onPressed: () async {
+            final selectedPaths =
+                await FilePicker.platform.pickFiles(allowMultiple: true);
+            if (!context.mounted) return;
+            if (selectedPaths != null) {
+              for (final path in selectedPaths.paths) {
+                if (path == null) continue;
+                await _handleNodeSelection(
+                  context,
+                  reloadNode: true,
+                  fullPath: path,
+                  isSelected: true,
+                );
+              }
+            }
+          },
+          trailing: const ShadImage.square(LucideIcons.filePlus, size: 16),
+          child: const Text('Add Other Files…'),
+        ),
+      ],
+      child: child,
     );
   }
 }

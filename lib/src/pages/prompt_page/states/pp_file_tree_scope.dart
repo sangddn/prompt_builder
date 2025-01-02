@@ -13,12 +13,75 @@ class _PPFileTreeScopeState extends State<_PPFileTreeScope> {
   // Tree - File paths - Folder paths
   (IndexedFileTree, List<String>, List<String>)? _tree;
 
-  void _onTreeReady(
+  void _updateTreeAndPaths(
     IndexedFileTree tree,
     List<String> filePaths,
     List<String> folderPaths,
   ) =>
-      setState(() => _tree = (tree, filePaths, folderPaths));
+      maybeSetState(() => _tree = (tree, filePaths, folderPaths));
+
+  void _handleEntityEvent(final FileSystemEvent event) {
+    final tree = _tree;
+    if (tree == null) return;
+    switch ((event.isDirectory, event)) {
+      case (_, FileSystemModifyEvent()):
+        return;
+      case (true, FileSystemCreateEvent()):
+        maybeSetState(
+          () => _tree = (
+            tree.$1,
+            tree.$2,
+            tree.$3..add(event.path),
+          ),
+        );
+      case (true, FileSystemDeleteEvent()):
+        maybeSetState(
+          () => _tree = (
+            tree.$1,
+            tree.$2,
+            tree.$3..remove(event.path),
+          ),
+        );
+      case (true, FileSystemMoveEvent()):
+        maybeSetState(
+          () => _tree = (
+            tree.$1,
+            tree.$2,
+            tree.$3
+              ..remove(event.path)
+              ..add((event as FileSystemMoveEvent).destination ?? '')
+              ..remove(''),
+          ),
+        );
+      case (false, FileSystemCreateEvent()):
+        maybeSetState(
+          () => _tree = (
+            tree.$1,
+            tree.$2..add(event.path),
+            tree.$3,
+          ),
+        );
+      case (false, FileSystemDeleteEvent()):
+        maybeSetState(
+          () => _tree = (
+            tree.$1,
+            tree.$2..remove(event.path),
+            tree.$3,
+          ),
+        );
+      case (false, FileSystemMoveEvent()):
+        maybeSetState(
+          () => _tree = (
+            tree.$1,
+            tree.$2
+              ..remove(event.path)
+              ..add((event as FileSystemMoveEvent).destination ?? '')
+              ..remove(''),
+            tree.$3,
+          ),
+        );
+    }
+  }
 
   /// {@macro path_search_callback}
   Future<List<(String, String, bool)>> _searchPaths(
@@ -50,16 +113,32 @@ class _PPFileTreeScopeState extends State<_PPFileTreeScope> {
           update: (context, blocks, _) =>
               blocks.map((b) => b.filePath).nonNulls.toISet(),
         ),
-        Provider<_NodeSelectionCallback>.value(
-          value: _getNodeSelectionHandler(context, filePaths: _tree?.$2),
-        ),
-        Provider<_TreeReadyCallback>.value(value: _onTreeReady),
         Provider<_FileAndFolderPaths>.value(
           value: (ISet(_tree?.$2), ISet(_tree?.$3)),
         ),
         Provider<_PathSearchCallback>.value(value: _searchPaths),
       ],
-      child: widget.child,
+      child: NotificationListener<FileTreeNotification>(
+        onNotification: (n) {
+          switch (n) {
+            case NodeSelectionNotification():
+              _handleNodeSelection(
+                context,
+                fullPath: n.path,
+                isSelected: n.isSelected,
+                filePaths: _tree?.$2,
+              );
+              return true;
+            case TreeReadyNotification():
+              _updateTreeAndPaths(n.tree, n.filePaths, n.folderPaths);
+              return true;
+            case EntityEventNotification():
+              _handleEntityEvent(n.event);
+              return true;
+          }
+        },
+        child: widget.child,
+      ),
     );
   }
 }
@@ -69,15 +148,6 @@ class _PPFileTreeScopeState extends State<_PPFileTreeScope> {
 // -----------------------------------------------------------------------------
 
 typedef _SelectedFilePaths = ISet<String>;
-typedef _NodeSelectionCallback = void Function(
-  String fullPath,
-  bool isSelected,
-);
-typedef _TreeReadyCallback = void Function(
-  IndexedFileTree tree,
-  List<String> filePaths,
-  List<String> folderPaths,
-);
 
 /// Function signature for the search callback.
 /// {@template path_search_callback}
@@ -102,10 +172,6 @@ extension _PPFileTreeScopeExtension on BuildContext {
   int countSelection(String filePath) => select(
         (_SelectedFilePaths s) => s.where((e) => e.startsWith(filePath)).length,
       );
-
-  /// Handles the selection of a file or folder
-  void handleNodeSelection(IndexedFileTree node, bool isSelected) =>
-      read<_NodeSelectionCallback>()(node.data!.path, isSelected);
 }
 
 // -----------------------------------------------------------------------------
@@ -113,39 +179,37 @@ extension _PPFileTreeScopeExtension on BuildContext {
 // -----------------------------------------------------------------------------
 
 /// Handles file/folder de-/selection
-_NodeSelectionCallback _getNodeSelectionHandler(
+Future<void> _handleNodeSelection(
   BuildContext context, {
   bool reloadNode = false,
+  required String fullPath,
+  required bool isSelected,
   List<String>? filePaths,
-}) =>
-    (
-      String fullPath,
-      bool isSelected,
-    ) async {
-      // Deselect the file, or all files in the folder (recursively)
-      if (!isSelected) {
-        final blocks = context.promptBlocks;
-        final blocksToRemove = blocks
-            .where((b) => b.filePath?.startsWith(fullPath) ?? false)
-            .map((b) => b.id)
-            .toList();
-        await context.db.deleteBlocks(blocksToRemove);
-        return;
-      }
-      var allFilePaths = <String>[];
-      // Select the file, or all files in the folder (recursively)
-      if (reloadNode) {
-        allFilePaths = await compute(_loadFilePaths, fullPath);
-      } else {
-        allFilePaths =
-            filePaths?.where((e) => e.startsWith(fullPath)).toList() ?? [];
-      }
-      if (!context.mounted) return;
-      await context.db.createBlocksFromFiles(
-        allFilePaths,
-        promptId: context.prompt!.id,
-      );
-    };
+}) async {
+  // Deselect the file, or all files in the folder (recursively)
+  if (!isSelected) {
+    final blocks = context.promptBlocks;
+    final blocksToRemove = blocks
+        .where((b) => b.filePath?.startsWith(fullPath) ?? false)
+        .map((b) => b.id)
+        .toList();
+    await context.db.deleteBlocks(blocksToRemove);
+    return;
+  }
+  var allFilePaths = <String>[];
+  // Select the file, or all files in the folder (recursively)
+  if (reloadNode) {
+    allFilePaths = await compute(_loadFilePaths, fullPath);
+  } else {
+    allFilePaths =
+        filePaths?.where((e) => e.startsWith(fullPath)).toList() ?? [];
+  }
+  if (!context.mounted) return;
+  await context.db.createBlocksFromFiles(
+    allFilePaths,
+    promptId: context.prompt!.id,
+  );
+}
 
 /// Loads all file paths that are children of the given file path
 List<String> _loadFilePaths(String givenPath) {

@@ -12,9 +12,15 @@ Future<void> _showFileSearchDialog(BuildContext context) => showPDialog<void>(
                 .where((e) => e.startsWith(p))
                 .length,
           ),
-          Provider<_NodeSelectionCallback>.value(value: context.read()),
         ],
-        child: const _PPSearchDialog(),
+        child: NotificationListener<NodeSelectionNotification>(
+          onNotification: (n) {
+            // Forward the notification from dialog to the main context.
+            n.dispatch(context);
+            return true;
+          },
+          child: const _PPFileSearchDialog(),
+        ),
       ),
     );
 
@@ -26,73 +32,91 @@ typedef _FileSearchNotifier = ValueNotifier<_FileSearchResults>;
 /// and the third element is a boolean indicating whether the path is a directory.
 typedef _FileSearchResults = IList<(String, String, bool)>;
 
-class _PPSearchDialog extends StatelessWidget {
-  const _PPSearchDialog();
+enum _FileSearchState {
+  idle,
+  searching,
+}
+
+class _PPFileSearchDialog extends StatelessWidget {
+  const _PPFileSearchDialog();
 
   @override
   Widget build(BuildContext context) {
     return StateProvider<_FileSearchResults>(
       createInitialValue: (_) => const IList.empty(),
-      child: ValueProvider<TextEditingController>(
-        create: (_) => TextEditingController(),
-        onNotified: (context, controller) async {
-          if (controller?.text case final text?) {
-            final notifier = context.read<_FileSearchNotifier>();
-            notifier.value = (await context.read<_PathSearchCallback>()(text))
-                .take(100)
-                .toIList();
-          }
-        },
-        builder: (context, child) =>
-            ProxyProvider<TextEditingController, List<String>>(
-          update: (_, TextEditingController controller, __) => controller.text
-              .toLowerCase()
-              .split(' ')
-              .where((element) => element.length >= 3)
-              .toList(),
-          child: child,
-        ),
-        child: Align(
-          alignment: const Alignment(0.0, -0.4),
-          child: Container(
-            decoration: ShapeDecoration(
-              color: context.colorScheme.popover,
-              shape: Superellipse(
-                cornerRadius: 12.0,
-                side: BorderSide(
-                  width: .15,
-                  color: PColors.opagueGray.resolveFrom(context),
-                ),
-              ),
-              shadows: [
-                ...mediumShadows(),
-                BoxShadow(
-                  color: Colors.black.replaceOpacity(.1),
-                  blurRadius: 48.0,
-                  spreadRadius: 8.0,
-                ),
-              ],
-            ),
-            width: 600.0,
-            height: 500.0,
-            clipBehavior: Clip.hardEdge,
-            child: const Material(
-              color: Colors.transparent,
-              child: CustomScrollView(
-                shrinkWrap: true,
-                slivers: [
-                  PinnedHeaderSliver(
-                    child: Column(
-                      children: [
-                        _FileSearchField(),
-                        Divider(height: 1.0, thickness: 1.0),
-                      ],
-                    ),
+      child: StateProvider<_FileSearchState>(
+        createInitialValue: (_) => _FileSearchState.idle,
+        child: ValueProvider<TextEditingController>(
+          create: (_) => TextEditingController(),
+          onNotified: (context, controller) async {
+            if (controller?.text case final text?) {
+              final stateNotifier =
+                  context.read<ValueNotifier<_FileSearchState>>();
+              final notifier = context.read<_FileSearchNotifier>();
+              stateNotifier.value = _FileSearchState.searching;
+              final results = (await context.read<_PathSearchCallback>()(text))
+                  .take(20)
+                  .toIList();
+              if (!context.mounted) return;
+              stateNotifier.value = _FileSearchState.idle;
+              // By the time the search results are ready, the text may have changed.
+              // If so, we don't want to update the search results.
+              if (text == controller?.text) {
+                notifier.value = results;
+              }
+            }
+          },
+          builder: (context, child) =>
+              ProxyProvider<TextEditingController, List<String>>(
+            update: (_, controller, __) => controller.text
+                .toLowerCase()
+                .split(' ')
+                .where((element) => element.length >= 3)
+                .toList(),
+            child: child,
+          ),
+          child: Align(
+            alignment: const Alignment(0.0, -0.4),
+            child: Container(
+              decoration: ShapeDecoration(
+                color: context.colorScheme.popover,
+                shape: Superellipse(
+                  cornerRadius: 12.0,
+                  side: BorderSide(
+                    width: .15,
+                    color: PColors.opagueGray.resolveFrom(context),
                   ),
-                  SliverGap(8.0),
-                  _FileSearchResultList(),
-                  SliverGap(32.0),
+                ),
+                shadows: [
+                  ...mediumShadows(),
+                  BoxShadow(
+                    color: Colors.black.replaceOpacity(.1),
+                    blurRadius: 48.0,
+                    spreadRadius: 8.0,
+                  ),
                 ],
+              ),
+              width: 600.0,
+              height: 500.0,
+              clipBehavior: Clip.hardEdge,
+              child: const Material(
+                color: Colors.transparent,
+                child: CustomScrollView(
+                  shrinkWrap: true,
+                  slivers: [
+                    PinnedHeaderSliver(
+                      child: Column(
+                        children: [
+                          _FileSearchField(),
+                          Divider(height: 1.0, thickness: 1.0),
+                        ],
+                      ),
+                    ),
+                    SliverGap(8.0),
+                    _FileSearchResultList(),
+                    SliverGap(32.0),
+                  ],
+                ),
               ),
             ),
           ),
@@ -111,11 +135,20 @@ class _FileSearchField extends StatelessWidget {
       controller: context.read(),
       autofocus: true,
       decoration: InputDecoration(
-        prefixIcon: const Padding(
-          padding: EdgeInsets.only(left: 8.0),
-          child: Icon(
-            HugeIcons.strokeRoundedFolderSearch,
-            size: 20.0,
+        prefixIcon: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Builder(
+            builder: (context) {
+              final isLoading = context.watch<_FileSearchState>() ==
+                  _FileSearchState.searching;
+              return GrayShimmer(
+                enableShimmer: isLoading,
+                child: const Icon(
+                  HugeIcons.strokeRoundedFolderSearch,
+                  size: 20.0,
+                ),
+              );
+            },
           ),
         ),
         hintText: 'Search files…',
@@ -134,15 +167,22 @@ class _FileSearchResultList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final results = context.watch<_FileSearchNotifier>().value;
-    return SuperSliverList.list(
-      children: results.map((info) => _FileSearchResult(info)).toList(),
+    final count = context.select((_FileSearchNotifier n) => n.value.length);
+    return SuperSliverList.builder(
+      itemCount: count,
+      itemBuilder: (context, index) => Builder(
+        builder: (context) {
+          final info =
+              context.select((_FileSearchNotifier n) => n.value[index]);
+          return _FileSearchResult(info, key: ValueKey(info.$1));
+        },
+      ),
     );
   }
 }
 
 class _FileSearchResult extends StatelessWidget {
-  const _FileSearchResult(this.info);
+  const _FileSearchResult(this.info, {super.key});
 
   final (String, String, bool) info;
 
@@ -157,12 +197,12 @@ class _FileSearchResult extends StatelessWidget {
           builder: (context, setState) {
             final selectionCount =
                 context.read<int Function(String)>()(fullPath);
-            void addOrRemove() => setState(
-                  () => context.read<_NodeSelectionCallback>()(
-                    fullPath,
-                    selectionCount == 0,
-                  ),
-                );
+            Future<void> addOrRemove() async {
+              NodeSelectionNotification(fullPath, selectionCount == 0)
+                  .dispatch(context);
+              setState(() {});
+            }
+
             if (selectionCount > 0) {
               if (isHovered) {
                 return ShadBadge.destructive(

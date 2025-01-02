@@ -110,7 +110,7 @@ class _TokenEstimationState extends State<_TokenEstimation> {
             _TokenEstimationProgress(widget.isFullContent),
             const Gap(4.0),
             Text(
-              _formatNumber(widget.count),
+              formatTokenCount(widget.count),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
@@ -118,16 +118,6 @@ class _TokenEstimationState extends State<_TokenEstimation> {
       ),
     );
   }
-}
-
-String _formatNumber(int number) {
-  if (number < 1000) return number.toString();
-  if (number < 1000000) {
-    final k = (number / 1000).toStringAsFixed(1);
-    return '${k}k';
-  }
-  final m = (number / 1000000).toStringAsFixed(1);
-  return '${m}M';
 }
 
 class _CopyButton extends StatelessWidget {
@@ -222,6 +212,7 @@ TextSpan _shortcutSpan(
   bool command,
   bool shift,
   String key,
+  [Color? color,]
 ) =>
     TextSpan(
       children: [
@@ -231,7 +222,7 @@ TextSpan _shortcutSpan(
               padding: const EdgeInsets.only(right: 2.0),
               child: Icon(
                 HugeIcons.strokeRoundedCommand,
-                color: context.textTheme.muted.color,
+                color: color ?? context.textTheme.muted.color,
                 size: 14.0,
               ),
             ),
@@ -242,14 +233,14 @@ TextSpan _shortcutSpan(
               padding: const EdgeInsets.only(right: 2.0),
               child: Icon(
                 CupertinoIcons.shift,
-                color: context.textTheme.muted.color,
+                color: color ?? context.textTheme.muted.color,
                 size: 14.0,
               ),
             ),
           ),
         TextSpan(
           text: key,
-          style: context.textTheme.muted,
+          style: context.textTheme.muted.copyWith(color: color),
         ),
       ],
     );

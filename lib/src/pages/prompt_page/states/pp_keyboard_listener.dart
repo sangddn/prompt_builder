@@ -40,11 +40,10 @@ class _KeyboardListener extends StatelessWidget {
             }
           },
           const SingleActivator(LogicalKeyboardKey.keyP, meta: true): () {
-            context.read<ValueNotifier<_PromptContentViewState>>().value =
-                _PromptContentViewState.preview;
+            _showFileSearchDialog(context);
           },
           const SingleActivator(LogicalKeyboardKey.keyF, meta: true): () {
-            _showFileSearchDialog(context);
+            _showWebSearchDialog(context);
           },
         };
         return CallbackShortcuts(

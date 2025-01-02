@@ -16,22 +16,18 @@ class _PPDropRegionState extends State<_PPDropRegion> {
     final readers = event.session.items.map((e) => e.dataReader).nonNulls;
     for (final reader in readers) {
       if (reader.canProvide(Formats.fileUri)) {
-        reader.getValue(Formats.fileUri, (value) {
+        reader.getValue(Formats.fileUri, (value) async {
           if (mounted && value != null) {
-            _getNodeSelectionHandler(context, reloadNode: true)(
-              value.toFilePath(),
-              true,
+            await _handleNodeSelection(
+              context,
+              reloadNode: true,
+              fullPath: value.toFilePath(),
+              isSelected: true,
             );
-            setState(() {
-              _state = _ProcessingState.received;
-            });
+            maybeSetState(() => _state = _ProcessingState.received);
             Future.delayed(
               Effects.mediumDuration,
-              () {
-                maybeSetState(() {
-                  _state = _ProcessingState.idle;
-                });
-              },
+              () => maybeSetState(() => _state = _ProcessingState.idle),
             );
           }
         });
@@ -41,6 +37,7 @@ class _PPDropRegionState extends State<_PPDropRegion> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
     return DropRegion(
       formats: Formats.standardFormats,
       onDropOver: (event) {
@@ -71,12 +68,12 @@ class _PPDropRegionState extends State<_PPDropRegion> {
               left: 16.0,
               child: Builder(
                 builder: (context) {
-                  return ColoredBox(
+                  return AnimatedContainer(
+                    duration: Effects.shortDuration,
+                    curve: Curves.easeInOut,
                     color: (_state.isInviting
-                            ? context.themeAccent.representativeColor
-                            : CupertinoColors.activeBlue)
-                        .resolveFrom(context)
-                        .replaceOpacity(.3),
+                        ? theme.resolveColor(Colors.white38, Colors.black38)
+                        : theme.resolveColor(Colors.white54, Colors.black54)),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

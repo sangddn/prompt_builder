@@ -51,10 +51,11 @@ class _PromptContentEditMode extends StatelessWidget {
     final widgets = blocks
         .indexedExpand(
           (i, e) => [
+            if (i == 0) const _NewBlockActions.first(),
             Builder(
               key: e.$2,
               builder: (context) => PromptBlockCard(
-                padding: k32HPadding + const EdgeInsets.only(top: 16.0),
+                padding: k32HPadding + const EdgeInsets.only(top: 4.0),
                 database: context.db,
                 prompt: context.watch<Prompt?>(),
                 block: context.watchBlock(e.$1)!,
@@ -70,13 +71,10 @@ class _PromptContentEditMode extends StatelessWidget {
                       },
               ),
             ),
-            if (i < blocks.length - 1)
-              const Divider(
-                height: .75,
-                thickness: .75,
-                indent: 16.0,
-                endIndent: 16.0,
-              ),
+            if (i == blocks.length - 1)
+              const _NewBlockActions.last()
+            else
+              _NewBlockActions(i),
           ],
         )
         .toList();

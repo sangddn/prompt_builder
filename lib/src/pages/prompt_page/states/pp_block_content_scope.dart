@@ -122,9 +122,9 @@ class _BlockChangesHandlerState extends State<_BlockChangesHandler> {
   Widget build(BuildContext context) => MultiProvider(
         providers: [
           Provider<_PromptBlockContents>.value(value: _contents),
-          ProxyProvider<_PromptBlockContents, _PromptCopiableContent>(
-            update: (context, contents, _) => _PromptCopiableContent(
-              contents.values.map((e) => e.text).nonNulls.join('\n\n'),
+          ProxyProvider2<_PromptBlockList, _PromptBlockContents, _PromptCopiableContent>(
+            update: (context, blocks, contents, _) => _PromptCopiableContent(
+              blocks.map((b) => contents[b.id]?.text).nonNulls.join('\n\n'),
             ),
           ),
         ],

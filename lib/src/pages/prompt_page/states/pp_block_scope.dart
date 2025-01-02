@@ -84,4 +84,53 @@ extension _PromptBlockScopeExtension on BuildContext {
   PromptBlock? watchBlock(int id) => selectBlocks(
         (bs) => bs.firstWhereOrNull((b) => b.id == id),
       );
+
+  /// Creates a new text block for the prompt at the given index and returns its
+  /// ID. The new block will occupy the given index in the new list.
+  ///
+  /// If the index is 0, the new block will be inserted at the beginning of the
+  /// list. If the index is the currently last index (n_old - 1), the new block
+  /// will be inserted right before the last block.
+  Future<int?> createTextBlockAtIndex(
+    int index, {
+    String? displayName,
+    String? textContent,
+  }) async {
+    final promptId = prompt?.id;
+    if (promptId == null) return null;
+    if (index < 0) throw StateError('New index must be non-negative.');
+    if (index == 0) {
+      final prevSortOrder = promptBlocks.firstOrNull?.sortOrder;
+      final sortOrder = (prevSortOrder ?? 10e6) / 2;
+      return db.createBlock(
+        promptId: promptId,
+        blockType: BlockType.text,
+        displayName: displayName,
+        textContent: textContent,
+        sortOrder: sortOrder,
+      );
+    }
+    final currentLength = promptBlocks.length;
+    if (index >= currentLength) {
+      final currentLastSortOrder = promptBlocks.lastOrNull?.sortOrder;
+      final sortOrder = (currentLastSortOrder ?? 10e6) * 2;
+      return db.createBlock(
+        promptId: promptId,
+        blockType: BlockType.text,
+        displayName: displayName,
+        textContent: textContent,
+        sortOrder: sortOrder,
+      );
+    }
+    final prevSortOrder = promptBlocks[index - 1].sortOrder;
+    final nextSortOrder = promptBlocks[index].sortOrder;
+    final sortOrder = (prevSortOrder + nextSortOrder) / 2;
+    return db.createBlock(
+      promptId: promptId,
+      blockType: BlockType.text,
+      displayName: displayName,
+      textContent: textContent,
+      sortOrder: sortOrder,
+    );
+  }
 }
