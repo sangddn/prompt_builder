@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Prompt Builder</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist&display=swap" rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Geist', sans-serif;
+            background-color: #fff;
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            max-width: 1200px;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo in the top-left */
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        /* GitHub link in the top-right */
+        nav a {
+            color: #000;
+            text-decoration: none;
+            font-weight: 500;
+            margin-left: 1rem;
+        }
+
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            padding-top: 6rem;
+            padding-bottom: 6rem;
+        }
+
+        main .icon {
+            margin-bottom: 1.5rem;
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+        }
+
+        h1 {
+            font-size: 2rem;
+            max-width: 500px;
+            margin-bottom: 1.5rem;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+            max-width: 600px;
+        }
+
+        .download-button {
+            background-color: #222222;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 12px;
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+        }
+
+        .availability {
+            font-size: 0.85rem;
+            color: #777;
+            margin-bottom: 2rem;
+        }
+
+        footer {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .footer-links a {
+            color: #999;
+            text-decoration: none;
+            margin-left: 1rem;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="./">
+                <img src="logo.png" alt="logo" />
+            </a>
+        </div>
+        <nav>
+            <a href="https://github.com/sangddn/prompt_builder" target="_blank">
+                GitHub
+            </a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <img class="icon" src="logo.png" alt="icon" />
+
+        <h1>Build rich, multi-file prompts</h1>
+        <p>
+            Prompt Builder streamlines the process of creating complex prompts for LLMs by
+            letting you combine files, transcripts, summaries, and more in a single
+            interface.
+        </p>
+
+        <a class="download-button"
+            href="https://github.com/sangddn/prompt_builder/releases/download/v0.0.1/prompt-builder-macos-universal-v0.0.1+3.zip"
+            target="_blank">
+            Download ↓
+        </a>
+        <div class="availability">
+            Available for macOS
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div>&copy; 2024 Sang Doan</div>
+        <div class="footer-links">
+            <a href="https://github.com/sangddn/prompt_builder" target="_blank">GitHub</a>
+            <a href="https://x.com/sangddn" target="_blank">Twitter</a>
+        </div>
+    </footer>
+
+</body>
+
+</html>
