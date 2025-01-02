@@ -2,23 +2,48 @@ part of 'llm_pickers.dart';
 
 class ProviderPicker<T extends ProviderWithApiKey> extends StatelessWidget {
   const ProviderPicker({
+    this.decoration,
     this.initialProvider,
     required this.providers,
     required this.onChange,
+    this.builder,
     super.key,
   });
 
   ProviderPicker.llms({
     this.initialProvider,
     required this.onChange,
+    this.builder,
+    this.decoration,
     super.key,
   }) : providers = kAllLLMProviders.cast<T>();
 
   ProviderPicker.search({
     this.initialProvider,
     required this.onChange,
+    this.builder,
+    this.decoration,
     super.key,
   }) : providers = kAllSearchProviders.cast<T>();
+
+  factory ProviderPicker.searchWithDefaultUpdate({
+    T? initialProvider,
+    Widget Function(BuildContext, T)? builder,
+    Key? key,
+    ShadDecoration? decoration,
+  }) =>
+      ProviderPicker(
+        key: key,
+        initialProvider: initialProvider,
+        builder: builder,
+        providers: kAllSearchProviders.cast<T>(),
+        decoration: decoration,
+        onChange: (provider) {
+          if (provider != null) {
+            SearchProviderPreference.setProvider(provider as SearchProvider);
+          }
+        },
+      );
 
   final T? initialProvider;
 
@@ -27,17 +52,25 @@ class ProviderPicker<T extends ProviderWithApiKey> extends StatelessWidget {
   /// Called when the provider is changed.
   final void Function(T?) onChange;
 
+  final Widget Function(BuildContext, T)? builder;
+
+  final ShadDecoration? decoration;
+
   @override
   Widget build(BuildContext context) {
     return ShadSelect<ProviderWithApiKey>(
       placeholder: const Text('Select a provider'),
       initialValue: initialProvider,
       options: providers.map((provider) => _ProviderOption(provider)),
-      selectedOptionBuilder: (context, value) => Padding(
-        padding: const EdgeInsets.only(right: 8.0),
-        child: ProviderTile(provider: value),
-      ),
+      selectedOptionBuilder: (context, value) =>
+          builder?.call(context, value as T) ??
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: ProviderTile(provider: value),
+          ),
+      minWidth: 16.0,
       onChanged: (value) => onChange(value as T?),
+      decoration: decoration,
     );
   }
 }

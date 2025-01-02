@@ -60,14 +60,11 @@ class _SearchProviderPreference extends StatelessWidget {
         ),
         const Gap(4.0),
         Provider<SearchProvider?>(
-          create: (_) => SearchProviderPreference.getValidProviderWithFallback(),
-          builder: (context, _) => ProviderPicker<SearchProvider>.search(
+          create: (_) =>
+              SearchProviderPreference.getValidProviderWithFallback(),
+          builder: (context, _) =>
+              ProviderPicker<SearchProvider>.searchWithDefaultUpdate(
             initialProvider: context.read(),
-            onChange: (provider) {
-              if (provider != null) {
-                SearchProviderPreference.setProvider(provider);
-              }
-            },
           ),
         ),
       ],

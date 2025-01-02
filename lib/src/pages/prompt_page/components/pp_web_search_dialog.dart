@@ -21,7 +21,7 @@ class _WebSearchButton extends StatelessWidget {
       tooltip: 'Search and add content from the web.',
       onTap: () => _showWebSearchDialog(context),
       padding: k16H8VPadding,
-      color: PColors.opaqueLightGray.resolveFrom(context),
+      color: PColors.lightGray.resolveFrom(context),
       child: Stack(
         alignment: AlignmentDirectional.centerEnd,
         children: [
@@ -141,16 +141,28 @@ class _SearchBar extends StatelessWidget {
       autofocus: true,
       decoration: InputDecoration(
         prefixIcon: Padding(
-          padding: const EdgeInsets.only(left: 8.0),
+          padding: const EdgeInsets.only(left: 8.0, right: 4.0),
           child: Builder(
             builder: (context) {
               final isLoading = context.isSearching();
+              final provider = context.watch<SearchProvider?>();
               return GrayShimmer(
                 enableShimmer: isLoading,
-                child: const ShadImage.square(
-                  HugeIcons.strokeRoundedGlobe02,
-                  size: 20.0,
-                ),
+                child: provider == null
+                    ? const ShadImage.square(
+                        HugeIcons.strokeRoundedGlobe02,
+                        size: 20.0,
+                      )
+                    : ProviderPicker.searchWithDefaultUpdate(
+                        initialProvider: provider,
+                        decoration: const ShadDecoration(
+                          border: ShadBorder(),
+                        ),
+                        builder: (context, provider) => Padding(
+                          padding: const EdgeInsets.only(right: 4.0),
+                          child: ProviderLogo(provider: provider),
+                        ),
+                      ),
               );
             },
           ),
@@ -163,6 +175,8 @@ class _SearchBar extends StatelessWidget {
       ),
       style: context.textTheme.list,
       onSubmitted: (query) => context._search(),
+      // This ensures field stays focused when Enter is pressed.
+      onEditingComplete: () {},
     );
   }
 }
