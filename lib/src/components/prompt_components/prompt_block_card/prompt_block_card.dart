@@ -16,6 +16,7 @@ import '../../../services/services.dart';
 import '../../components.dart';
 
 part 'block_router_widget.dart';
+part 'block_display_name.dart';
 part 'block_token_count.dart';
 part 'block_context_menu.dart';
 part 'block_actions.dart';
@@ -92,35 +93,6 @@ class PromptBlockCard extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _BlockDisplayName extends StatelessWidget {
-  const _BlockDisplayName();
-
-  @override
-  Widget build(BuildContext context) {
-    final prompt = context.watch<Prompt?>();
-    final hint = context.selectBlock((b) => b.getDefaultDisplayName(prompt));
-    return ValueProvider<TextEditingController>(
-      create: (context) =>
-          TextEditingController(text: context.block.displayName),
-      onNotified: (context, controller) {
-        if (controller?.text != context.block.displayName) {
-          context.db
-              .updateBlock(context.block.id, displayName: controller?.text);
-        }
-      },
-      builder: (context, _) => TextField(
-        controller: context.read(),
-        style: context.textTheme.muted,
-        decoration: InputDecoration.collapsed(
-          hintText: hint,
-          hintStyle: context.textTheme.muted
-              .copyWith(color: PColors.textGray.resolveFrom(context)),
         ),
       ),
     );
