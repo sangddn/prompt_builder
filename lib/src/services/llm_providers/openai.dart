@@ -134,13 +134,9 @@ final class OpenAI extends LLMProvider {
     Uint8List data,
     String mimeType, [
     String? model,
-  ]) {
+  ]) async {
     if (mimeType.startsWith('image/')) {
-      final image = img.decodeImage(data);
-      if (image == null) {
-        throw Exception('Failed to decode image');
-      }
-
+      final image = await decodeImageFromList(data);
       final width = image.width;
       final height = image.height;
 
