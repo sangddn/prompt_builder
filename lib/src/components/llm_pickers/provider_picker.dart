@@ -1,39 +1,51 @@
 part of 'llm_pickers.dart';
 
-class ProviderPicker extends StatelessWidget {
+class ProviderPicker<T extends ProviderWithApiKey> extends StatelessWidget {
   const ProviderPicker({
     this.initialProvider,
-    this.allowedProviders,
+    required this.providers,
     required this.onChange,
     super.key,
   });
 
-  final LLMProvider? initialProvider;
+  ProviderPicker.llms({
+    this.initialProvider,
+    required this.onChange,
+    super.key,
+  }) : providers = kAllLLMProviders.cast<T>();
 
-  /// If null, all providers are allowed.
-  final List<LLMProvider>? allowedProviders;
+  ProviderPicker.search({
+    this.initialProvider,
+    required this.onChange,
+    super.key,
+  }) : providers = kAllSearchProviders.cast<T>();
+
+  final T? initialProvider;
+
+  final List<T> providers;
 
   /// Called when the provider is changed.
-  final void Function(LLMProvider?) onChange;
+  final void Function(T?) onChange;
 
   @override
   Widget build(BuildContext context) {
-    final providers = allowedProviders ?? [OpenAI(), Anthropic(), Gemini()];
-    return ShadSelect<LLMProvider>(
+    return ShadSelect<ProviderWithApiKey>(
       placeholder: const Text('Select a provider'),
       initialValue: initialProvider,
       options: providers.map((provider) => _ProviderOption(provider)),
-      selectedOptionBuilder: (context, value) =>
-          LLMProviderTile(provider: value),
-      onChanged: onChange,
+      selectedOptionBuilder: (context, value) => Padding(
+        padding: const EdgeInsets.only(right: 8.0),
+        child: ProviderTile(provider: value),
+      ),
+      onChanged: (value) => onChange(value as T?),
     );
   }
 }
 
-class _ProviderOption extends StatefulWidget {
+class _ProviderOption<T extends ProviderWithApiKey> extends StatefulWidget {
   const _ProviderOption(this.provider);
 
-  final LLMProvider provider;
+  final T provider;
 
   @override
   State<_ProviderOption> createState() => _ProviderOptionState();
@@ -49,11 +61,12 @@ class _ProviderOptionState extends State<_ProviderOption> {
           final isEnabled = snapshot.data ?? false;
           return IgnorePointer(
             ignoring: !isEnabled,
-            child: ShadOption(
+            child: ShadOption<ProviderWithApiKey>(
               value: widget.provider,
-              child: LLMProviderTile(
+              child: ProviderTile(
                 provider: widget.provider,
                 isEnabled: isEnabled,
+                expandSpaceBetween: true,
                 subtitle: isEnabled ? null : const Text('API key not set.'),
               ),
             ),

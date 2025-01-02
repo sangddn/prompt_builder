@@ -65,7 +65,7 @@ class _AudioTranscriberProviderPicker extends StatelessWidget {
     final provider = context.watchProvider();
     return ProviderPicker(
       initialProvider: provider,
-      allowedProviders: const TranscribeAudioUseCase().providers,
+      providers: const TranscribeAudioUseCase().providers,
       onChange: (newProvider) {
         if (newProvider != null) {
           context.setProvider(newProvider);

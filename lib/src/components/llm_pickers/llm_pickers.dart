@@ -76,7 +76,7 @@ class _ProviderPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watchProvider();
-    return ProviderPicker(
+    return ProviderPicker.llms(
       initialProvider: provider,
       onChange: (newProvider) {
         if (newProvider != null) {
@@ -127,13 +127,8 @@ class _ModelPickerState extends State<_ModelPicker> {
                   : const Text('Select a model'),
           enabled: isEnabled,
           initialValue: isEnabled ? null : context.watchModel(),
-          options: models?.map(
-                (model) => ShadOption(
-                  value: model,
-                  child: Text(model),
-                ),
-              ) ??
-              [],
+          options:
+              models?.map((m) => ShadOption(value: m, child: Text(m))) ?? [],
           selectedOptionBuilder: (context, value) => Text(value),
           onChanged: (newModel) {
             if (newModel != null) {
