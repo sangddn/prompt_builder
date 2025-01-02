@@ -97,13 +97,12 @@ class _Tags extends StatelessWidget {
               final tag = context.select(
                 (_TagsNotifier n) => n.value.elementAtOrNull(index),
               );
-              if (tag == null) return const SizedBox.shrink();
               return AnimatedTo(
-                globalKey: GlobalObjectKey('snippet-tag-$tag'),
+                globalKey: GlobalObjectKey('snippet-tag-$index'),
                 duration: Effects.shortDuration,
                 curve: Effects.snappyOutCurve,
                 slidingFrom: Offset(0.0, (index + 1) * 5.0),
-                child: _Tag(tag),
+                child: tag == null ? const SizedBox.shrink() : _Tag(tag),
               );
             },
           ),
