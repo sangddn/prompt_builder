@@ -1,6 +1,8 @@
-// ignore_for_file: avoid_dynamic_calls
+// ignore_for_file: avoid_dynamic_calls, use_late_for_private_fields_and_variables
 
 part of 'llm_providers.dart';
+
+List<String>? _cachedOpenAIModelNames;
 
 final class OpenAI extends LLMProvider {
   factory OpenAI({String? apiKey}) =>
@@ -36,6 +38,7 @@ final class OpenAI extends LLMProvider {
 
   @override
   Future<List<String>> listModels() async {
+    if (_cachedOpenAIModelNames != null) return _cachedOpenAIModelNames!;
     try {
       final apiKey = getApiKey();
       final response = await http.get(
@@ -52,12 +55,11 @@ final class OpenAI extends LLMProvider {
         throw Exception(data['error']['message'] as String);
       }
 
-      final models = (data['data'] as List)
-          .map((model) => model['id'] as String)
-          .where((id) => id.startsWith('gpt-4'))
-          .toList();
+      final models =
+          (data['data'] as List).map((model) => model['id'] as String).toList();
 
-      return models.isEmpty ? _defaultModelsList : models;
+      return _cachedOpenAIModelNames ??=
+          (models.isEmpty ? _defaultModelsList : models);
     } on Exception catch (e) {
       debugPrint('Failed to fetch models: $e. Using default models list.');
       return _defaultModelsList;

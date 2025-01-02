@@ -1,20 +1,37 @@
 import 'package:flutter/foundation.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart' as fuzzy;
 
-List<String> _fuzzySearch((List<String>, String) args) {
-  final (strings, query) = args;
-  return strings
-    ..sort((a, b) {
-      final scoreA =
-          fuzzy.tokenSortPartialRatio(a.toLowerCase(), query.toLowerCase());
-      final scoreB =
-          fuzzy.tokenSortPartialRatio(b.toLowerCase(), query.toLowerCase());
-      return scoreB.compareTo(scoreA); // Sort in descending order
-    });
+List<String> _fuzzySearch((List<String>, String, int) args) {
+  final (strings, query, threshold) = args;
+  final effectiveQuery = query.toLowerCase();
+  return (List.of(strings, growable: false)
+          .map(
+            (s) => (
+              s,
+              fuzzy.tokenSortPartialRatio(s.toLowerCase(), effectiveQuery)
+            ),
+          )
+          .where((s) => s.$2 >= threshold)
+          .toList()
+        ..sort((a, b) {
+          final scoreA = a.$2;
+          final scoreB = b.$2;
+          return scoreB.compareTo(scoreA); // Sort in descending order
+        }))
+      .map((s) => s.$1)
+      .toList();
 }
 
-List<String> fuzzySearch(List<String> strings, String query) =>
-    _fuzzySearch((strings, query));
+List<String> fuzzySearch(
+  List<String> strings,
+  String query, [
+  int threshold = 0,
+]) =>
+    _fuzzySearch((strings, query, threshold));
 
-Future<List<String>> fuzzySearchAsync(List<String> strings, String query) =>
-    compute(_fuzzySearch, (strings, query));
+Future<List<String>> fuzzySearchAsync(
+  List<String> strings,
+  String query, [
+  int threshold = 0,
+]) =>
+    compute(_fuzzySearch, (strings, query, threshold));

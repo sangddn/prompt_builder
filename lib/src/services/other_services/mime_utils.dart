@@ -3,6 +3,9 @@ import 'package:path/path.dart' as path;
 import 'package:super_clipboard/super_clipboard.dart';
 
 bool canBeRepresentedAsText(String filePath) {
+  // If is code or markdown, return true
+  if (isCodeFile(filePath) || isMarkdownFile(filePath)) return true;
+
   final mimeType = lookupMimeType(filePath);
   if (mimeType == null) return false;
 
@@ -51,112 +54,124 @@ bool isImageFile(String filePath) {
   return mimeType != null && mimeType.startsWith('image/');
 }
 
+bool isPdfFile(String filePath) {
+  final mimeType = lookupMimeType(filePath);
+  return mimeType != null && mimeType.startsWith('application/pdf');
+}
+
 bool isVideoFile(String filePath) {
   final mimeType = lookupMimeType(filePath);
   return mimeType != null && mimeType.startsWith('video/');
 }
 
 bool isCodeFile(String filePath) {
-  final extension = path.extension(filePath).toLowerCase();
-
-  // Map of file extensions to their corresponding language identifiers
-  const codeFileExtensions = {
-    // Common web languages
-    'js': 'javascript',
-    'ts': 'typescript',
-    'html': 'html',
-    'css': 'css',
-    'scss': 'scss',
-    'less': 'less',
-    'json': 'json',
-    'xml': 'xml',
-    'yaml': 'yaml',
-    'yml': 'yaml',
-    'graphql': 'graphql',
-    'gql': 'graphql',
-    'vue': 'vue',
-
-    // Programming languages
-    'py': 'python',
-    'rb': 'ruby',
-    'php': 'php',
-    'java': 'java',
-    'kt': 'kotlin',
-    'scala': 'scala',
-    'cs': 'cs',
-    'fs': 'fsharp',
-    'go': 'go',
-    'rs': 'rust',
-    'swift': 'swift',
-    'dart': 'dart',
-    'r': 'r',
-    'lua': 'lua',
-    'pl': 'perl',
-    'elm': 'elm',
-    'erl': 'erlang',
-    'ex': 'elixir',
-    'exs': 'elixir',
-    'hs': 'haskell',
-    'ml': 'ocaml',
-    'clj': 'clojure',
-    'coffee': 'coffeescript',
-    // 'ts': 'typescript',
-    'jsx': 'javascript',
-    'tsx': 'typescript',
-
-    // Shell/config languages
-    'sh': 'bash',
-    'bash': 'bash',
-    'zsh': 'bash',
-    'fish': 'bash',
-    'ini': 'ini',
-    'conf': 'ini',
-    'toml': 'ini',
-    'dockerfile': 'dockerfile',
-
-    // Systems languages
-    'c': 'c',
-    'h': 'c',
-    'cpp': 'cpp',
-    'hpp': 'cpp',
-    'cc': 'cpp',
-    'hh': 'cpp',
-    'asm': 'x86asm',
-    
-    // Database languages
-    'sql': 'sql',
-    'pgsql': 'pgsql',
-    'mysql': 'sql',
-
-    // Markup/template languages
-    'md': 'markdown',
-    'markdown': 'markdown',
-    'tex': 'tex',
-    'latex': 'tex',
-    'haml': 'haml',
-    'slim': 'ruby',
-    'jade': 'javascript',
-    'pug': 'javascript',
-    'liquid': 'ruby',
-    'erb': 'erb',
-    'twig': 'twig',
-    
-    // Build/config files
-    'gradle': 'gradle',
-    'maven': 'xml',
-    'pom': 'xml',
-    'cmake': 'cmake',
-    'make': 'makefile',
-    'mk': 'makefile',
-    
-    // Other
-    'sol': 'solidity',
-    'proto': 'protobuf',
-    'gn': 'gn',
-  };
-
-  return codeFileExtensions.containsKey(extension);
+  final extension = path.extension(filePath).replaceAll('.', '').toLowerCase();
+  return _codeFileExtensions.containsKey(extension);
 }
+
+bool isMarkdownFile(String filePath) {
+  final extension = path.extension(filePath).replaceAll('.', '').toLowerCase();
+  return extension == 'md' || extension == 'markdown';
+}
+
+String? getCodeLanguage(String fileExtension) =>
+    _codeFileExtensions[fileExtension];
+
+// Map of file extensions to their corresponding language identifiers
+const _codeFileExtensions = {
+  // Common web languages
+  'js': 'javascript',
+  'ts': 'typescript',
+  'html': 'html',
+  'css': 'css',
+  'scss': 'scss',
+  'less': 'less',
+  'json': 'json',
+  'xml': 'xml',
+  'yaml': 'yaml',
+  'yml': 'yaml',
+  'graphql': 'graphql',
+  'gql': 'graphql',
+  'vue': 'vue',
+
+  // Programming languages
+  'py': 'python',
+  'rb': 'ruby',
+  'php': 'php',
+  'java': 'java',
+  'kt': 'kotlin',
+  'scala': 'scala',
+  'cs': 'cs',
+  'fs': 'fsharp',
+  'go': 'go',
+  'rs': 'rust',
+  'swift': 'swift',
+  'dart': 'dart',
+  'r': 'r',
+  'lua': 'lua',
+  'pl': 'perl',
+  'elm': 'elm',
+  'erl': 'erlang',
+  'ex': 'elixir',
+  'exs': 'elixir',
+  'hs': 'haskell',
+  'ml': 'ocaml',
+  'clj': 'clojure',
+  'coffee': 'coffeescript',
+  // 'ts': 'typescript',
+  'jsx': 'javascript',
+  'tsx': 'typescript',
+
+  // Shell/config languages
+  'sh': 'bash',
+  'bash': 'bash',
+  'zsh': 'bash',
+  'fish': 'bash',
+  'ini': 'ini',
+  'conf': 'ini',
+  'toml': 'ini',
+  'dockerfile': 'dockerfile',
+
+  // Systems languages
+  'c': 'c',
+  'h': 'c',
+  'cpp': 'cpp',
+  'hpp': 'cpp',
+  'cc': 'cpp',
+  'hh': 'cpp',
+  'asm': 'x86asm',
+
+  // Database languages
+  'sql': 'sql',
+  'pgsql': 'pgsql',
+  'mysql': 'sql',
+
+  // Markup/template languages
+  'md': 'markdown',
+  'markdown': 'markdown',
+  'tex': 'tex',
+  'latex': 'tex',
+  'haml': 'haml',
+  'slim': 'ruby',
+  'jade': 'javascript',
+  'pug': 'javascript',
+  'liquid': 'ruby',
+  'erb': 'erb',
+  'twig': 'twig',
+
+  // Build/config files
+  'gradle': 'gradle',
+  'maven': 'xml',
+  'pom': 'xml',
+  'cmake': 'cmake',
+  'make': 'makefile',
+  'mk': 'makefile',
+
+  // Other
+  'sol': 'solidity',
+  'proto': 'protobuf',
+  'gn': 'gn',
+};
 
 DataFormat? getDataFormat(String filePath) {
   final extension = filePath.split('.').last.toLowerCase();

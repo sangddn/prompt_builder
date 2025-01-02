@@ -1,6 +1,8 @@
-// ignore_for_file: avoid_dynamic_calls
+// ignore_for_file: avoid_dynamic_calls, use_late_for_private_fields_and_variables
 
 part of 'llm_providers.dart';
+
+List<String>? _cachedAnthropicModelNames;
 
 final class Anthropic extends LLMProvider {
   factory Anthropic({String? apiKey}) =>
@@ -25,6 +27,8 @@ final class Anthropic extends LLMProvider {
   @override
   String get apiKeyKey => 'anthropic_api_key';
 
+  static const _defaultMaxTokens = 3000;
+
   Map<String, String> _getHeaders() => {
         'x-api-key': getApiKey(),
         'anthropic-version': '2023-06-01',
@@ -33,19 +37,23 @@ final class Anthropic extends LLMProvider {
 
   @override
   Future<List<String>> listModels() async {
+    if (_cachedAnthropicModelNames != null) return _cachedAnthropicModelNames!;
     try {
       final response = await http.get(
         Uri.parse('https://api.anthropic.com/v1/models'),
         headers: _getHeaders()..remove('Content-Type'),
       );
-      if (response.statusCode != 200) {
-        throw Exception('Failed to list models: ${response.body}');
-      }
+
       final data = jsonDecode(response.body);
 
-      return (data['data'] as List)
-          .map((model) => model['id'] as String)
-          .toList();
+      if (response.statusCode != 200) {
+        final error = data['error']['message'] as String;
+        debugPrint('Anthropic error: $error');
+        throw Exception(error);
+      }
+
+      return _cachedAnthropicModelNames ??=
+          (data['data'] as List).map((model) => model['id'] as String).toList();
     } on Exception catch (e) {
       debugPrint('Failed to list models: $e. Using default models list.');
       return _defaultModelsList;
@@ -85,15 +93,17 @@ final class Anthropic extends LLMProvider {
             ],
           },
         ],
-        'max_tokens': 300,
+        'max_tokens': _defaultMaxTokens,
       }),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to caption image: ${response.body}');
-    }
-
     final data = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      final error = data['error']['message'] as String;
+      debugPrint('Anthropic error: $error');
+      throw Exception(error);
+    }
 
     return data['content'][0]['text'] as String;
   }
@@ -124,11 +134,14 @@ final class Anthropic extends LLMProvider {
       }),
     );
 
+    final data = jsonDecode(response.body);
+
     if (response.statusCode != 200) {
-      throw Exception('Failed to count tokens: ${response.body}');
+      final error = data['error']['message'] as String;
+      debugPrint('Anthropic error: $error');
+      throw Exception(error);
     }
 
-    final data = jsonDecode(response.body);
     return (
       data['input_tokens'] as int,
       'Anthropic API • ${model ?? defaultModel}'
@@ -188,7 +201,7 @@ final class Anthropic extends LLMProvider {
 
     // Create mutable copy of headers and add PDF beta flag if needed
     final headers = Map<String, String>.from(_getHeaders());
-    if (mimeType == 'application/pdf') {
+    if (mimeType.startsWith('application/pdf')) {
       headers['anthropic-beta'] = 'pdfs-2024-09-25';
     }
 
@@ -198,11 +211,13 @@ final class Anthropic extends LLMProvider {
       body: jsonEncode(requestBody),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to count tokens: ${response.body}');
-    }
-
     final responseData = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      final error = responseData['error']['message'] as String;
+      debugPrint('Anthropic error: $error');
+      throw Exception(error);
+    }
 
     return responseData['input_tokens'] as int;
   }
@@ -224,14 +239,18 @@ final class Anthropic extends LLMProvider {
         'messages': [
           {'role': 'user', 'content': prompt},
         ],
+        'max_tokens': _defaultMaxTokens,
       }),
     );
 
+    final data = jsonDecode(response.body);
+
     if (response.statusCode != 200) {
-      throw Exception('Failed to generate prompt: ${response.body}');
+      final error = data['error']['message'] as String;
+      debugPrint('Anthropic error: $error');
+      throw Exception(error);
     }
 
-    final data = jsonDecode(response.body);
     return data['content'][0]['text'] as String;
   }
 
@@ -253,14 +272,17 @@ final class Anthropic extends LLMProvider {
         'messages': [
           {'role': 'user', 'content': prompt},
         ],
+        'max_tokens': _defaultMaxTokens,
       }),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to summarize content: ${response.body}');
-    }
-
     final data = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      final error = data['error']['message'] as String;
+      debugPrint('Anthropic error: $error');
+      throw Exception(error);
+    }
 
     return data['content'][0]['text'] as String;
   }

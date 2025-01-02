@@ -139,7 +139,8 @@ abstract final class SearchProviderPreference {
         .stringRef
         .watch(key: _preferenceKey)
         .map((e) => e.value as String?)
-        .map(_parseProvider);
+        .map(_parseProvider)
+        .startsWith(getValidProvider());
     final braveStream = Brave().isSetUp().map((e) => e ? Brave() : null);
     final exaStream = Exa().isSetUp().map((e) => e ? Exa() : null);
     return CombineAnyLatestStream.combine3(

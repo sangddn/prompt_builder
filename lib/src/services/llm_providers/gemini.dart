@@ -1,6 +1,8 @@
-// ignore_for_file: avoid_dynamic_calls
+// ignore_for_file: avoid_dynamic_calls, use_late_for_private_fields_and_variables
 
 part of 'llm_providers.dart';
+
+List<String>? _cachedGeminiModelNames;
 
 final class Gemini extends LLMProvider {
   factory Gemini({String? apiKey}) =>
@@ -24,22 +26,24 @@ final class Gemini extends LLMProvider {
 
   @override
   Future<List<String>> listModels() async {
+    if (_cachedGeminiModelNames != null) return _cachedGeminiModelNames!;
     try {
       final apiKey = getApiKey();
       final response = await http.get(
         Uri.parse('https://generativelanguage.googleapis.com/v1beta/models'),
-        headers: {
-          'x-goog-api-key': apiKey,
-        },
+        headers: {'x-goog-api-key': apiKey},
       );
 
+      final data = jsonDecode(response.body);
+
       if (response.statusCode != 200) {
-        throw Exception('Failed to list models: ${response.body}');
+        final error = data['error']['message'] as String;
+        debugPrint('Gemini error: $error');
+        throw Exception(error);
       }
 
-      final data = jsonDecode(response.body);
-      return (data['models'] as List)
-          .map((model) => model['baseModelId'] as String)
+      return _cachedGeminiModelNames ??= (data['models'] as List)
+          .map((model) => (model['name'] as String).replaceFirst('models/', ''))
           .toList();
     } on Exception catch (e) {
       debugPrint(
@@ -55,11 +59,8 @@ final class Gemini extends LLMProvider {
 
     final response = await http.post(
       Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/'
-          '${model ?? defaultModel}:countTokens'),
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey,
-      },
+          '${model ?? defaultModel}:countTokens?key=$apiKey'),
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
           {
@@ -71,11 +72,14 @@ final class Gemini extends LLMProvider {
       }),
     );
 
+    final data = jsonDecode(response.body);
+
     if (response.statusCode != 200) {
-      throw Exception('Failed to count tokens: ${response.body}');
+      final error = data['error']['message'] as String;
+      debugPrint('Gemini error: $error');
+      throw Exception(error);
     }
 
-    final data = jsonDecode(response.body);
     return (
       data['totalTokens'] as int,
       'Gemini API • ${model ?? defaultModel}'
@@ -95,11 +99,8 @@ final class Gemini extends LLMProvider {
 
     final response = await http.post(
       Uri.parse('https://generativelanguage.googleapis.com/v1/models/'
-          '${model ?? defaultModel}/generateContent'),
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey,
-      },
+          '${model ?? defaultModel}:generateContent?key=$apiKey'),
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
           {
@@ -111,11 +112,13 @@ final class Gemini extends LLMProvider {
       }),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to summarize content: ${response.body}');
-    }
-
     final data = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      final error = data['error']['message'] as String;
+      debugPrint('Gemini error: $error');
+      throw Exception(error);
+    }
 
     return data['candidates'][0]['content']['parts'][0]['text'] as String;
   }
@@ -133,11 +136,8 @@ final class Gemini extends LLMProvider {
 
     final response = await http.post(
       Uri.parse('https://generativelanguage.googleapis.com/v1/models/'
-          '${model ?? defaultModel}/generateContent'),
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey,
-      },
+          '${model ?? defaultModel}:generateContent?key=$apiKey'),
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
           {
@@ -155,11 +155,13 @@ final class Gemini extends LLMProvider {
       }),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to caption image: ${response.body}');
-    }
-
     final data = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      final error = data['error']['message'] as String;
+      debugPrint('Gemini error: $error');
+      throw Exception(error);
+    }
 
     return data['candidates'][0]['content']['parts'][0]['text'] as String;
   }
@@ -176,11 +178,8 @@ final class Gemini extends LLMProvider {
 
     final response = await http.post(
       Uri.parse('https://generativelanguage.googleapis.com/v1/models/'
-          '${model ?? defaultModel}/generateContent'),
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey,
-      },
+          '${model ?? defaultModel}:generateContent?key=$apiKey'),
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
           {
@@ -192,11 +191,13 @@ final class Gemini extends LLMProvider {
       }),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to generate prompt: ${response.body}');
-    }
-
     final data = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      final error = data['error']['message'] as String;
+      debugPrint('Gemini error: $error');
+      throw Exception(error);
+    }
 
     return data['candidates'][0]['content']['parts'][0]['text'] as String;
   }
@@ -214,11 +215,8 @@ final class Gemini extends LLMProvider {
 
     final response = await http.post(
       Uri.parse('https://generativelanguage.googleapis.com/v1/models/'
-          '${model ?? defaultModel}/generateContent'),
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey,
-      },
+          '${model ?? defaultModel}:generateContent?key=$apiKey'),
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
           {
@@ -236,11 +234,13 @@ final class Gemini extends LLMProvider {
       }),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to transcribe audio: ${response.body}');
-    }
-
     final data = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      final error = data['error']['message'] as String;
+      debugPrint('Gemini error: $error');
+      throw Exception(error);
+    }
 
     return data['candidates'][0]['content']['parts'][0]['text'] as String;
   }
@@ -262,11 +262,8 @@ final class Gemini extends LLMProvider {
 
     final response = await http.post(
       Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/'
-          '${model ?? defaultModel}:countTokens'),
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey,
-      },
+          '${model ?? defaultModel}:countTokens?key=$apiKey'),
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
           {
@@ -283,11 +280,14 @@ final class Gemini extends LLMProvider {
       }),
     );
 
+    final responseData = jsonDecode(response.body);
+
     if (response.statusCode != 200) {
-      throw Exception('Failed to count tokens from data: ${response.body}');
+      final error = responseData['error']['message'] as String;
+      debugPrint('Gemini error: $error');
+      throw Exception(error);
     }
 
-    final responseData = jsonDecode(response.body);
     return responseData['totalTokens'] as int;
   }
 }
