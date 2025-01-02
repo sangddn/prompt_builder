@@ -51,7 +51,6 @@ class _TokenEstimationProgress extends StatelessWidget {
     final numBlocks = context.selectBlocks((bs) => bs.length);
     final percentage = context.watch<_TokenCountingState>().count / numBlocks;
     return TranslationSwitcher.top(
-      duration: Effects.shortDuration,
       child: percentage >= 1.0
           ? const SizedBox.shrink()
           : AnimatedCircularProgress(percentage: percentage, size: 20.0),
@@ -126,7 +125,7 @@ class _CopyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    final copySpan = _shortcutSpan(context, true, true, 'C');
+    final copySpan = keyboardShortcutSpan(context, true, true, 'C');
     return CopyButton.builder(
       data: () => context.getContent(),
       builder: (context, show, copy) {
@@ -177,7 +176,7 @@ class _EditPreviewToggler extends StatelessWidget {
     return CupertinoSlidingSegmentedControl<_PromptContentViewState>(
       children: {
         _PromptContentViewState.edit: PTooltip(
-          richMessage: _shortcutSpan(context, true, false, 'E'),
+          richMessage: keyboardShortcutSpan(context, true, false, 'E'),
           preferBelow: false,
           child: const Row(
             mainAxisSize: MainAxisSize.min,
@@ -189,7 +188,7 @@ class _EditPreviewToggler extends StatelessWidget {
           ),
         ),
         _PromptContentViewState.preview: PTooltip(
-          richMessage: _shortcutSpan(context, true, false, 'E'),
+          richMessage: keyboardShortcutSpan(context, true, false, 'E'),
           preferBelow: false,
           child: const Row(
             mainAxisSize: MainAxisSize.min,
@@ -206,41 +205,3 @@ class _EditPreviewToggler extends StatelessWidget {
     );
   }
 }
-
-TextSpan _shortcutSpan(
-  BuildContext context,
-  bool command,
-  bool shift,
-  String key,
-  [Color? color,]
-) =>
-    TextSpan(
-      children: [
-        if (command)
-          WidgetSpan(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 2.0),
-              child: Icon(
-                HugeIcons.strokeRoundedCommand,
-                color: color ?? context.textTheme.muted.color,
-                size: 14.0,
-              ),
-            ),
-          ),
-        if (shift)
-          WidgetSpan(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 2.0),
-              child: Icon(
-                CupertinoIcons.shift,
-                color: color ?? context.textTheme.muted.color,
-                size: 14.0,
-              ),
-            ),
-          ),
-        TextSpan(
-          text: key,
-          style: context.textTheme.muted.copyWith(color: color),
-        ),
-      ],
-    );
