@@ -27,7 +27,6 @@ class FileTree extends StatefulWidget {
     required this.dirPath,
     this.showRootNode = false,
     this.countSelection,
-    this.onNodeSelected,
     this.skipHiddenFoldersAndFiles = true,
     this.ignorePatterns = const IList.empty(),
     this.sortPreferences = const FileTreeSortPreferences(),
@@ -58,10 +57,6 @@ class FileTree extends StatefulWidget {
   /// - For a file, returns 1 if the file is selected, 0 otherwise.
   /// - For a folder, returns the number of selected files in the folder.
   final int Function(BuildContext, FileTreeItem)? countSelection;
-
-  /// Callback to handle node selection.
-  final Future<void> Function(BuildContext, IndexedFileTree, bool)?
-      onNodeSelected;
 
   /// Custom builder for the node.
   final Widget Function(BuildContext, IndexedFileTree)? builder;
@@ -164,11 +159,8 @@ class _FileTreeState extends State<FileTree> with _WatchDirectoryMixin {
                                   ?.call(context, node.data!) ??
                               0,
                           onItemSelected: (isSelected) async =>
-                              await widget.onNodeSelected?.call(
-                            context,
-                            node,
-                            isSelected,
-                          ),
+                              NodeSelectionNotification(node.data!.path, isSelected)
+                                  .dispatch(context),
                           node: node,
                         );
                       },
