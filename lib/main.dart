@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'src/app.dart';
 import 'src/database/database.dart';
+import 'src/services/update_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +13,10 @@ Future<void> main() async {
       debugPrintThrottled(message, wrapWidth: wrapWidth);
     }
   };
+
+  // Initialize Sparkle
+  await UpdateService.initialize();
+  await UpdateService.checkForUpdates();
 
   // Initialize the local database
   await Database().initialize();

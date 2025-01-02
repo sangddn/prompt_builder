@@ -1,4 +1,7 @@
 PODS:
+  - auto_updater_macos (0.0.1):
+    - FlutterMacOS
+    - Sparkle
   - device_info_plus (0.0.1):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
@@ -10,6 +13,7 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - Sparkle (2.6.4)
   - sqflite_darwin (0.0.4):
     - Flutter
     - FlutterMacOS
@@ -43,6 +47,7 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
+  - auto_updater_macos (from `Flutter/ephemeral/.symlinks/plugins/auto_updater_macos/macos`)
   - device_info_plus (from `Flutter/ephemeral/.symlinks/plugins/device_info_plus/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
   - irondash_engine_context (from `Flutter/ephemeral/.symlinks/plugins/irondash_engine_context/macos`)
@@ -57,9 +62,12 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - Sparkle
     - sqlite3
 
 EXTERNAL SOURCES:
+  auto_updater_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/auto_updater_macos/macos
   device_info_plus:
     :path: Flutter/ephemeral/.symlinks/plugins/device_info_plus/macos
   FlutterMacOS:
@@ -84,11 +92,13 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/webview_flutter_wkwebview/darwin
 
 SPEC CHECKSUMS:
+  auto_updater_macos: 3e3462c418fe4e731917eacd8d28eef7af84086d
   device_info_plus: ce1b7762849d3ec103d0e0517299f2db7ad60720
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   irondash_engine_context: da62996ee25616d2f01bbeb85dc115d813359478
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
+  Sparkle: 5f8960a7a119aa7d45dacc0d5837017170bc5675
   sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
   sqlite3: 7559e33dae4c78538df563795af3a86fc887ee71
   sqlite3_flutter_libs: 58ae36c0dd086395d066b4fe4de9cdca83e717b3

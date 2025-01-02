@@ -35,5 +35,7 @@
 	</dict>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>SUPublicEDKey</key>
+	<string>dNNfAh/CRmw6VS5IjNmsUY52sy5LJVOQpBGduWqHsKk=</string>
 </dict>
 </plist>
