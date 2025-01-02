@@ -30,24 +30,32 @@ final class YoutubeService {
   /// Gets the transcript or auto-generated captions for a YouTube video.
   ///
   /// Takes a YouTube [url] string parameter and returns the transcript text as a [String].
-  /// Returns an empty string if no captions are available.
+  /// Returns `null` if no captions are available.
   ///
-  /// For simplicity, this method fetches only the first available closed caption track.
+  /// Throws an [ArgumentError] if the video URL is invalid (either not a valid
+  /// YouTube URL or not a valid video ID).
+  ///
+  /// For simplicity, this method fetches only the first available closed caption
+  /// track that is in English or the first one if no English captions are
+  /// available.
   ///
   /// Example:
   /// ```dart
   /// final transcript = await youtubeService.getTranscript('https://youtube.com/watch?v=abc123');
   /// print(transcript);
   /// ```
-  Future<String> getTranscript(String url) async {
+  Future<String?> getTranscript(String url) async {
     final videoId = VideoId(url);
     final manifest = await _yt.videos.closedCaptions.getManifest(videoId);
-    // pick the first track
+    // Pick the first track that is English
     if (manifest.tracks.isNotEmpty) {
-      final track = manifest.tracks.first;
+      final track = manifest.tracks.firstWhere(
+        (e) => e.language.code.startsWith('en'),
+        orElse: () => manifest.tracks.first,
+      );
       final captions = await _yt.videos.closedCaptions.get(track);
       return captions.captions.map((c) => c.text).join(' ');
     }
-    return '';
+    return null;
   }
 }
