@@ -259,11 +259,11 @@ mixin _TokenCountingPreferencesMixin {
   Future<(int, String)> _estimateTokensFallback(
     String text,
     String? model,
-  ) async {
+  ) {
     if (_useTiktoken()) {
-      return _countTiktoken((text, model));
+      return compute(_countTiktoken, (text, model));
     }
-    return (_estimateTokens(text), '¼ Estimate');
+    return SynchronousFuture((_estimateTokens(text), '¼ Estimate'));
   }
 }
 

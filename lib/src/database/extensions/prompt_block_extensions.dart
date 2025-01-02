@@ -314,6 +314,11 @@ extension PromptBlockExtension on PromptBlock {
     return null;
   }
 
+  (int, String)? get effectiveTokenCountAndMethod {
+    if (preferSummary) return summaryTokenCountAndMethod;
+    return fullContentTokenCountAndMethod;
+  }
+
   String? getSummarizableContent() => switch (type) {
         BlockType.text ||
         BlockType.localFile ||

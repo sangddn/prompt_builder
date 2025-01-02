@@ -8,8 +8,6 @@ class _BlockContextMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLocalFile = context.isLocalFile();
-    final isSupported =
-        context.selectBlock((b) => b.type) != BlockType.unsupported;
     return ShadContextMenuRegion(
       items: [
         _ContextMenuAction(

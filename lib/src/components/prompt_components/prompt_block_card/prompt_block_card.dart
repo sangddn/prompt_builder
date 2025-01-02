@@ -16,6 +16,7 @@ import '../../../services/services.dart';
 import '../../components.dart';
 
 part 'block_router_widget.dart';
+part 'block_token_count.dart';
 part 'block_context_menu.dart';
 part 'block_actions.dart';
 part 'text_block.dart';
