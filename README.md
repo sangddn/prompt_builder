@@ -8,8 +8,7 @@
 
 > **Status**: v0.0.1 (Alpha). This is a very early release, so things will be changing rapidly!
 
-[![Download for macOS](https://img.shields.io/badge/Download-macOS-blue?style=for-the-badge&logo=apple)]
-(https://github.com/sangddn/prompt_builder/releases/download/v0.0.1/prompt-builder-macos-universal-v0.0.1+2.zip)
+[![Download for macOS](https://badgen.net/badge/Download%20for/macOS/black?icon=apple)](https://github.com/sangddn/prompt_builder/releases/download/v0.0.1/prompt-builder-macos-universal-v0.0.1+2.zip)
 
 ## What is Prompt Builder?
 
