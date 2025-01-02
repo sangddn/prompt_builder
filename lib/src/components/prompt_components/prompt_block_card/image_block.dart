@@ -35,9 +35,11 @@ class _ImageBlock extends StatelessWidget {
                 shape: Superellipse.border12,
                 color: context.colorScheme.accent,
               ),
-              child: Text(
-                description ?? 'No description available.',
-                style: context.textTheme.muted,
+              child: SingleChildScrollView(
+                child: Text(
+                  description ?? 'No description available.',
+                  style: context.textTheme.muted,
+                ),
               ),
             ),
           ),

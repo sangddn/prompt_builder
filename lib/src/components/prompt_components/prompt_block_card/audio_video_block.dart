@@ -27,7 +27,7 @@ class _AudioVideoBlock extends StatelessWidget {
             Text(
               transcript,
               style: style,
-              maxLines: isExpanded ? null : 1,
+              maxLines: isExpanded ? 200 : 1,
               overflow: TextOverflow.ellipsis,
             ),
         ],

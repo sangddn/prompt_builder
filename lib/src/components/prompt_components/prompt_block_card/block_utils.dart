@@ -65,16 +65,6 @@ extension LLMUseCaseInfo on LLMUseCase {
       };
 }
 
-String _formatNumber(int number) {
-  if (number < 1000) return number.toString();
-  if (number < 1000000) {
-    final k = (number / 1000).toStringAsFixed(1);
-    return '${k}k';
-  }
-  final m = (number / 1000000).toStringAsFixed(1);
-  return '${m}M';
-}
-
 // -----------------------------------------------------------------------------
 // File saving utils
 // -----------------------------------------------------------------------------
@@ -99,10 +89,15 @@ Future<void> _saveTranscriptAsMarkdown(
   if (dir == null) return;
   final name = _figureOutFileName('transcript', block.displayName, filePath);
   await saveTextToFile(dir, name, transcript);
+  final fullPath = '$dir/$name.md';
   return toaster.show(
     ShadToast(
       title: const Text('Saved transcript.'),
-      description: Text('$dir/$name.md'),
+      description: Text(fullPath),
+      action: ShadButton.ghost(
+        onPressed: () => revealInFinder(fullPath),
+        child: const Text('Open'),
+      ),
     ),
   );
 }
@@ -121,10 +116,15 @@ Future<void> _saveSummaryAsMarkdown(
   final name = _figureOutFileName('summary', block.displayName, filePath);
   debugPrint('Saving summary to $name');
   await saveTextToFile(dir, name, summary);
+  final fullPath = '$dir/$name.md';
   return toaster.show(
     ShadToast(
       title: const Text('Saved summary.'),
-      description: Text('$dir/$name.md'),
+      description: Text(fullPath),
+      action: ShadButton.ghost(
+        onPressed: () => revealInFinder(fullPath),
+        child: const Text('Open'),
+      ),
     ),
   );
 }
@@ -142,10 +142,15 @@ Future<void> _saveDescriptionAsMarkdown(
   if (dir == null) return;
   final name = _figureOutFileName('description', block.displayName, filePath);
   await saveTextToFile(dir, name, description);
+  final fullPath = '$dir/$name.md';
   return toaster.show(
     ShadToast(
       title: const Text('Saved description.'),
-      description: Text('$dir/$name.md'),
+      description: Text(fullPath),
+      action: ShadButton.ghost(
+        onPressed: () => revealInFinder(fullPath),
+        child: const Text('Open'),
+      ),
     ),
   );
 }
