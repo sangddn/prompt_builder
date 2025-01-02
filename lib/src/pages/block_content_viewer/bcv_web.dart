@@ -31,7 +31,6 @@ class _BCVWebViewState extends State<BCVWebView> {
   void _initWebView() {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(Colors.white)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
@@ -52,30 +51,65 @@ class _BCVWebViewState extends State<BCVWebView> {
 
   @override
   Widget build(BuildContext context) {
+    final webView = Container(
+      decoration: ShapeDecoration(
+        color: context.colorScheme.popover,
+        shape: Superellipse.border24,
+        shadows: mediumShadows(),
+      ),
+      clipBehavior: Clip.hardEdge,
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ShadButton.ghost(
+                icon: const ShadImage.square(
+                  LucideIcons.refreshCcw,
+                  size: 16,
+                ),
+                onPressed: () => _controller.reload(),
+              ),
+              ShadButton.ghost(
+                icon: const ShadImage.square(
+                  LucideIcons.arrowLeft,
+                  size: 16,
+                ),
+                onPressed: () async {
+                  if (await _controller.canGoBack()) {
+                    await _controller.goBack();
+                  }
+                },
+              ),
+              ShadButton.ghost(
+                icon: const ShadImage.square(
+                  LucideIcons.arrowRight,
+                  size: 16,
+                ),
+                onPressed: () async {
+                  if (await _controller.canGoForward()) {
+                    await _controller.goForward();
+                  }
+                },
+              ),
+            ],
+          ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return SizedBox(
+                width: constraints.maxWidth,
+                height: MediaQuery.sizeOf(context).height - 230,
+                child: WebViewWidget(controller: _controller),
+              );
+            },
+          ),
+        ],
+      ),
+    );
     return ShadSheet(
       title: widget.title?.let((title) => Text(title)),
-      actions: [
-        ShadButton.ghost(
-          icon: const ShadImage.square(LucideIcons.refreshCcw, size: 16),
-          onPressed: () => _controller.reload(),
-        ),
-        ShadButton.ghost(
-          icon: const ShadImage.square(LucideIcons.arrowLeft, size: 16),
-          onPressed: () async {
-            if (await _controller.canGoBack()) {
-              await _controller.goBack();
-            }
-          },
-        ),
-        ShadButton.ghost(
-          icon: const ShadImage.square(LucideIcons.arrowRight, size: 16),
-          onPressed: () async {
-            if (await _controller.canGoForward()) {
-              await _controller.goForward();
-            }
-          },
-        ),
-      ],
       gap: 16.0,
       constraints: const BoxConstraints(minWidth: 500, maxWidth: 750),
       enterDuration: Effects.veryShortDuration,
@@ -89,13 +123,14 @@ class _BCVWebViewState extends State<BCVWebView> {
             ),
           ShadTabs<String>(
             value: 'web',
-            tabBarConstraints: const BoxConstraints(maxWidth: 400),
-            contentConstraints: const BoxConstraints(maxWidth: 400),
             tabs: [
               ShadTab(
                 value: 'web',
-                content: WebViewWidget(controller: _controller),
-                child: Text(_currentUrl),
+                content: webView,
+                child: Text(
+                  Uri.parse(_currentUrl).host,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               if (widget.textContent != null)
                 ShadTab(
