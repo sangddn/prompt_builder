@@ -2,8 +2,7 @@ part of 'ui.dart';
 
 const kThemeModeKey = 'theme-mode';
 const kInitialThemeMode = ThemeMode.system;
-ThemeMode _themeModeFromName(String? name) =>
-    ThemeMode.values.firstWhere(
+ThemeMode _themeModeFromName(String? name) => ThemeMode.values.firstWhere(
       (element) => element.toString() == name,
       orElse: () => kInitialThemeMode,
     );
@@ -31,8 +30,7 @@ enum ThemeAccent {
   zinc,
   ;
 
-  static ThemeAccent _fromName(String? name) =>
-      ThemeAccent.values.firstWhere(
+  static ThemeAccent _fromName(String? name) => ThemeAccent.values.firstWhere(
         (element) => element.name == name,
         orElse: () => kInitialThemeAccent,
       );
@@ -57,6 +55,10 @@ ShadThemeData getTheme(ThemeAccent themeAccent, Brightness brightness) =>
       switchTheme:
           ShadSwitchTheme(margin: brightness == Brightness.light ? 0.0 : 1.0),
       radius: BorderRadius.circular(8.0),
+      sheetTheme: const ShadSheetTheme(
+        gap: 16.0,
+        constraints: BoxConstraints(minWidth: 500, maxWidth: 750),
+      ),
     );
 
 extension ThemeAccentRepresentativeColor on ThemeAccent {
