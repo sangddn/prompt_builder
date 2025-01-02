@@ -1,6 +1,6 @@
 part of '../prompt_page.dart';
 
-Future<void> _showFileSearchDialog(BuildContext context) => showPDialog<void>(
+Future<void> _showPathSearchDialog(BuildContext context) => showPDialog<void>(
       context: context,
       barrierColor: Colors.transparent,
       builder: (_) => MultiProvider(
@@ -16,49 +16,36 @@ Future<void> _showFileSearchDialog(BuildContext context) => showPDialog<void>(
         child: NotificationListener<NodeSelectionNotification>(
           onNotification: (n) {
             // Forward the notification from dialog to the main context.
-            n.dispatch(context);
+            if (context.mounted) n.dispatch(context);
             return true;
           },
-          child: const _PPFileSearchDialog(),
+          child: const _PPPathSearchDialog(),
         ),
       ),
     );
 
-/// Type signature of the notifier that holds the search results.
-typedef _FileSearchNotifier = ValueNotifier<_FileSearchResults>;
-
-/// Type signature of the search results.
-/// The first element is the full path, the second element is the relative path,
-/// and the third element is a boolean indicating whether the path is a directory.
-typedef _FileSearchResults = IList<(String, String, bool)>;
-
-enum _FileSearchState {
-  idle,
-  searching,
-}
-
-class _PPFileSearchDialog extends StatelessWidget {
-  const _PPFileSearchDialog();
+class _PPPathSearchDialog extends StatelessWidget {
+  const _PPPathSearchDialog();
 
   @override
   Widget build(BuildContext context) {
-    return StateProvider<_FileSearchResults>(
+    return StateProvider<_PathSearchResults>(
       createInitialValue: (_) => const IList.empty(),
-      child: StateProvider<_FileSearchState>(
-        createInitialValue: (_) => _FileSearchState.idle,
+      child: StateProvider<_PathSearchState>(
+        createInitialValue: (_) => _PathSearchState.idle,
         child: ValueProvider<TextEditingController>(
           create: (_) => TextEditingController(),
           onNotified: (context, controller) async {
             if (controller?.text case final text?) {
               final stateNotifier =
-                  context.read<ValueNotifier<_FileSearchState>>();
-              final notifier = context.read<_FileSearchNotifier>();
-              stateNotifier.value = _FileSearchState.searching;
+                  context.read<ValueNotifier<_PathSearchState>>();
+              final notifier = context.read<_PathSearchNotifier>();
+              stateNotifier.value = _PathSearchState.searching;
               final results = (await context.read<_PathSearchCallback>()(text))
                   .take(20)
                   .toIList();
               if (!context.mounted) return;
-              stateNotifier.value = _FileSearchState.idle;
+              stateNotifier.value = _PathSearchState.idle;
               // By the time the search results are ready, the text may have changed.
               // If so, we don't want to update the search results.
               if (text == controller?.text) {
@@ -139,8 +126,8 @@ class _FileSearchField extends StatelessWidget {
           padding: const EdgeInsets.only(left: 8.0),
           child: Builder(
             builder: (context) {
-              final isLoading = context.watch<_FileSearchState>() ==
-                  _FileSearchState.searching;
+              final isLoading = context.watch<_PathSearchState>() ==
+                  _PathSearchState.searching;
               return GrayShimmer(
                 enableShimmer: isLoading,
                 child: const Icon(
@@ -167,24 +154,24 @@ class _FileSearchResultList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final count = context.select((_FileSearchNotifier n) => n.value.length);
+    final count = context.select((_PathSearchNotifier n) => n.value.length);
     return SuperSliverList.builder(
       itemCount: count,
       itemBuilder: (context, index) => Builder(
         builder: (context) {
           final info =
-              context.select((_FileSearchNotifier n) => n.value[index]);
-          return _FileSearchResult(info, key: ValueKey(info.$1));
+              context.select((_PathSearchNotifier n) => n.value[index]);
+          return _PathSearchResultTile(info, key: ValueKey(info.$1));
         },
       ),
     );
   }
 }
 
-class _FileSearchResult extends StatelessWidget {
-  const _FileSearchResult(this.info, {super.key});
+class _PathSearchResultTile extends StatelessWidget {
+  const _PathSearchResultTile(this.info, {super.key});
 
-  final (String, String, bool) info;
+  final _PathSearchResult info;
 
   @override
   Widget build(BuildContext context) {
@@ -280,4 +267,12 @@ class _FileSearchResult extends StatelessWidget {
       },
     );
   }
+}
+
+/// Type signature of the notifier that holds the search results.
+typedef _PathSearchNotifier = ValueNotifier<_PathSearchResults>;
+
+enum _PathSearchState {
+  idle,
+  searching,
 }

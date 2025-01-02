@@ -8,112 +8,35 @@ class _PPFolderTree extends AnimatedStatelessWidget {
     if (context.isPromptLoading()) {
       return const SizedBox.shrink();
     }
-    final folderPath = context.selectPrompt((p) => p?.folderPath);
-    final ignorePatterns = context.selectPrompt((p) => p?.ignorePatterns);
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ValueNotifier<String?>>(
-          create: (context) => createFolderPathNotifier(context, folderPath),
-        ),
-        ChangeNotifierProvider<ValueNotifier<IList<String>>>(
-          create: (context) => createIgnorePatternsNotifier(
-            context,
-            ignorePatterns,
-          ),
-        ),
-      ],
-      child: StateProvider<FileTreeSortPreferences>(
-        createInitialValue: (_) => const FileTreeSortPreferences(),
-        child: const _FileTreeContextMenu(
-          child: CustomScrollView(
-            slivers: [
-              SliverGap(4.0),
-              SliverToBoxAdapter(
-                child: Padding(padding: k4HPadding, child: _WebSearchButton()),
+    return StateProvider<FileTreeSortPreferences>(
+      createInitialValue: (_) => const FileTreeSortPreferences(),
+      child: const _FileTreeContextMenu(
+        child: CustomScrollView(
+          slivers: [
+            SliverGap(4.0),
+            SliverToBoxAdapter(
+              child: Padding(padding: k4HPadding, child: _WebSearchButton()),
+            ),
+            SliverGap(8.0),
+            PinnedHeaderSliver(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 12.0),
+                child: _SelectFolderButton(),
               ),
-              SliverGap(8.0),
-              PinnedHeaderSliver(
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 4.0, vertical: 12.0),
-                  child: _SelectFolderButton(),
-                ),
-              ),
-              SliverPadding(padding: k4HPadding, sliver: _FileTree()),
-              // SliverGap(32.0),
-              // SliverToBoxAdapter(child: _AddOtherFilesButton()),
-              SliverGap(64.0),
-            ],
-          ),
+            ),
+            SliverPadding(padding: k4HPadding, sliver: _FileTree()),
+            // SliverGap(32.0),
+            // SliverToBoxAdapter(child: _AddOtherFilesButton()),
+            SliverGap(64.0),
+          ],
         ),
       ),
     );
   }
 }
 
-// -----------------------------------------------------------------------------
-// Providers & Extensions
-// -----------------------------------------------------------------------------
-
-/// Creates a [ValueNotifier] for the folder path associated with the prompt.
-/// It automatically updates the prompt in the database when the folder path
-/// changes.
-ValueNotifier<String?> createFolderPathNotifier(
-  BuildContext context,
-  String? folderPath,
-) {
-  final notifier = ValueNotifier(folderPath);
-  notifier.addListener(() {
-    context.db.updatePrompt(context.prompt!.id, folderPath: notifier.value);
-  });
-  return notifier;
-}
-
-/// Creates a [ValueNotifier] for ignore patterns associated with the prompt.
-/// It automatically updates the prompt in the database when the ignore
-/// patterns change.
-ValueNotifier<IList<String>> createIgnorePatternsNotifier(
-  BuildContext context,
-  String? ignorePatterns,
-) {
-  final notifier = ValueNotifier(
-    IList(
-      ignorePatterns?.split('\n').where((p) => p.trim().isNotEmpty).toList(),
-    ),
-  );
-  notifier.addListener(() {
-    context.db.updatePrompt(
-      context.prompt!.id,
-      ignorePatterns: notifier.value.join('\n'),
-    );
-  });
-  return notifier;
-}
-
-extension _LeftSidebarFolderExtension on BuildContext {
-  ValueNotifier<String?> get folderNotifier => read<ValueNotifier<String?>>();
-  // ValueNotifier<IList<String>> get ignorePatternsNotifier =>
-  //     read<ValueNotifier<IList<String>>>();
-
-  String? watchFolderPath() => watch<ValueNotifier<String?>>().value;
-  IList<String> watchIgnorePatterns() =>
-      watch<ValueNotifier<IList<String>>>().value;
-
-  bool isAnyFolderSelected() =>
-      select((ValueNotifier<String?> n) => n.value != null);
-}
-
 class _SelectFolderButton extends StatelessWidget {
   const _SelectFolderButton();
-
-  Future<void> _pickFolder(BuildContext context) async {
-    final notifier = context.folderNotifier;
-    final String? selectedDirectory = await FilePicker.platform
-        .getDirectoryPath(initialDirectory: notifier.value);
-    if (selectedDirectory != null) {
-      notifier.value = selectedDirectory;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,43 +52,64 @@ class _SelectFolderButton extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: ColoredBox(
-                color: lightGray,
-                child: CButton(
-                  tooltip: 'Change Folder',
-                  onTap: () => _pickFolder(context),
-                  cornerRadius: 12.0,
-                  padding: k16H8VPadding,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        HugeIcons.strokeRoundedFolder02,
-                        size: 16.0,
-                        color: PColors.textGray.resolveFrom(context),
+              child: Stack(
+                alignment: AlignmentDirectional.centerEnd,
+                children: [
+                  ColoredBox(
+                    color: lightGray,
+                    child: CButton(
+                      tooltip: 'Change Folder',
+                      onTap: context.pickFolder,
+                      cornerRadius: 12.0,
+                      padding: k16H8VPadding,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            HugeIcons.strokeRoundedFolder02,
+                            size: 16.0,
+                            color: PColors.textGray.resolveFrom(context),
+                          ),
+                          const Gap(6.0),
+                          Flexible(
+                            child: TranslationSwitcher.top(
+                              duration: Effects.veryShortDuration,
+                              child: noneSelected
+                                  ? Text(
+                                      'Open Folder…',
+                                      style: style,
+                                      key: const ValueKey(1),
+                                    )
+                                  : Text(
+                                      path.basename(folderPath),
+                                      overflow: TextOverflow.ellipsis,
+                                      style: style,
+                                      key: ValueKey(folderPath),
+                                      maxLines: 1,
+                                    ),
+                            ),
+                          ),
+                        ],
                       ),
-                      const Gap(6.0),
-                      Flexible(
-                        child: TranslationSwitcher.top(
-                          duration: Effects.veryShortDuration,
-                          child: noneSelected
-                              ? Text(
-                                  'Open Folder…',
-                                  style: style,
-                                  key: const ValueKey(1),
-                                )
-                              : Text(
-                                  path.basename(folderPath),
-                                  overflow: TextOverflow.ellipsis,
-                                  style: style,
-                                  key: ValueKey(folderPath),
-                                  maxLines: 1,
-                                ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  TranslationSwitcher.right(
+                    layoutBuilder: alignedLayoutBuilder(
+                      AlignmentDirectional.centerEnd,
+                    ),
+                    child: noneSelected
+                        ? Text.rich(
+                            keyboardShortcutSpan(
+                              context,
+                              true,
+                              false,
+                              'O',
+                              PColors.darkGray.resolveFrom(context),
+                            ),
+                          )
+                        : null,
+                  ),
+                ],
               ),
             ),
             const _SearchFolderButton(),
@@ -203,8 +147,8 @@ class _SearchFolderButton extends AnimatedStatelessWidget {
         ColoredBox(
           color: lightGray,
           child: CButton(
-            tooltip: _shortcutSpan(context, true, false, 'P'),
-            onTap: () => _showFileSearchDialog(context),
+            tooltip: keyboardShortcutSpan(context, true, false, 'P'),
+            onTap: () => _showPathSearchDialog(context),
             cornerRadius: 12.0,
             padding: k12HPadding,
             child: Row(
@@ -216,7 +160,7 @@ class _SearchFolderButton extends AnimatedStatelessWidget {
                 ),
                 const Gap(4.0),
                 Text.rich(
-                  _shortcutSpan(
+                  keyboardShortcutSpan(
                     context,
                     true,
                     false,

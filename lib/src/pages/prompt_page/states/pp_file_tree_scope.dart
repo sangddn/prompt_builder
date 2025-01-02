@@ -83,8 +83,8 @@ class _PPFileTreeScopeState extends State<_PPFileTreeScope> {
     }
   }
 
-  /// {@macro path_search_callback}
-  Future<List<(String, String, bool)>> _searchPaths(
+  /// {@macro pages.prompt_page.path_search_callback}
+  Future<List<_PathSearchResult>> _searchPaths(
     String query,
   ) async {
     final results = await fuzzySearchAsync(
@@ -117,6 +117,16 @@ class _PPFileTreeScopeState extends State<_PPFileTreeScope> {
           value: (ISet(_tree?.$2), ISet(_tree?.$3)),
         ),
         Provider<_PathSearchCallback>.value(value: _searchPaths),
+        ChangeNotifierProvider<_FolderPathNotifier>(
+          create: (context) =>
+              createFolderPathNotifier(context, context.prompt?.folderPath),
+        ),
+        ChangeNotifierProvider<_IgnorePatternsNotifier>(
+          create: (context) => createIgnorePatternsNotifier(
+            context,
+            context.prompt?.ignorePatterns,
+          ),
+        ),
       ],
       child: NotificationListener<FileTreeNotification>(
         onNotification: (n) {
@@ -149,25 +159,96 @@ class _PPFileTreeScopeState extends State<_PPFileTreeScope> {
 
 typedef _SelectedFilePaths = ISet<String>;
 
+typedef _PathSearchResult = (
+  String fullPath,
+  String relativePath,
+  bool isDirectory
+);
+
+/// Type signature of the search results.
+/// The first element is the full path, the second element is the relative path,
+/// and the third element is a boolean indicating whether the path is a directory.
+typedef _PathSearchResults = IList<_PathSearchResult>;
+
 /// Function signature for the search callback.
-/// {@template path_search_callback}
+/// {@template pages.prompt_page.path_search_callback}
 /// Takes a query and returns a list of tuples,
 /// where the first element is the full path, the second element is the relative
 /// path from the prompt's folder path, and the third element is a boolean
 /// indicating whether the path is a directory.
 /// {@endtemplate}
-typedef _PathSearchCallback
-    = Future<List<(String fullPath, String relativePath, bool isDirectory)>>
-        Function(String);
+typedef _PathSearchCallback = Future<List<_PathSearchResult>> Function(String);
 
 /// Signature for the file and folder paths.
 typedef _FileAndFolderPaths = (ISet<String>, ISet<String>);
+
+/// Signature for the folder path notifier.
+typedef _FolderPathNotifier = ValueNotifier<String?>;
+
+/// Signature for the notifier for ignore patterns.
+typedef _IgnorePatternsNotifier = ValueNotifier<IList<String>>;
+
+/// Creates a [ValueNotifier] for the folder path associated with the prompt.
+/// It automatically updates the prompt in the database when the folder path
+/// changes.
+ValueNotifier<String?> createFolderPathNotifier(
+  BuildContext context,
+  String? folderPath,
+) {
+  final notifier = ValueNotifier(folderPath);
+  notifier.addListener(() {
+    context.db.updatePrompt(context.prompt!.id, folderPath: notifier.value);
+  });
+  return notifier;
+}
+
+/// Creates a [ValueNotifier] for ignore patterns associated with the prompt.
+/// It automatically updates the prompt in the database when the ignore
+/// patterns change.
+ValueNotifier<IList<String>> createIgnorePatternsNotifier(
+  BuildContext context,
+  String? ignorePatterns,
+) {
+  final notifier = ValueNotifier(
+    IList(
+      ignorePatterns?.split('\n').where((p) => p.trim().isNotEmpty).toList(),
+    ),
+  );
+  notifier.addListener(() {
+    context.db.updatePrompt(
+      context.prompt!.id,
+      ignorePatterns: notifier.value.join('\n'),
+    );
+  });
+  return notifier;
+}
 
 // -----------------------------------------------------------------------------
 // Extensions
 // -----------------------------------------------------------------------------
 
 extension _PPFileTreeScopeExtension on BuildContext {
+  ValueNotifier<String?> get folderNotifier => read<ValueNotifier<String?>>();
+  // ValueNotifier<IList<String>> get ignorePatternsNotifier =>
+  //     read<ValueNotifier<IList<String>>>();
+
+  String? watchFolderPath() => watch<ValueNotifier<String?>>().value;
+  IList<String> watchIgnorePatterns() =>
+      watch<ValueNotifier<IList<String>>>().value;
+
+  bool isAnyFolderSelected() =>
+      select((ValueNotifier<String?> n) => n.value != null);
+
+  /// Pick a folder
+  Future<void> pickFolder() async {
+    final notifier = folderNotifier;
+    final String? selectedDirectory = await FilePicker.platform
+        .getDirectoryPath(initialDirectory: notifier.value);
+    if (selectedDirectory != null) {
+      notifier.value = selectedDirectory;
+    }
+  }
+
   /// Counts how many selected files start with the given file path
   int countSelection(String filePath) => select(
         (_SelectedFilePaths s) => s.where((e) => e.startsWith(filePath)).length,

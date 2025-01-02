@@ -40,10 +40,13 @@ class _KeyboardListener extends StatelessWidget {
             }
           },
           const SingleActivator(LogicalKeyboardKey.keyP, meta: true): () {
-            _showFileSearchDialog(context);
+            _showPathSearchDialog(context);
           },
           const SingleActivator(LogicalKeyboardKey.keyF, meta: true): () {
             _showWebSearchDialog(context);
+          },
+          const SingleActivator(LogicalKeyboardKey.keyO, meta: true): () {
+            context.pickFolder();
           },
         };
         return CallbackShortcuts(

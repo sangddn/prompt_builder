@@ -38,7 +38,7 @@ part 'components/pp_new_block_actions.dart';
 part 'components/pp_right_sidebar.dart';
 part 'components/pp_unsupported_block_section.dart';
 part 'components/pp_copy_section.dart';
-part 'components/pp_file_search_dialog.dart';
+part 'components/pp_path_search_dialog.dart';
 
 @RoutePage()
 class PromptPage extends StatelessWidget {

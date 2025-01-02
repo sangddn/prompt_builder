@@ -41,7 +41,7 @@ class _WebSearchButton extends StatelessWidget {
             ],
           ),
           Text.rich(
-            _shortcutSpan(
+            keyboardShortcutSpan(
               context,
               true,
               false,
