@@ -22,8 +22,9 @@ class _LPProvidersState extends State<_LPProviders> {
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
-          ChangeNotifierProvider<_FilterTagsNotifier>(
-            create: (_) => ValueNotifier(const IList.empty()),
+          Provider<Database>.value(value: widget.db),
+          ValueProvider<_FilterTagNotifier>(
+            create: (_) => ValueNotifier(null),
           ),
           ChangeNotifierProvider<_SearchQueryNotifier>(
             create: (_) => TextEditingController(),
@@ -36,13 +37,14 @@ class _LPProvidersState extends State<_LPProviders> {
               _controller = _LibraryController(
                 db: widget.db,
                 sortByNotifier: context.read(),
-                filterTagsNotifier: context.read(),
+                filterTagNotifier: context.read(),
                 searchQueryNotifier: context.read(),
               );
               final observer = LibraryObserver.of(context);
               observer.addNewPromptListener(_onNewPromptAddedOrEdited);
               observer.addPromptTitleOrDescriptionChangedListener(
-                  _onNewPromptAddedOrEdited);
+                _onNewPromptAddedOrEdited,
+              );
               return _controller;
             },
             dispose: (_, controller) {
@@ -50,7 +52,8 @@ class _LPProvidersState extends State<_LPProviders> {
               final observer = LibraryObserver.of(context);
               observer.removeNewPromptListener(_onNewPromptAddedOrEdited);
               observer.removePromptTitleOrDescriptionChangedListener(
-                  _onNewPromptAddedOrEdited);
+                _onNewPromptAddedOrEdited,
+              );
             },
           ),
         ],
@@ -62,7 +65,7 @@ class _LPProvidersState extends State<_LPProviders> {
 // Enums & Typedefs
 // -----------------------------------------------------------------------------
 
-typedef _FilterTagsNotifier = ValueNotifier<IList<String>>;
+typedef _FilterTagNotifier = ValueNotifier<String?>;
 typedef _SearchQueryNotifier = TextEditingController;
 typedef _SortByNotifier = ValueNotifier<(PromptSortBy, bool)>;
 
@@ -84,4 +87,12 @@ _SortByNotifier _createSortByNotifier(Database db) {
     db.boolRef.put(_kSortByAscending, notifier.value.$2);
   });
   return notifier;
+}
+
+// -----------------------------------------------------------------------------
+// Extensions
+// -----------------------------------------------------------------------------
+
+extension _LPProvidersExtension on BuildContext {
+  Database get db => read<Database>();
 }

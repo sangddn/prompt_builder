@@ -7,13 +7,13 @@ const _kSortByAscending = 'library_sort_by_ascending';
 final class _LibraryController implements InfinityController<Prompt> {
   _LibraryController({
     required this.db,
-    required this.filterTagsNotifier,
+    required this.filterTagNotifier,
     required this.searchQueryNotifier,
     required this.sortByNotifier,
   });
 
   final Database db;
-  final _FilterTagsNotifier filterTagsNotifier;
+  final _FilterTagNotifier filterTagNotifier;
   final _SearchQueryNotifier searchQueryNotifier;
   final _SortByNotifier sortByNotifier;
 
@@ -23,7 +23,7 @@ final class _LibraryController implements InfinityController<Prompt> {
   @override
   void init() {
     pagingController.addPageRequestListener(_fetchPage);
-    filterTagsNotifier.addListener(_refresh);
+    filterTagNotifier.addListener(_refresh);
     searchQueryNotifier.addListener(_refresh);
     sortByNotifier.addListener(_refresh);
   }
@@ -31,7 +31,7 @@ final class _LibraryController implements InfinityController<Prompt> {
   @override
   void dispose() {
     pagingController.dispose();
-    filterTagsNotifier.removeListener(_refresh);
+    filterTagNotifier.removeListener(_refresh);
     searchQueryNotifier.removeListener(_refresh);
     sortByNotifier.removeListener(_refresh);
   }
@@ -45,7 +45,7 @@ final class _LibraryController implements InfinityController<Prompt> {
       final prompts = await db.queryPrompts(
         sortBy: sortByNotifier.value.$1,
         ascending: sortByNotifier.value.$2,
-        tags: filterTagsNotifier.value.unlockView,
+        tags: filterTagNotifier.value?.let((it) => [it]) ?? const [],
         searchQuery: searchQueryNotifier.text,
         // ignore: avoid_redundant_argument_values
         limit: _kPageSize,

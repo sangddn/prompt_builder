@@ -11,7 +11,9 @@ class _LPPromptList extends StatelessWidget {
       padding: k16HPadding,
       itemPadding: k16H4VPadding,
       itemBuilder: (context, index, prompt) => PromptTile(
+        db: context.db,
         onTap: () => context.router.push(PromptRoute(id: prompt.id)),
+        onDeleted: () => controller._refresh(),
         prompt: prompt,
       )
           .animate()
