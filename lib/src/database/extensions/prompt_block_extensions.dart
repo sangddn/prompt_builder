@@ -5,6 +5,7 @@ import 'package:mime/mime.dart';
 import 'package:super_clipboard/super_clipboard.dart';
 import '../../core/core.dart';
 import '../../services/other_services/mime_utils.dart';
+import '../../services/services.dart';
 import '../database.dart';
 
 extension PromptBlocksExtension on Database {
@@ -70,6 +71,13 @@ extension PromptBlocksExtension on Database {
     bool? preferSummary,
   }) async {
     final now = DateTime.now();
+    final tokenRelatedContentChanged = displayName != null ||
+        textContent != null ||
+        filePath != null ||
+        url != null ||
+        transcript != null ||
+        caption != null ||
+        summary != null;
     await (update(promptBlocks)..where((tbl) => tbl.id.equals(blockId))).write(
       PromptBlocksCompanion(
         blockType:
@@ -89,16 +97,24 @@ extension PromptBlocksExtension on Database {
         summary: summary != null ? Value(summary) : const Value.absent(),
         fullContentTokenCount: fullContentTokenCountAndMethod != null
             ? Value(fullContentTokenCountAndMethod.$1)
-            : const Value.absent(),
+            : tokenRelatedContentChanged
+                ? const Value(null)
+                : const Value.absent(),
         fullContentTokenCountMethod: fullContentTokenCountAndMethod != null
             ? Value(fullContentTokenCountAndMethod.$2)
-            : const Value.absent(),
+            : tokenRelatedContentChanged
+                ? const Value(null)
+                : const Value.absent(),
         summaryTokenCount: summaryTokenCountAndMethod != null
             ? Value(summaryTokenCountAndMethod.$1)
-            : const Value.absent(),
+            : tokenRelatedContentChanged
+                ? const Value(null)
+                : const Value.absent(),
         summaryTokenCountMethod: summaryTokenCountAndMethod != null
             ? Value(summaryTokenCountAndMethod.$2)
-            : const Value.absent(),
+            : tokenRelatedContentChanged
+                ? const Value(null)
+                : const Value.absent(),
         preferSummary:
             preferSummary != null ? Value(preferSummary) : const Value.absent(),
         updatedAt: Value(now),
@@ -123,14 +139,19 @@ extension PromptBlocksExtension on Database {
         caption: caption ? const Value(null) : const Value.absent(),
         summary: summary ? const Value(null) : const Value.absent(),
         fullContentTokenCount:
-            fullContentTokenCount ? const Value(null) : const Value.absent(),
-        fullContentTokenCountMethod: fullContentTokenCountMethod
+            fullContentTokenCount || fullContentTokenCountMethod
+                ? const Value(null)
+                : const Value.absent(),
+        fullContentTokenCountMethod:
+            fullContentTokenCount || fullContentTokenCountMethod
+                ? const Value(null)
+                : const Value.absent(),
+        summaryTokenCount: summaryTokenCount || summaryTokenCountMethod
             ? const Value(null)
             : const Value.absent(),
-        summaryTokenCount:
-            summaryTokenCount ? const Value(null) : const Value.absent(),
-        summaryTokenCountMethod:
-            summaryTokenCountMethod ? const Value(null) : const Value.absent(),
+        summaryTokenCountMethod: summaryTokenCount || summaryTokenCountMethod
+            ? const Value(null)
+            : const Value.absent(),
         updatedAt: Value(now),
       ),
     );
@@ -154,18 +175,12 @@ extension PromptBlocksExtension on Database {
 
   /// Delete a block (and related variables)
   Future<void> deleteBlock(int blockId) async {
-    // Delete variables first
-    await (delete(blockVariables)..where((tbl) => tbl.blockId.equals(blockId)))
-        .go();
     // Delete block
     await (delete(promptBlocks)..where((tbl) => tbl.id.equals(blockId))).go();
   }
 
   /// Delete many blocks
   Future<void> deleteBlocks(List<int> blockIds) async {
-    // Delete variables first
-    await (delete(blockVariables)..where((tbl) => tbl.blockId.isIn(blockIds)))
-        .go();
     // Delete blocks
     await (delete(promptBlocks)..where((tbl) => tbl.id.isIn(blockIds))).go();
   }
@@ -348,9 +363,9 @@ extension PromptBlockExtension on PromptBlock {
         throw Exception('Block is not supported to be copied to prompt.'),
     };
     final content = switch ((type, preferSummary)) {
-      (BlockType.text, _) ||
-      (BlockType.localFile || BlockType.webUrl, false) =>
-        textContent,
+      (BlockType.text, _) =>
+        textContent?.let(SnippetExtension.collapseVariables),
+      (BlockType.localFile || BlockType.webUrl, false) => textContent,
       (BlockType.youtube || BlockType.audio || BlockType.video, false) =>
         transcript,
       (
@@ -410,16 +425,20 @@ extension PromptBlockCreation on Database {
       isAudioFile(filePath) ||
       isVideoFile(filePath);
 
-  Future<void> createBlocksFromFiles(
-    List<String> filePaths, {
-    required int promptId,
-  }) async {
+  Future<double> _inferLastSortOrder(int promptId) async {
     final lastCurrentBlock = await (select(promptBlocks)
           ..where((tbl) => tbl.promptId.equals(promptId))
           ..orderBy([(tbl) => OrderingTerm.desc(tbl.sortOrder)])
           ..limit(1))
         .getSingleOrNull();
-    final lastSortOrder = lastCurrentBlock?.sortOrder ?? 100.0;
+    return lastCurrentBlock?.sortOrder ?? 100.0;
+  }
+
+  Future<void> createBlocksFromFiles(
+    List<String> filePaths, {
+    required int promptId,
+  }) async {
+    final lastSortOrder = await _inferLastSortOrder(promptId);
     final companions = await Future.wait(
       filePaths.indexedMap((index, filePath) async {
         final mimeType = lookupMimeType(filePath);
@@ -449,4 +468,87 @@ extension PromptBlockCreation on Database {
     );
     return _createBlocks(companions);
   }
+
+  /// Creates a YouTube block in the prompt from a YouTube URL.
+  ///
+  /// Returns a tuple of (blockId, transcript) if successful, or null if not.
+  Future<(int, String)?> createYouTubeBlock(
+    int promptId,
+    String videoUrl,
+  ) async {
+    final yt = YoutubeService();
+    final lastSortOrder = await _inferLastSortOrder(promptId);
+    try {
+      final video = await yt.getVideoInfo(videoUrl);
+      final transcript = await yt.getTranscript(videoUrl);
+      if (transcript == null) throw Exception('No transcript found.');
+      final blockId = await createBlock(
+        promptId: promptId,
+        blockType: BlockType.youtube,
+        url: video.url,
+        displayName: video.title,
+        transcript: transcript,
+        sortOrder: lastSortOrder + 10e6,
+      );
+      return (blockId, transcript);
+    } on ArgumentError {
+      throw Exception('Invalid YouTube URL.');
+    } finally {
+      yt.dispose();
+    }
+  }
+
+  /// Creates a "web block" in the prompt from a web URL.
+  ///
+  /// Returns a tuple of (blockId, content) if successful, or null if not.
+  Future<(int, String)?> createWebBlock(
+    int promptId,
+    String url,
+    SearchProvider searchProvider,
+  ) async {
+    final lastSortOrder = await _inferLastSortOrder(promptId);
+    final content = await searchProvider.fetchWebpage(url);
+    if (content.isEmpty) return null;
+    final blockId = await createBlock(
+      promptId: promptId,
+      blockType: BlockType.webUrl,
+      url: url,
+      textContent: content,
+      sortOrder: lastSortOrder + 10e6,
+    );
+    return (blockId, content);
+  }
+
+  /// Creates a "web block" in the prompt from the already-fetched search result.
+  Future<(int, String)?> createWebBlockFromResult(
+    int promptId,
+    SearchResult result,
+  ) async {
+    final lastSortOrder = await _inferLastSortOrder(promptId);
+    final content = result.copyableContent;
+    final blockId = await createBlock(
+      promptId: promptId,
+      blockType: BlockType.webUrl,
+      url: result.url,
+      textContent: content,
+      sortOrder: lastSortOrder + 10e6,
+    );
+    return (blockId, content);
+  }
+}
+
+extension WebResultContentExtension on SearchResult {
+  String get copyableContent => '# Title: $title\n'
+      '**Url:** $url\n'
+      '**Published:** $publishedDate\n'
+      '**Author:** $author\n\n'
+      '---\n\n'
+      '## Highlights\n'
+      '${highlights.join('\n')}\n\n'
+      '---\n\n'
+      '## Summary\n'
+      '$summary\n\n'
+      '---\n\n'
+      '## Full Text\n'
+      '$text\n';
 }

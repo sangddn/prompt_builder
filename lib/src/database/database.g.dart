@@ -1477,316 +1477,6 @@ class PromptBlocksCompanion extends UpdateCompanion<PromptBlock> {
   }
 }
 
-class $BlockVariablesTable extends BlockVariables
-    with TableInfo<$BlockVariablesTable, BlockVariable> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $BlockVariablesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _blockIdMeta =
-      const VerificationMeta('blockId');
-  @override
-  late final GeneratedColumn<int> blockId = GeneratedColumn<int>(
-      'block_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES prompt_blocks (id)'));
-  static const VerificationMeta _varNameMeta =
-      const VerificationMeta('varName');
-  @override
-  late final GeneratedColumn<String> varName = GeneratedColumn<String>(
-      'var_name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _defaultValueMeta =
-      const VerificationMeta('defaultValue');
-  @override
-  late final GeneratedColumn<String> defaultValue = GeneratedColumn<String>(
-      'default_value', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _userValueMeta =
-      const VerificationMeta('userValue');
-  @override
-  late final GeneratedColumn<String> userValue = GeneratedColumn<String>(
-      'user_value', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [id, blockId, varName, defaultValue, userValue];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'block_variables';
-  @override
-  VerificationContext validateIntegrity(Insertable<BlockVariable> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('block_id')) {
-      context.handle(_blockIdMeta,
-          blockId.isAcceptableOrUnknown(data['block_id']!, _blockIdMeta));
-    } else if (isInserting) {
-      context.missing(_blockIdMeta);
-    }
-    if (data.containsKey('var_name')) {
-      context.handle(_varNameMeta,
-          varName.isAcceptableOrUnknown(data['var_name']!, _varNameMeta));
-    } else if (isInserting) {
-      context.missing(_varNameMeta);
-    }
-    if (data.containsKey('default_value')) {
-      context.handle(
-          _defaultValueMeta,
-          defaultValue.isAcceptableOrUnknown(
-              data['default_value']!, _defaultValueMeta));
-    }
-    if (data.containsKey('user_value')) {
-      context.handle(_userValueMeta,
-          userValue.isAcceptableOrUnknown(data['user_value']!, _userValueMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  BlockVariable map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return BlockVariable(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      blockId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}block_id'])!,
-      varName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}var_name'])!,
-      defaultValue: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}default_value']),
-      userValue: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}user_value']),
-    );
-  }
-
-  @override
-  $BlockVariablesTable createAlias(String alias) {
-    return $BlockVariablesTable(attachedDatabase, alias);
-  }
-}
-
-class BlockVariable extends DataClass implements Insertable<BlockVariable> {
-  final int id;
-  final int blockId;
-  final String varName;
-  final String? defaultValue;
-  final String? userValue;
-  const BlockVariable(
-      {required this.id,
-      required this.blockId,
-      required this.varName,
-      this.defaultValue,
-      this.userValue});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['block_id'] = Variable<int>(blockId);
-    map['var_name'] = Variable<String>(varName);
-    if (!nullToAbsent || defaultValue != null) {
-      map['default_value'] = Variable<String>(defaultValue);
-    }
-    if (!nullToAbsent || userValue != null) {
-      map['user_value'] = Variable<String>(userValue);
-    }
-    return map;
-  }
-
-  BlockVariablesCompanion toCompanion(bool nullToAbsent) {
-    return BlockVariablesCompanion(
-      id: Value(id),
-      blockId: Value(blockId),
-      varName: Value(varName),
-      defaultValue: defaultValue == null && nullToAbsent
-          ? const Value.absent()
-          : Value(defaultValue),
-      userValue: userValue == null && nullToAbsent
-          ? const Value.absent()
-          : Value(userValue),
-    );
-  }
-
-  factory BlockVariable.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return BlockVariable(
-      id: serializer.fromJson<int>(json['id']),
-      blockId: serializer.fromJson<int>(json['blockId']),
-      varName: serializer.fromJson<String>(json['varName']),
-      defaultValue: serializer.fromJson<String?>(json['defaultValue']),
-      userValue: serializer.fromJson<String?>(json['userValue']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'blockId': serializer.toJson<int>(blockId),
-      'varName': serializer.toJson<String>(varName),
-      'defaultValue': serializer.toJson<String?>(defaultValue),
-      'userValue': serializer.toJson<String?>(userValue),
-    };
-  }
-
-  BlockVariable copyWith(
-          {int? id,
-          int? blockId,
-          String? varName,
-          Value<String?> defaultValue = const Value.absent(),
-          Value<String?> userValue = const Value.absent()}) =>
-      BlockVariable(
-        id: id ?? this.id,
-        blockId: blockId ?? this.blockId,
-        varName: varName ?? this.varName,
-        defaultValue:
-            defaultValue.present ? defaultValue.value : this.defaultValue,
-        userValue: userValue.present ? userValue.value : this.userValue,
-      );
-  BlockVariable copyWithCompanion(BlockVariablesCompanion data) {
-    return BlockVariable(
-      id: data.id.present ? data.id.value : this.id,
-      blockId: data.blockId.present ? data.blockId.value : this.blockId,
-      varName: data.varName.present ? data.varName.value : this.varName,
-      defaultValue: data.defaultValue.present
-          ? data.defaultValue.value
-          : this.defaultValue,
-      userValue: data.userValue.present ? data.userValue.value : this.userValue,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('BlockVariable(')
-          ..write('id: $id, ')
-          ..write('blockId: $blockId, ')
-          ..write('varName: $varName, ')
-          ..write('defaultValue: $defaultValue, ')
-          ..write('userValue: $userValue')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(id, blockId, varName, defaultValue, userValue);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is BlockVariable &&
-          other.id == this.id &&
-          other.blockId == this.blockId &&
-          other.varName == this.varName &&
-          other.defaultValue == this.defaultValue &&
-          other.userValue == this.userValue);
-}
-
-class BlockVariablesCompanion extends UpdateCompanion<BlockVariable> {
-  final Value<int> id;
-  final Value<int> blockId;
-  final Value<String> varName;
-  final Value<String?> defaultValue;
-  final Value<String?> userValue;
-  const BlockVariablesCompanion({
-    this.id = const Value.absent(),
-    this.blockId = const Value.absent(),
-    this.varName = const Value.absent(),
-    this.defaultValue = const Value.absent(),
-    this.userValue = const Value.absent(),
-  });
-  BlockVariablesCompanion.insert({
-    this.id = const Value.absent(),
-    required int blockId,
-    required String varName,
-    this.defaultValue = const Value.absent(),
-    this.userValue = const Value.absent(),
-  })  : blockId = Value(blockId),
-        varName = Value(varName);
-  static Insertable<BlockVariable> custom({
-    Expression<int>? id,
-    Expression<int>? blockId,
-    Expression<String>? varName,
-    Expression<String>? defaultValue,
-    Expression<String>? userValue,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (blockId != null) 'block_id': blockId,
-      if (varName != null) 'var_name': varName,
-      if (defaultValue != null) 'default_value': defaultValue,
-      if (userValue != null) 'user_value': userValue,
-    });
-  }
-
-  BlockVariablesCompanion copyWith(
-      {Value<int>? id,
-      Value<int>? blockId,
-      Value<String>? varName,
-      Value<String?>? defaultValue,
-      Value<String?>? userValue}) {
-    return BlockVariablesCompanion(
-      id: id ?? this.id,
-      blockId: blockId ?? this.blockId,
-      varName: varName ?? this.varName,
-      defaultValue: defaultValue ?? this.defaultValue,
-      userValue: userValue ?? this.userValue,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (blockId.present) {
-      map['block_id'] = Variable<int>(blockId.value);
-    }
-    if (varName.present) {
-      map['var_name'] = Variable<String>(varName.value);
-    }
-    if (defaultValue.present) {
-      map['default_value'] = Variable<String>(defaultValue.value);
-    }
-    if (userValue.present) {
-      map['user_value'] = Variable<String>(userValue.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('BlockVariablesCompanion(')
-          ..write('id: $id, ')
-          ..write('blockId: $blockId, ')
-          ..write('varName: $varName, ')
-          ..write('defaultValue: $defaultValue, ')
-          ..write('userValue: $userValue')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -2130,14 +1820,13 @@ abstract class _$Database extends GeneratedDatabase {
   $DatabaseManager get managers => $DatabaseManager(this);
   late final $PromptsTable prompts = $PromptsTable(this);
   late final $PromptBlocksTable promptBlocks = $PromptBlocksTable(this);
-  late final $BlockVariablesTable blockVariables = $BlockVariablesTable(this);
   late final $SnippetsTable snippets = $SnippetsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [prompts, promptBlocks, blockVariables, snippets];
+      [prompts, promptBlocks, snippets];
 }
 
 typedef $$PromptsTableCreateCompanionBuilder = PromptsCompanion Function({
@@ -2508,21 +2197,6 @@ final class $$PromptBlocksTableReferences
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: [item]));
   }
-
-  static MultiTypedResultKey<$BlockVariablesTable, List<BlockVariable>>
-      _blockVariablesRefsTable(_$Database db) =>
-          MultiTypedResultKey.fromTable(db.blockVariables,
-              aliasName: $_aliasNameGenerator(
-                  db.promptBlocks.id, db.blockVariables.blockId));
-
-  $$BlockVariablesTableProcessedTableManager get blockVariablesRefs {
-    final manager = $$BlockVariablesTableTableManager($_db, $_db.blockVariables)
-        .filter((f) => f.blockId.id($_item.id));
-
-    final cache = $_typedResult.readTableOrNull(_blockVariablesRefsTable($_db));
-    return ProcessedTableManager(
-        manager.$state.copyWith(prefetchedData: cache));
-  }
 }
 
 class $$PromptBlocksTableFilterComposer
@@ -2613,27 +2287,6 @@ class $$PromptBlocksTableFilterComposer
                   $removeJoinBuilderFromRootComposer,
             ));
     return composer;
-  }
-
-  Expression<bool> blockVariablesRefs(
-      Expression<bool> Function($$BlockVariablesTableFilterComposer f) f) {
-    final $$BlockVariablesTableFilterComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $db.blockVariables,
-        getReferencedColumn: (t) => t.blockId,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$BlockVariablesTableFilterComposer(
-              $db: $db,
-              $table: $db.blockVariables,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
-    return f(composer);
   }
 }
 
@@ -2814,27 +2467,6 @@ class $$PromptBlocksTableAnnotationComposer
             ));
     return composer;
   }
-
-  Expression<T> blockVariablesRefs<T extends Object>(
-      Expression<T> Function($$BlockVariablesTableAnnotationComposer a) f) {
-    final $$BlockVariablesTableAnnotationComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $db.blockVariables,
-        getReferencedColumn: (t) => t.blockId,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$BlockVariablesTableAnnotationComposer(
-              $db: $db,
-              $table: $db.blockVariables,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
-    return f(composer);
-  }
 }
 
 class $$PromptBlocksTableTableManager extends RootTableManager<
@@ -2848,7 +2480,7 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
     $$PromptBlocksTableUpdateCompanionBuilder,
     (PromptBlock, $$PromptBlocksTableReferences),
     PromptBlock,
-    PrefetchHooks Function({bool promptId, bool blockVariablesRefs})> {
+    PrefetchHooks Function({bool promptId})> {
   $$PromptBlocksTableTableManager(_$Database db, $PromptBlocksTable table)
       : super(TableManagerState(
           db: db,
@@ -2953,13 +2585,10 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
                     $$PromptBlocksTableReferences(db, table, e)
                   ))
               .toList(),
-          prefetchHooksCallback: (
-              {promptId = false, blockVariablesRefs = false}) {
+          prefetchHooksCallback: ({promptId = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [
-                if (blockVariablesRefs) db.blockVariables
-              ],
+              explicitlyWatchedTables: [],
               addJoins: <
                   T extends TableManagerState<
                       dynamic,
@@ -2987,20 +2616,7 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
                 return state;
               },
               getPrefetchedDataCallback: (items) async {
-                return [
-                  if (blockVariablesRefs)
-                    await $_getPrefetchedData(
-                        currentTable: table,
-                        referencedTable: $$PromptBlocksTableReferences
-                            ._blockVariablesRefsTable(db),
-                        managerFromTypedResult: (p0) =>
-                            $$PromptBlocksTableReferences(db, table, p0)
-                                .blockVariablesRefs,
-                        referencedItemsForCurrentItem: (item,
-                                referencedItems) =>
-                            referencedItems.where((e) => e.blockId == item.id),
-                        typedResults: items)
-                ];
+                return [];
               },
             );
           },
@@ -3018,276 +2634,7 @@ typedef $$PromptBlocksTableProcessedTableManager = ProcessedTableManager<
     $$PromptBlocksTableUpdateCompanionBuilder,
     (PromptBlock, $$PromptBlocksTableReferences),
     PromptBlock,
-    PrefetchHooks Function({bool promptId, bool blockVariablesRefs})>;
-typedef $$BlockVariablesTableCreateCompanionBuilder = BlockVariablesCompanion
-    Function({
-  Value<int> id,
-  required int blockId,
-  required String varName,
-  Value<String?> defaultValue,
-  Value<String?> userValue,
-});
-typedef $$BlockVariablesTableUpdateCompanionBuilder = BlockVariablesCompanion
-    Function({
-  Value<int> id,
-  Value<int> blockId,
-  Value<String> varName,
-  Value<String?> defaultValue,
-  Value<String?> userValue,
-});
-
-final class $$BlockVariablesTableReferences
-    extends BaseReferences<_$Database, $BlockVariablesTable, BlockVariable> {
-  $$BlockVariablesTableReferences(
-      super.$_db, super.$_table, super.$_typedResult);
-
-  static $PromptBlocksTable _blockIdTable(_$Database db) =>
-      db.promptBlocks.createAlias(
-          $_aliasNameGenerator(db.blockVariables.blockId, db.promptBlocks.id));
-
-  $$PromptBlocksTableProcessedTableManager get blockId {
-    final manager = $$PromptBlocksTableTableManager($_db, $_db.promptBlocks)
-        .filter((f) => f.id($_item.blockId!));
-    final item = $_typedResult.readTableOrNull(_blockIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-        manager.$state.copyWith(prefetchedData: [item]));
-  }
-}
-
-class $$BlockVariablesTableFilterComposer
-    extends Composer<_$Database, $BlockVariablesTable> {
-  $$BlockVariablesTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get varName => $composableBuilder(
-      column: $table.varName, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get defaultValue => $composableBuilder(
-      column: $table.defaultValue, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get userValue => $composableBuilder(
-      column: $table.userValue, builder: (column) => ColumnFilters(column));
-
-  $$PromptBlocksTableFilterComposer get blockId {
-    final $$PromptBlocksTableFilterComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.blockId,
-        referencedTable: $db.promptBlocks,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$PromptBlocksTableFilterComposer(
-              $db: $db,
-              $table: $db.promptBlocks,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
-    return composer;
-  }
-}
-
-class $$BlockVariablesTableOrderingComposer
-    extends Composer<_$Database, $BlockVariablesTable> {
-  $$BlockVariablesTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get varName => $composableBuilder(
-      column: $table.varName, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get defaultValue => $composableBuilder(
-      column: $table.defaultValue,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get userValue => $composableBuilder(
-      column: $table.userValue, builder: (column) => ColumnOrderings(column));
-
-  $$PromptBlocksTableOrderingComposer get blockId {
-    final $$PromptBlocksTableOrderingComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.blockId,
-        referencedTable: $db.promptBlocks,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$PromptBlocksTableOrderingComposer(
-              $db: $db,
-              $table: $db.promptBlocks,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
-    return composer;
-  }
-}
-
-class $$BlockVariablesTableAnnotationComposer
-    extends Composer<_$Database, $BlockVariablesTable> {
-  $$BlockVariablesTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get varName =>
-      $composableBuilder(column: $table.varName, builder: (column) => column);
-
-  GeneratedColumn<String> get defaultValue => $composableBuilder(
-      column: $table.defaultValue, builder: (column) => column);
-
-  GeneratedColumn<String> get userValue =>
-      $composableBuilder(column: $table.userValue, builder: (column) => column);
-
-  $$PromptBlocksTableAnnotationComposer get blockId {
-    final $$PromptBlocksTableAnnotationComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.blockId,
-        referencedTable: $db.promptBlocks,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$PromptBlocksTableAnnotationComposer(
-              $db: $db,
-              $table: $db.promptBlocks,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
-    return composer;
-  }
-}
-
-class $$BlockVariablesTableTableManager extends RootTableManager<
-    _$Database,
-    $BlockVariablesTable,
-    BlockVariable,
-    $$BlockVariablesTableFilterComposer,
-    $$BlockVariablesTableOrderingComposer,
-    $$BlockVariablesTableAnnotationComposer,
-    $$BlockVariablesTableCreateCompanionBuilder,
-    $$BlockVariablesTableUpdateCompanionBuilder,
-    (BlockVariable, $$BlockVariablesTableReferences),
-    BlockVariable,
-    PrefetchHooks Function({bool blockId})> {
-  $$BlockVariablesTableTableManager(_$Database db, $BlockVariablesTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$BlockVariablesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$BlockVariablesTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$BlockVariablesTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<int> blockId = const Value.absent(),
-            Value<String> varName = const Value.absent(),
-            Value<String?> defaultValue = const Value.absent(),
-            Value<String?> userValue = const Value.absent(),
-          }) =>
-              BlockVariablesCompanion(
-            id: id,
-            blockId: blockId,
-            varName: varName,
-            defaultValue: defaultValue,
-            userValue: userValue,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required int blockId,
-            required String varName,
-            Value<String?> defaultValue = const Value.absent(),
-            Value<String?> userValue = const Value.absent(),
-          }) =>
-              BlockVariablesCompanion.insert(
-            id: id,
-            blockId: blockId,
-            varName: varName,
-            defaultValue: defaultValue,
-            userValue: userValue,
-          ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (
-                    e.readTable(table),
-                    $$BlockVariablesTableReferences(db, table, e)
-                  ))
-              .toList(),
-          prefetchHooksCallback: ({blockId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins: <
-                  T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic>>(state) {
-                if (blockId) {
-                  state = state.withJoin(
-                    currentTable: table,
-                    currentColumn: table.blockId,
-                    referencedTable:
-                        $$BlockVariablesTableReferences._blockIdTable(db),
-                    referencedColumn:
-                        $$BlockVariablesTableReferences._blockIdTable(db).id,
-                  ) as T;
-                }
-
-                return state;
-              },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
-        ));
-}
-
-typedef $$BlockVariablesTableProcessedTableManager = ProcessedTableManager<
-    _$Database,
-    $BlockVariablesTable,
-    BlockVariable,
-    $$BlockVariablesTableFilterComposer,
-    $$BlockVariablesTableOrderingComposer,
-    $$BlockVariablesTableAnnotationComposer,
-    $$BlockVariablesTableCreateCompanionBuilder,
-    $$BlockVariablesTableUpdateCompanionBuilder,
-    (BlockVariable, $$BlockVariablesTableReferences),
-    BlockVariable,
-    PrefetchHooks Function({bool blockId})>;
+    PrefetchHooks Function({bool promptId})>;
 typedef $$SnippetsTableCreateCompanionBuilder = SnippetsCompanion Function({
   Value<int> id,
   Value<String> title,
@@ -3470,8 +2817,6 @@ class $DatabaseManager {
       $$PromptsTableTableManager(_db, _db.prompts);
   $$PromptBlocksTableTableManager get promptBlocks =>
       $$PromptBlocksTableTableManager(_db, _db.promptBlocks);
-  $$BlockVariablesTableTableManager get blockVariables =>
-      $$BlockVariablesTableTableManager(_db, _db.blockVariables);
   $$SnippetsTableTableManager get snippets =>
       $$SnippetsTableTableManager(_db, _db.snippets);
 }

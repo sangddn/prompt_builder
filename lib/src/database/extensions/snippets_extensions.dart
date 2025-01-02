@@ -24,14 +24,38 @@ extension SnippetsExtension on Database {
     return (select(snippets)..where((t) => t.id.equals(id))).getSingle();
   }
 
-  /// Query text prompts
+  /// Query snippets with flexible sorting and filtering options.
+  ///
+  /// Parameters:
+  /// - [sortBy] Field to sort results by (default: createdAt)
+  /// - [ascending] Sort direction (default: false/descending)
+  /// - [limit] Maximum number of results to return (default: 50)
+  /// - [offset] Number of results to skip for pagination (default: 0)
+  /// - [searchQuery] Optional search query to filter by
+  ///
+  /// If [searchQuery] is not empty, it will be used to filter snippets
+  /// case-insensitively in:
+  /// - Snippet titles
+  /// - Snippet content
+  ///
+  /// Returns a list of snippets matching the query parameters.
   Future<List<Snippet>> querySnippets({
-    int limit = 50,
-    int offset = 0,
     SnippetSortBy sortBy = SnippetSortBy.createdAt,
     bool ascending = false,
+    int limit = 50,
+    int offset = 0,
+    String searchQuery = '',
   }) async {
     final q = select(snippets)..limit(limit, offset: offset);
+
+    if (searchQuery.isNotEmpty) {
+      final searchTerm = '%${searchQuery.toLowerCase()}%';
+      q.where((t) {
+        final titleMatch = t.title.lower().like(searchTerm);
+        final contentMatch = t.content.lower().like(searchTerm);
+        return titleMatch | contentMatch;
+      });
+    }
 
     switch (sortBy) {
       case SnippetSortBy.title:
@@ -61,4 +85,117 @@ extension SnippetsExtension on Database {
     }
     return q.get();
   }
+
+  /// Delete a snippet by its ID.
+  Future<void> deleteSnippet(int id) async {
+    await (delete(snippets)..where((t) => t.id.equals(id))).go();
+  }
+
+  /// Update a snippet by its ID.
+  Future<void> updateSnippet(int id, {String? title, String? content}) async {
+    await (update(snippets)..where((t) => t.id.equals(id))).write(
+      SnippetsCompanion(
+        title: title != null ? Value(title) : const Value.absent(),
+        content: content != null ? Value(content) : const Value.absent(),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  /// Record the last time the snippet was used.
+  Future<void> recordLastUsed(int id) async {
+    await (update(snippets)..where((t) => t.id.equals(id))).write(
+      SnippetsCompanion(lastUsedAt: Value(DateTime.now())),
+    );
+  }
+}
+
+extension SnippetExtension on Snippet {
+  /// Parse the variables from the given content.
+  ///
+  /// Variables can be formatted as:
+  /// - `{{variableName=value}}` - variable with default value
+  /// - `{{variableName}}` - variable without default value (equivalent to empty default)
+  ///
+  /// Returns a map of variable names to their default values.
+  static Map<String, String> parseVariables(String content) {
+    final variables = <String, String>{};
+
+    // Match {{name=value}} format
+    final matchesWithValue =
+        RegExp(r'\{\{(\w+)=([^}]*)\}\}').allMatches(content);
+    for (final match in matchesWithValue) {
+      variables[match.group(1)!] = match.group(2)!;
+    }
+
+    // Match {{name}} format
+    final matchesWithoutValue = RegExp(r'\{\{(\w+)\}\}').allMatches(content);
+    for (final match in matchesWithoutValue) {
+      final name = match.group(1)!;
+      // Only add if not already added by previous regex
+      if (!variables.containsKey(name)) {
+        variables[name] = '';
+      }
+    }
+
+    return variables;
+  }
+
+  /// Replace the value of a variable in the given content.
+  ///
+  /// Handles both `{{variableName=value}}` and `{{variableName}}` formats.
+  /// Returns the new content with the variable value updated.
+  static String replaceVariableValue(
+    String content,
+    String variableName,
+    String newValue,
+  ) {
+    var updatedContent = content;
+
+    // Replace {{name=value}} format
+    updatedContent = updatedContent.replaceAllMapped(
+      RegExp(r'\{\{(\w+)=([^}]*)\}\}'),
+      (match) => match.group(1) == variableName
+          ? '{{$variableName=$newValue}}'
+          : match.group(0)!,
+    );
+
+    // Replace {{name}} format
+    updatedContent = updatedContent.replaceAllMapped(
+      RegExp(r'\{\{(\w+)\}\}'),
+      (match) => match.group(1) == variableName
+          ? '{{$variableName=$newValue}}'
+          : match.group(0)!,
+    );
+
+    return updatedContent;
+  }
+
+  /// Replace the values of multiple variables in the snippet content.
+  static String replaceVariableValues(
+    String content,
+    Map<String, String> variables,
+  ) {
+    var updatedContent = content;
+    for (final variable in variables.entries) {
+      updatedContent = replaceVariableValue(
+        updatedContent,
+        variable.key,
+        variable.value,
+      );
+    }
+    return updatedContent;
+  }
+
+  /// Collapses the variables in the snippet content to their values.
+  /// For example, `{{name=value}}` becomes `value`.
+  static String collapseVariables(String content) {
+    return content.replaceAllMapped(
+      RegExp(r'\{\{(\w+)(?:=([^}]*))?\}\}'),
+      (match) => match.group(2) ?? '',
+    );
+  }
+
+  /// Get the variables from the snippet content, mapped to their default values.
+  Map<String, String> get variables => parseVariables(content);
 }

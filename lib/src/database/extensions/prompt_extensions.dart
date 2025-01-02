@@ -204,6 +204,15 @@ extension PromptsExtension on Database {
   }
 }
 
+/// Basic extensions for prompts
+extension PromptExtension on Prompt {
+  /// Returns the content of the prompt as a string.
+  Future<String> getContent(Database db) async {
+    final blocks = await db.getBlocksByPrompt(id);
+    return blocks.map((b) => b.copyToPrompt()).nonNulls.join('\n\n');
+  }
+}
+
 /// Extension methods for handling prompt tags
 extension PromptTagsExtension on Prompt {
   /// Separator used between tags in the stored string
@@ -225,19 +234,16 @@ extension PromptTagsExtension on Prompt {
   /// Filters out empty tags and tags containing the separator character.
   static String tagsToString(List<String> tagsList) {
     return tagsList
-        .map((t) => t.trim())
-        .where((t) => t.isNotEmpty && !t.contains(_tagSeparator))
-        .toList()
+        .map((t) => cleanTag(t))
+        .nonNulls
+        .toSet()
         .join(_tagSeparator);
   }
 
-  /// Validates if a single tag string is valid for storage.
-  ///
-  /// A valid tag:
-  /// - Is not empty after trimming
-  /// - Does not contain the separator character
-  static bool isValidTag(String tag) {
-    final trimmed = tag.trim();
-    return trimmed.isNotEmpty && !trimmed.contains(_tagSeparator);
+  /// Cleans a tag by removing the separator character.
+  /// Returns null if the resulted tag is empty.
+  static String? cleanTag(String tag) {
+    final cleaned = tag.trim().replaceAll(_tagSeparator, '');
+    return cleaned.isEmpty ? null : cleaned;
   }
 }

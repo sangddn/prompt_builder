@@ -4,23 +4,13 @@ import '../database.dart';
 
 /// Extension methods for tag-related database operations
 extension TagsExtension on Database {
-  /// Retrieves tags ordered by their frequency of use.
-  ///
-  /// Parameters:
-  /// - [limit] Maximum number of tags to return (default: 50)
-  /// - [offset] Number of tags to skip for pagination (default: 0)
-  /// - [searchQuery] Optional search query to filter tags (case-insensitive)
-  /// - [minCount] Minimum number of times a tag must be used to be included
-  ///
-  /// Returns a list of [TagCount] objects containing the tag and its usage count.
-  Future<List<TagCount>> getTagsByFrequency({
-    int limit = 50,
-    int offset = 0,
-    String searchQuery = '',
-    int minCount = 1,
-  }) async {
-    // Custom query to split tags string and count occurrences
-    final query = customSelect(
+  Selectable<TagCount> _createTagsQuery({
+    required int limit,
+    required int offset,
+    required String searchQuery,
+    required int minCount,
+  }) {
+    return customSelect(
       '''
       WITH RECURSIVE
       split_tags(tag) AS (
@@ -47,17 +37,35 @@ extension TagsExtension on Database {
         Variable.withInt(offset),
       ],
       readsFrom: {prompts},
+    ).map(
+      (row) => TagCount(
+        tag: row.read<String>('tag'),
+        count: row.read<int>('count'),
+      ),
     );
+  }
 
-    final rows = await query.get();
-    return rows
-        .map(
-          (row) => TagCount(
-            tag: row.read<String>('tag'),
-            count: row.read<int>('count'),
-          ),
-        )
-        .toList();
+  /// Streams tags ordered by their frequency of use.
+  ///
+  /// Parameters:
+  /// - [limit] Maximum number of tags to return (default: 50)
+  /// - [offset] Number of tags to skip for pagination (default: 0)
+  /// - [searchQuery] Optional search query to filter tags (case-insensitive)
+  /// - [minCount] Minimum number of times a tag must be used to be included
+  ///
+  /// Returns a list of [TagCount] objects containing the tag and its usage count.
+  Stream<List<TagCount>> streamTagsByFrequency({
+    int limit = 50,
+    int offset = 0,
+    String searchQuery = '',
+    int minCount = 1,
+  }) {
+    return _createTagsQuery(
+      limit: limit,
+      offset: offset,
+      searchQuery: searchQuery,
+      minCount: minCount,
+    ).watch();
   }
 
   /// Returns the total count of unique tags in the database.
@@ -109,6 +117,20 @@ extension TagsExtension on Database {
           ..where((p) => p.tags.like('%|$tag|%'))
           ..limit(limit, offset: offset))
         .get();
+  }
+
+  Future<List<TagCount>> getTagsByFrequency({
+    int limit = 50,
+    int offset = 0,
+    String searchQuery = '',
+    int minCount = 1,
+  }) {
+    return _createTagsQuery(
+      limit: limit,
+      offset: offset,
+      searchQuery: searchQuery,
+      minCount: minCount,
+    ).get();
   }
 }
 

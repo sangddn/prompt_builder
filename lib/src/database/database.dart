@@ -13,7 +13,7 @@ export 'tables/db_tables.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Prompts, PromptBlocks, BlockVariables, Snippets])
+@DriftDatabase(tables: [Prompts, PromptBlocks, Snippets])
 final class Database extends _$Database {
   factory Database() => instance;
   Database.custom(String name) : super(_openConnection(name));
