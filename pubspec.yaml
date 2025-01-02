@@ -46,6 +46,10 @@ dependencies:
   mime: ^2.0.0
   http_parser: ^4.1.1
   image: ^4.5.2
+  webview_flutter: ^4.10.0
+  syncfusion_flutter_pdfviewer: ^28.1.36
+  flutter_staggered_grid_view: ^0.7.0
+  animated_to: ^0.2.0
 
 dev_dependencies:
   flutter_test:
@@ -65,6 +69,7 @@ flutter:
   assets:
     - assets/fonts/
     - assets/images/
+    - assets/snippet_resources.json
 
   fonts:
     - family: HgiStrokeRounded
