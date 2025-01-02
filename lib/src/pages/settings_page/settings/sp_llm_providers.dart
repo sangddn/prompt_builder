@@ -30,8 +30,8 @@ class LLMProviderSettings extends StatelessWidget {
             ),
           ),
           const Gap(16.0),
-          ...[OpenAI(), Anthropic(), Gemini()]
-              .map((provider) => LLMProviderInfo(provider: provider)),
+          ...kAllLLMProviders
+              .map((provider) => ProviderInfo(provider: provider)),
           const Gap(8.0),
         ].toList(),
       ),
@@ -40,13 +40,13 @@ class LLMProviderSettings extends StatelessWidget {
 }
 
 // -----------------------------------------------------------------------------
-// LLM Provider Widgets
+// Search and LLM Provider Widgets
 // -----------------------------------------------------------------------------
 
-class LLMProviderInfo extends StatelessWidget {
-  const LLMProviderInfo({required this.provider, super.key});
+class ProviderInfo<T extends ProviderWithApiKey> extends StatelessWidget {
+  const ProviderInfo({required this.provider, super.key});
 
-  final LLMProvider provider;
+  final T provider;
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +57,9 @@ class LLMProviderInfo extends StatelessWidget {
         Row(
           children: [
             const Gap(6.0),
-            Expanded(child: Text(provider.providerName, style: textTheme.list)),
+            Expanded(child: Text(provider.name, style: textTheme.list)),
             ShadButton.ghost(
-              onPressed: () => launchUrlString(provider.docsPage),
+              onPressed: () => launchUrlString(provider.docsUrl),
               size: ShadButtonSize.sm,
               icon: const ShadImage.square(
                 HugeIcons.strokeRoundedDoc01,
@@ -68,7 +68,7 @@ class LLMProviderInfo extends StatelessWidget {
               child: const Text('Docs'),
             ),
             ShadButton.ghost(
-              onPressed: () => launchUrlString(provider.apiKeyPage),
+              onPressed: () => launchUrlString(provider.consoleUrl),
               size: ShadButtonSize.sm,
               icon: const ShadImage.square(
                 HugeIcons.strokeRoundedCode,
@@ -78,21 +78,23 @@ class LLMProviderInfo extends StatelessWidget {
             ),
           ],
         ),
-        LLMProviderApiKeyField(provider: provider),
+        ProviderApiKeyField<T>(provider: provider),
         const Gap(24.0),
       ],
     );
   }
 }
 
-class LLMProviderApiKeyField extends StatefulWidget {
-  const LLMProviderApiKeyField({required this.provider, super.key});
-  final LLMProvider provider;
+class ProviderApiKeyField<T extends ProviderWithApiKey> extends StatefulWidget {
+  const ProviderApiKeyField({required this.provider, super.key});
+
+  final T provider;
+
   @override
-  State<LLMProviderApiKeyField> createState() => _LLMProviderApiKeyFieldState();
+  State<ProviderApiKeyField> createState() => _ProviderApiKeyFieldState();
 }
 
-class _LLMProviderApiKeyFieldState extends State<LLMProviderApiKeyField> {
+class _ProviderApiKeyFieldState extends State<ProviderApiKeyField> {
   bool _showApiKey = false;
   late final _initialKey = () {
     try {
@@ -104,21 +106,33 @@ class _LLMProviderApiKeyFieldState extends State<LLMProviderApiKeyField> {
 
   @override
   Widget build(BuildContext context) {
-    return ShadInput(
-      initialValue: _initialKey,
-      prefix: LLMProviderLogo(provider: widget.provider, size: 14.0),
-      suffix: CButton(
-        tooltip: _showApiKey ? 'Hide' : 'Show',
-        padding: k4APadding,
-        onTap: () => setState(() => _showApiKey = !_showApiKey),
-        child: ShadImage.square(
-          _showApiKey ? CupertinoIcons.eye : CupertinoIcons.eye_slash,
-          size: 14,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ShadInput(
+          initialValue: _initialKey,
+          prefix: ProviderLogo(provider: widget.provider, size: 14.0),
+          suffix: CButton(
+            tooltip: _showApiKey ? 'Hide' : 'Show',
+            padding: k4APadding,
+            onTap: () => setState(() => _showApiKey = !_showApiKey),
+            child: ShadImage.square(
+              _showApiKey ? CupertinoIcons.eye : CupertinoIcons.eye_slash,
+              size: 14,
+            ),
+          ),
+          placeholder: const Text('API Key'),
+          obscureText: !_showApiKey,
+          onChanged: widget.provider.setApiKey,
         ),
-      ),
-      placeholder: const Text('API Key'),
-      obscureText: !_showApiKey,
-      onChanged: widget.provider.setApiKey,
+        if (widget.provider.description case final description?) ...[
+          const Gap(6.0),
+          Padding(
+            padding: k4HPadding,
+            child: Text(description, style: context.textTheme.muted),
+          ),
+        ],
+      ],
     );
   }
 }

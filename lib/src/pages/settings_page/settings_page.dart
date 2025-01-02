@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
@@ -12,6 +13,7 @@ import '../../services/services.dart';
 part 'settings/sp_appearance_settings.dart';
 part 'settings/sp_llm_providers.dart';
 part 'settings/sp_llm_preferences.dart';
+part 'settings/sp_search_providers.dart';
 
 @RoutePage()
 class SettingsPage extends StatelessWidget {
@@ -33,6 +35,8 @@ class SettingsPage extends StatelessWidget {
                 Divider(thickness: .5, height: .5, indent: 16, endIndent: 16),
                 Gap(16.0),
                 LLMProviderSettings(),
+                Gap(16.0),
+                SearchProviderSettings(),
                 Gap(16.0),
                 LLMPreferencesSettings(),
               ],

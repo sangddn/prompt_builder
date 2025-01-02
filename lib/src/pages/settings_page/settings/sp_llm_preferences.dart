@@ -119,27 +119,19 @@ class _LLMUseCasePromptField extends StatelessWidget {
     if (initialPrompt == null) {
       return const SizedBox.shrink();
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ShadInput(
-          initialValue: initialPrompt,
-          minLines: 2,
-          maxLines: 5,
-          placeholder: const Text('Prompt'),
-          onChanged: (value) {
-            try {
-              useCase.setPrompt(value);
-            } catch (e) {
-              context.toaster.show(
-                ShadToast.destructive(
-                  title: Text(e.toString()),
-                ),
-              );
-            }
-          },
-        ),
-      ],
+    return ShadInput(
+      initialValue: initialPrompt,
+      minLines: 2,
+      maxLines: 5,
+      placeholder: const Text('Prompt'),
+      onChanged: (value) {
+        try {
+          useCase.setPrompt(value);
+        } catch (e) {
+          context.toaster
+              .show(ShadToast.destructive(title: Text(e.toString())));
+        }
+      },
     );
   }
 }
