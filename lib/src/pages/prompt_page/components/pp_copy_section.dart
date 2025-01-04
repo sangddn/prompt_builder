@@ -14,8 +14,10 @@ class _PPCopySection extends StatelessWidget {
           padding: k8HPadding,
           child: _EstimatedTokenCount(),
         ),
+        Gap(12.0),
+        _CountTokensButton(),
         Gap(20.0),
-        _CopyButton(),
+        _CopyPromptButton(),
       ],
     );
   }
@@ -41,35 +43,90 @@ class _EstimatedTokenCount extends StatelessWidget {
   }
 }
 
-class _TokenEstimationProgress extends StatelessWidget {
-  const _TokenEstimationProgress(this.isFullContent);
-
-  final bool isFullContent;
-
-  @override
-  Widget build(BuildContext context) {
-    final numBlocks = context.selectBlocks((bs) => bs.length);
-    final percentage = context.watch<_TokenCountingState>().count / numBlocks;
-    return TranslationSwitcher.top(
-      child: percentage >= 1.0
-          ? const SizedBox.shrink()
-          : AnimatedCircularProgress(percentage: percentage, size: 20.0),
-    );
-  }
-}
-
-class _TokenEstimation extends StatefulWidget {
+class _TokenEstimation extends StatelessWidget {
   const _TokenEstimation(this.count, this.isFullContent);
 
   final int count;
   final bool isFullContent;
 
   @override
-  State<_TokenEstimation> createState() => _TokenEstimationState();
+  Widget build(BuildContext context) {
+    return ListenableProvider(
+      create: (_) => ShadPopoverController(),
+      builder: (context, child) {
+        final controller = context.read<ShadPopoverController>();
+        return ShadPopover(
+          controller: controller,
+          popover: (context) {
+            final textTheme = context.textTheme;
+            return IntrinsicWidth(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    count.toString(),
+                    style: textTheme.large,
+                    textAlign: TextAlign.start,
+                  ),
+                  Text(
+                    'Estimated ${isFullContent ? 'Full Content' : 'Summary'} Tokens',
+                    style: textTheme.muted,
+                  ),
+                ],
+              ),
+            );
+          },
+          child: MouseRegion(
+            onHover: (_) => controller.show(),
+            onExit: (_) => controller.hide(),
+            child: child,
+          ),
+        );
+      },
+      child: Text(
+        formatTokenCount(count),
+        style: context.textTheme.small.copyWith(fontWeight: FontWeight.bold),
+      ),
+    );
+  }
 }
 
-class _TokenEstimationState extends State<_TokenEstimation> {
+class _CountTokensButton extends StatefulWidget {
+  const _CountTokensButton();
+
+  @override
+  State<_CountTokensButton> createState() => _CountTokensButtonState();
+}
+
+class _CountTokensButtonState extends State<_CountTokensButton> {
   final _controller = ShadPopoverController();
+  Future<Map<LLMProvider, (int, String)?>>? _countFuture;
+  String? _content;
+  bool _hasContentChanged = false;
+
+  void _count() {
+    setState(
+      () {
+        _content = context.getContent();
+        _hasContentChanged = false;
+        final futures = kAllLLMProviders.map((provider) {
+          try {
+            return provider.countTokens(_content!);
+          } on ApiKeyNotSetException {
+            // ignore: avoid_redundant_argument_values
+            return Future.value(null);
+          } on HttpException {
+            // ignore: avoid_redundant_argument_values
+            return Future.value(null);
+          }
+        });
+        _countFuture = Future.wait(futures).then(
+          (results) => Map.fromIterables(kAllLLMProviders, results),
+        );
+      },
+    );
+  }
 
   @override
   void dispose() {
@@ -79,48 +136,114 @@ class _TokenEstimationState extends State<_TokenEstimation> {
 
   @override
   Widget build(BuildContext context) {
-    return ShadPopover(
-      controller: _controller,
-      popover: (context) {
-        final textTheme = context.textTheme;
-        return IntrinsicWidth(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                widget.count.toString(),
-                style: textTheme.large,
-                textAlign: TextAlign.start,
+    final theme = context.theme;
+    if (!_hasContentChanged) {
+      _hasContentChanged = context.selectContent((c) => c != _content);
+    }
+    return AnimatedFutureBuilder(
+      future: _countFuture,
+      builder: (context, snapshot) {
+        final isLoading = snapshot.connectionState == ConnectionState.waiting;
+        final counts = snapshot.data;
+        return ShadPopover(
+          controller: _controller,
+          popover: (_) =>
+              _ExactTokenCounts(counts, isLoading, _hasContentChanged),
+          child: MouseRegion(
+            onHover: (_) => _controller.show(),
+            onExit: (_) => _controller.hide(),
+            child: CButton(
+              tooltip: null,
+              tooltipTriggerMode: TooltipTriggerMode.tap,
+              padding: k16H4VPadding,
+              onTap: _count,
+              child: SizedBox(
+                width: double.infinity,
+                child: TranslationSwitcher.top(
+                  child: Text(
+                    counts != null && !_hasContentChanged
+                        ? 'Exact Counts'
+                        : 'Count Exact',
+                    style: theme.textTheme.muted,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    key: ValueKey(counts != null && !_hasContentChanged),
+                  ),
+                ),
               ),
-              Text(
-                'Estimated ${widget.isFullContent ? 'Full Content' : 'Summary'} Tokens',
-                style: textTheme.muted,
-              ),
-            ],
+            ),
           ),
         );
       },
-      child: LongHoverButton(
-        onHover: (_) => _controller.show(),
-        onExit: (_) => _controller.hide(),
-        child: Row(
-          children: [
-            _TokenEstimationProgress(widget.isFullContent),
+    );
+  }
+}
+
+class _ExactTokenCounts extends StatelessWidget {
+  const _ExactTokenCounts(this.counts, this.isLoading, this.hasContentChanged);
+
+  final Map<LLMProvider, (int, String)?>? counts;
+  final bool isLoading;
+  final bool hasContentChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final counts = this.counts;
+    if (counts == null || counts.isEmpty || isLoading) {
+      return SizedBox(
+        width: 200.0,
+        height: 48.0,
+        child: Center(
+          child: isLoading
+              ? const CircularProgressIndicator.adaptive()
+              : Padding(
+                  padding: k8APadding,
+                  child: Text(
+                    'Count exact tokens with Tiktoken or API.',
+                    style: context.textTheme.small,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+        ),
+      );
+    }
+    final textTheme = context.textTheme;
+    return IntrinsicWidth(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final MapEntry(key: provider, :value) in counts.entries)
+            Row(
+              children: [
+                Text(value?.$2 ?? provider.name),
+                const Spacer(),
+                const Gap(8.0),
+                if (value != null)
+                  Text(
+                    '${value.$1}',
+                    style: textTheme.list.copyWith(fontWeight: FontWeight.bold),
+                  )
+                else
+                  Text('n/a', style: textTheme.muted),
+              ],
+            ),
+          if (hasContentChanged) ...[
             const Gap(4.0),
             Text(
-              formatTokenCount(widget.count),
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              'May be outdated. Recount to update.',
+              style: textTheme.muted,
             ),
           ],
-        ),
+        ],
       ),
     );
   }
 }
 
-class _CopyButton extends StatelessWidget {
-  const _CopyButton();
+class _CopyPromptButton extends StatelessWidget {
+  const _CopyPromptButton();
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +253,7 @@ class _CopyButton extends StatelessWidget {
       data: () => context.getContent(),
       builder: (context, show, copy) {
         if (context.watch<ValueNotifier<_PromptCopiedEvent?>>().value != null) {
-          // Side effect
+          // Side effect when the prompt is copied via keyboard shortcut
           WidgetsBinding.instance.addPostFrameCallback((_) {
             show(true);
           });
