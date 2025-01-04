@@ -113,18 +113,10 @@ final class OpenAI extends LLMProvider {
 
   /// Counts the number of tokens in a given text.
   ///
-  /// Since OpenAI doesn't have an API for this, we use the closest fallback
-  /// from [Anthropic], which itself may fallback to Tiktoken.
+  /// Since OpenAI doesn't have an API for this, we use Tiktoken.
   @override
-  Future<(int, String)> _countTokens(String text, [String? model]) {
-    try {
-      // Make sure we only use Anthropic API if user has set a key.
-      Anthropic().getApiKey();
-    } on ApiKeyNotSetException {
-      rethrow;
-    }
-    return Anthropic()._countTokens(text, model);
-  }
+  Future<(int, String)> _countTokens(String text, [String? model]) =>
+      compute(_countTiktoken, (text, model ?? defaultModel));
 
   /// Counts the number of tokens in a given image.
   ///
@@ -253,7 +245,8 @@ final class OpenAI extends LLMProvider {
       http.MultipartFile.fromBytes(
         'file',
         audio,
-        filename: 'file',
+        filename:
+            'file${mimeType.let(mimeToExtension)?.let((ext) => '.$ext') ?? ''}',
         contentType: MediaType.parse(mimeType),
       ),
     );
@@ -268,4 +261,18 @@ final class OpenAI extends LLMProvider {
 
     return data['text'] as String;
   }
+}
+
+(int, String) _countTiktoken((String, String?) data) {
+  final (text, model) = data;
+  final tiktoken = switch (model) {
+    'gpt-4o-mini' => Tiktoken(OpenAiModel.gpt_4o_mini),
+    'gpt-4o' => Tiktoken(OpenAiModel.gpt_4o),
+    'gpt-4' => Tiktoken(OpenAiModel.gpt_4),
+    'o1' => Tiktoken(OpenAiModel.o1),
+    'o1-mini' => Tiktoken(OpenAiModel.o1_mini),
+    // GPT-4 is the best fallback for Anthropic and Gemini models.
+    _ => Tiktoken(OpenAiModel.gpt_4),
+  };
+  return (tiktoken.count(text), 'Tiktoken ${model ?? 'gpt-4'}');
 }

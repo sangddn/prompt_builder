@@ -64,6 +64,7 @@ final class Gemini extends LLMProvider {
       body: jsonEncode({
         'contents': [
           {
+            'role': 'user',
             'parts': [
               {'text': text},
             ],
@@ -98,7 +99,7 @@ final class Gemini extends LLMProvider {
             .replaceAll('{{CONTENT}}', content);
 
     final response = await http.post(
-      Uri.parse('https://generativelanguage.googleapis.com/v1/models/'
+      Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/'
           '${model ?? defaultModel}:generateContent?key=$apiKey'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
@@ -135,12 +136,13 @@ final class Gemini extends LLMProvider {
     final base64Image = base64Encode(image);
 
     final response = await http.post(
-      Uri.parse('https://generativelanguage.googleapis.com/v1/models/'
+      Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/'
           '${model ?? defaultModel}:generateContent?key=$apiKey'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
           {
+            'role': 'user',
             'parts': [
               {'text': prompt},
               {
@@ -177,12 +179,13 @@ final class Gemini extends LLMProvider {
         .replaceAll('{{INSTRUCTIONS}}', instructions);
 
     final response = await http.post(
-      Uri.parse('https://generativelanguage.googleapis.com/v1/models/'
+      Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/'
           '${model ?? defaultModel}:generateContent?key=$apiKey'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
           {
+            'role': 'user',
             'parts': [
               {'text': prompt},
             ],
@@ -214,14 +217,17 @@ final class Gemini extends LLMProvider {
     final base64Audio = base64Encode(audio);
 
     final response = await http.post(
-      Uri.parse('https://generativelanguage.googleapis.com/v1/models/'
+      Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/'
           '${model ?? defaultModel}:generateContent?key=$apiKey'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
           {
+            'role': 'user',
             'parts': [
-              {'text': 'Transcribe the following audio:'},
+              {
+                'text': 'Transcribe the following audio. If possible, such as when you recognize some context around the audio, provide that contextual information. Do not include any other text in your response.',
+              },
               {
                 'inline_data': {
                   'mime_type': mimeType,
@@ -238,7 +244,7 @@ final class Gemini extends LLMProvider {
 
     if (response.statusCode != 200) {
       final error = data['error']['message'] as String;
-      debugPrint('Gemini error: $error');
+      debugPrint('Gemini error: $error. code: ${response.statusCode}');
       throw Exception(error);
     }
 
@@ -267,6 +273,7 @@ final class Gemini extends LLMProvider {
       body: jsonEncode({
         'contents': [
           {
+            'role': 'user',
             'parts': [
               {
                 'inline_data': {

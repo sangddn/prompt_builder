@@ -1,37 +1,21 @@
 part of '../prompt_page.dart';
 
-class _PPBlockContentScope extends StatelessWidget {
+class _PPBlockContentScope extends StatefulWidget {
   const _PPBlockContentScope({required this.child});
 
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => StateProvider<_TokenCountingState>(
-        createInitialValue: (context) => const _TokenCountingState(0),
-        child: _BlockChangesHandler(child: child),
-      );
+  State<_PPBlockContentScope> createState() => _PPBlockContentScopeState();
 }
 
-// -----------------------------------------------------------------------------
-// Handle Block Changes
-// -----------------------------------------------------------------------------
-
-class _BlockChangesHandler extends StatefulWidget {
-  const _BlockChangesHandler({required this.child});
-
-  final Widget child;
-
-  @override
-  State<_BlockChangesHandler> createState() => _BlockChangesHandlerState();
-}
-
-class _BlockChangesHandlerState extends State<_BlockChangesHandler> {
+class _PPBlockContentScopeState extends State<_PPBlockContentScope> {
   _PromptBlockContents _contents = const IMap.empty();
 
-  Future<(String?, int?, String?)> _extractContentAndCountTokens(
+  (String?, int?, String?) _extractContentAndCountTokens(
     LLMProvider provider,
     PromptBlock block,
-  ) async {
+  ) {
     final content = block.copyToPrompt();
     final preferSummary = block.preferSummary;
     if (preferSummary && block.summaryTokenCountAndMethod != null) {
@@ -48,7 +32,7 @@ class _BlockChangesHandlerState extends State<_BlockChangesHandler> {
         block.fullContentTokenCountAndMethod!.$2
       );
     }
-    final count = await content?.let(provider.countTokens);
+    final count = content?.let(provider.estimateTokens);
     if (mounted) {
       context.db.updateBlock(
         block.id,
@@ -59,25 +43,20 @@ class _BlockChangesHandlerState extends State<_BlockChangesHandler> {
     return (content, count?.$1, count?.$2);
   }
 
-  Future<void> _upsertContents(List<PromptBlock> newBlocks) async {
-    await Future.wait(
-      newBlocks.map((block) async {
-        final countingNotifier = context.countingNotifier;
-        final provider = context.read<ValueNotifier<LLMProvider>>().value;
-        final text = await _extractContentAndCountTokens(provider, block);
-        countingNotifier.value = countingNotifier.value.increment();
-        return _PromptBlockContent(
-          id: block.id,
-          text: text.$1,
-          textTokenCount: text.$2,
-          textTokenCountMethod: text.$3,
-        );
-      }),
-    ).then(
-      (contents) => maybeSetState(
-        () => _contents =
-            _contents.addEntries(contents.map((c) => MapEntry(c.id, c))),
-      ),
+  void _upsertContents(List<PromptBlock> newBlocks) {
+    final contents = newBlocks.map((block) {
+      final provider = context.read<ValueNotifier<LLMProvider>>().value;
+      final text = _extractContentAndCountTokens(provider, block);
+      return _PromptBlockContent(
+        id: block.id,
+        text: text.$1,
+        textTokenCount: text.$2,
+        textTokenCountMethod: text.$3,
+      );
+    });
+    setState(
+      () => _contents =
+          _contents.addEntries(contents.map((c) => MapEntry(c.id, c))),
     );
   }
 
@@ -86,15 +65,12 @@ class _BlockChangesHandlerState extends State<_BlockChangesHandler> {
     super.didChangeDependencies();
     final blocks = context.watch<_PromptBlockList>();
     // Remove blocks that are no longer in the list
-    int numRemoved = 0;
     for (final id in _contents.keys) {
       if (!blocks.any((b) => b.id == id)) {
         _contents = _contents.remove(id);
-        numRemoved++;
       }
     }
     // Add new and update changed blocks
-    int numChanged = 0;
     final diff = <PromptBlock>[];
     for (final block in blocks) {
       final prevBlock = _contents[block.id];
@@ -104,16 +80,9 @@ class _BlockChangesHandlerState extends State<_BlockChangesHandler> {
           (!block.preferSummary && block.fullContentTokenCount == null) ||
           (block.preferSummary && block.summaryTokenCount == null)) {
         diff.add(block);
-        numChanged++;
       }
     }
     if (diff.isNotEmpty) {
-      final countingNotifier = context.countingNotifier;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        countingNotifier.value = _TokenCountingState(
-          countingNotifier.value.count - numChanged - numRemoved,
-        );
-      });
       _upsertContents(diff.toList());
     }
   }
@@ -122,7 +91,8 @@ class _BlockChangesHandlerState extends State<_BlockChangesHandler> {
   Widget build(BuildContext context) => MultiProvider(
         providers: [
           Provider<_PromptBlockContents>.value(value: _contents),
-          ProxyProvider2<_PromptBlockList, _PromptBlockContents, _PromptCopiableContent>(
+          ProxyProvider2<_PromptBlockList, _PromptBlockContents,
+              _PromptCopiableContent>(
             update: (context, blocks, contents, _) => _PromptCopiableContent(
               blocks.map((b) => contents[b.id]?.text).nonNulls.join('\n\n'),
             ),
@@ -137,25 +107,6 @@ class _BlockChangesHandlerState extends State<_BlockChangesHandler> {
 // -----------------------------------------------------------------------------
 
 typedef _PromptBlockContents = IMap<int, _PromptBlockContent>;
-
-/// A state that holds the # of blocks completed for the token counting process.
-@immutable
-class _TokenCountingState {
-  const _TokenCountingState(this.count);
-  final int count;
-
-  _TokenCountingState increment() => _TokenCountingState(count + 1);
-
-  @override
-  bool operator ==(Object other) =>
-      other is _TokenCountingState && count == other.count;
-
-  @override
-  int get hashCode => count.hashCode;
-
-  @override
-  String toString() => 'TokenCountingState(count: $count)';
-}
 
 @immutable
 class _PromptBlockContent {
@@ -207,11 +158,11 @@ class _PromptCopiableContent {
 // -----------------------------------------------------------------------------
 
 extension _PromptBlockContentExtension on BuildContext {
-  ValueNotifier<_TokenCountingState> get countingNotifier =>
-      read<ValueNotifier<_TokenCountingState>>();
-
   String getContent({bool listen = false}) {
     final content = Provider.of<_PromptCopiableContent>(this, listen: listen);
     return content.text;
   }
+
+  T selectContent<T>(T Function(String) fn) =>
+      select((_PromptCopiableContent c) => fn(c.text));
 }

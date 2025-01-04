@@ -12,6 +12,7 @@ import 'package:tiktoken_tokenizer_gpt4o_o1/tiktoken_tokenizer_gpt4o_o1.dart';
 
 import '../../core/core.dart';
 import '../../database/database.dart';
+import '../other_services/mime_utils.dart';
 
 part 'anthropic.dart';
 part 'gemini.dart';
@@ -31,8 +32,7 @@ final kAllLLMProviders = [
 /// This abstract class defines the common interface that all LLM providers must implement.
 /// Each provider (OpenAI, Anthropic, Gemini etc.) will extend this class and provide
 /// their own implementations of these methods.
-sealed class LLMProvider
-    with ProviderWithApiKey, _TokenCountingPreferencesMixin {
+sealed class LLMProvider with ProviderWithApiKey, _EstimateTokensMixin {
   /// Creates a new LLM provider instance.
   const LLMProvider({this.apiKey});
 
@@ -53,24 +53,22 @@ sealed class LLMProvider
   /// Different providers may use different tokenization approaches, so the token
   /// count may vary between providers for the same input text.
   Future<(int, String)> countTokens(String text, [String? model]) {
-    // ! Just use the 1/4 method for now.
-    return _estimateTokensFallback(text, model);
-    // try {
-    //   getApiKey();
-    // } on ApiKeyNotSetException catch (e) {
-    //   debugPrint(
-    //     'API key not set for ${e.provider}. Falling back to token estimation.',
-    //   );
-    //   return _estimateTokensFallback(text, model);
-    // }
-    // try {
-    //   return _countTokens(text, model);
-    // } on Exception catch (e) {
-    //   debugPrint(
-    //     'Failed to count tokens: $e. Falling back to token estimation.',
-    //   );
-    //   return _estimateTokensFallback(text, model);
-    // }
+    try {
+      getApiKey();
+    } on ApiKeyNotSetException catch (e) {
+      debugPrint(
+        'API key not set for ${e.provider}. Falling back to token estimation.',
+      );
+      return SynchronousFuture(estimateTokens(text, model));
+    }
+    try {
+      return _countTokens(text, model);
+    } on Exception catch (e) {
+      debugPrint(
+        'Failed to count tokens: $e. Falling back to token estimation.',
+      );
+      return SynchronousFuture(estimateTokens(text, model));
+    }
   }
 
   /// Private implementation of [countTokens] by subclasses.
@@ -178,24 +176,6 @@ Map<LLMProvider, Map<String, String>> _llmProviderInfo = {
 };
 
 // -----------------------------------------------------------------------------
-// Utils
-// -----------------------------------------------------------------------------
-
-(int, String) _countTiktoken((String, String?) data) {
-  final (text, model) = data;
-  final tiktoken = switch (model) {
-    'gpt-4o-mini' => Tiktoken(OpenAiModel.gpt_4o_mini),
-    'gpt-4o' => Tiktoken(OpenAiModel.gpt_4o),
-    'gpt-4' => Tiktoken(OpenAiModel.gpt_4),
-    'o1' => Tiktoken(OpenAiModel.o1),
-    'o1-mini' => Tiktoken(OpenAiModel.o1_mini),
-    // GPT-4 is the best fallback for Anthropic and Gemini models.
-    _ => Tiktoken(OpenAiModel.gpt_4),
-  };
-  return (tiktoken.count(text), 'Tiktoken ${model ?? 'gpt-4'}');
-}
-
-// -----------------------------------------------------------------------------
 // Preferences Mixin
 // -----------------------------------------------------------------------------
 
@@ -242,28 +222,14 @@ mixin ProviderWithApiKey {
   }
 }
 
-mixin _TokenCountingPreferencesMixin {
-  static const shouldUseTiktokenKey = 'should_use_tiktoken';
-
-  bool _useTiktoken() => Database().boolRef.get(shouldUseTiktokenKey) ?? false;
-
+mixin _EstimateTokensMixin {
   /// Crudely estimates the number of tokens in a given text.
   ///
   /// This is a simple heuristic based on the number of characters in the text.
   /// Best for English texts, otherwise accuracy is low and should be used as a
   /// last resort.
-  int _estimateTokens(String text) => text.characterCount ~/ 4;
-
-  /// Estimates the number of tokens, taking user's Tiktoken preference into
-  /// account.
-  Future<(int, String)> _estimateTokensFallback(
-    String text,
-    String? model,
-  ) {
-    if (_useTiktoken()) {
-      return compute(_countTiktoken, (text, model));
-    }
-    return SynchronousFuture((_estimateTokens(text), '¼ Estimate'));
+  (int, String) estimateTokens(String text, [String? model]) {
+    return (text.characterCount ~/ 4, '¼ Estimate');
   }
 }
 
