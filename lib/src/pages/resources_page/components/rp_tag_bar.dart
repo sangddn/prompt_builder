@@ -42,10 +42,15 @@ class _RPTagBar extends StatelessWidget {
               ),
               margin: k8HPadding + const EdgeInsets.only(top: 64.0),
               clipBehavior: Clip.hardEdge,
-              child: const Column(
+              child: const Stack(
+                alignment: Alignment.bottomCenter,
                 children: [
-                  _TagSearchField(),
-                  Expanded(child: _Tags()),
+                  CustomScrollView(
+                    slivers: [
+                      PinnedHeaderSliver(child: _TagSearchField()),
+                      _Tags(),
+                    ],
+                  ),
                   _RPSubmitButton(),
                 ],
               ),
@@ -95,25 +100,15 @@ class _Tags extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tagCount = context.select((_TagsNotifier n) => n.value.length);
-    return SingleChildScrollView(
-      child: Column(
-        children: List.generate(
-          tagCount,
-          (index) => Builder(
-            builder: (context) {
-              final tag = context.select(
-                (_TagsNotifier n) => n.value.elementAtOrNull(index),
-              );
-              return AnimatedTo(
-                globalKey: GlobalObjectKey('snippet-tag-$index'),
-                duration: Effects.shortDuration,
-                curve: Effects.snappyOutCurve,
-                slidingFrom: Offset(0.0, (index + 1) * 5.0),
-                child: tag == null ? const SizedBox.shrink() : _Tag(tag),
-              );
-            },
-          ),
-        ),
+    return SuperSliverList.builder(
+      itemCount: tagCount,
+      itemBuilder: (context, index) => Builder(
+        builder: (context) {
+          final tag = context.select(
+            (_TagsNotifier n) => n.value.elementAtOrNull(index),
+          );
+          return tag == null ? const SizedBox.shrink() : _Tag(tag);
+        },
       ),
     );
   }

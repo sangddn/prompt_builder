@@ -1,4 +1,3 @@
-import 'package:animated_to/animated_to.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
