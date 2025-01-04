@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../components/components.dart';
 import '../../core/core.dart';
@@ -44,12 +45,18 @@ class ShellPage extends StatelessWidget {
           ),
         );
       },
-      builder: (context, child) => Scaffold(
-        body: Row(
-          children: [
-            const _Sidebar(),
-            Expanded(child: child),
-          ],
+      builder: (context, child) => CallbackShortcuts(
+        bindings: {
+          const SingleActivator(meta: true, LogicalKeyboardKey.keyN): () =>
+              _openNewPrompt(context),
+        },
+        child: Scaffold(
+          body: Row(
+            children: [
+              const _Sidebar(),
+              Expanded(child: child),
+            ],
+          ),
         ),
       ),
     );
@@ -117,12 +124,7 @@ class _NewPromptButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CButton(
       tooltip: 'New Prompt',
-      onTap: () async {
-        final id = await Database().createPrompt();
-        if (!context.mounted) return;
-        NewPromptAddedNotification(id: id).dispatch(context);
-        context.router.push(PromptRoute(id: id));
-      },
+      onTap: () => _openNewPrompt(context),
       color: PColors.gray.resolveFrom(context),
       padding: k24H12VPadding,
       cornerRadius: 16.0,
@@ -135,4 +137,11 @@ class _NewPromptButton extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<void> _openNewPrompt(BuildContext context) async {
+  final id = await Database().createPrompt();
+  if (!context.mounted) return;
+  NewPromptAddedNotification(id: id).dispatch(context);
+  context.router.popAndPush(PromptRoute(id: id));
 }
