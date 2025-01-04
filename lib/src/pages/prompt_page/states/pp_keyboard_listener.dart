@@ -7,20 +7,10 @@ class _KeyboardListener extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ListenableProvider<FocusScopeNode>(create: (_) => FocusScopeNode()),
-        ValueProvider<ValueNotifier<_PromptCopiedEvent?>>(
-          create: (_) => ValueNotifier(null),
-        ),
-      ],
-      builder: (context, child) {
+    final focusScopeNodeProvider = ListenableProvider<FocusScopeNode>(
+      create: (context) {
         final bindings = {
-          const SingleActivator(
-            LogicalKeyboardKey.keyC,
-            meta: true,
-            shift: true,
-          ): () async {
+          _cmdShiftC: () async {
             await Clipboard.setData(ClipboardData(text: context.getContent()));
             if (!context.mounted) return;
             final notifier = context.read<ValueNotifier<_PromptCopiedEvent?>>();
@@ -30,7 +20,7 @@ class _KeyboardListener extends StatelessWidget {
               () => context.mounted ? notifier.value = null : null,
             );
           },
-          const SingleActivator(LogicalKeyboardKey.keyE, meta: true): () {
+          _cmdE: () {
             final notifier =
                 context.read<ValueNotifier<_PromptContentViewState>>();
             if (notifier.value == _PromptContentViewState.edit) {
@@ -39,28 +29,43 @@ class _KeyboardListener extends StatelessWidget {
               notifier.value = _PromptContentViewState.edit;
             }
           },
-          const SingleActivator(LogicalKeyboardKey.keyP, meta: true): () {
-            _showPathSearchDialog(context);
-          },
-          const SingleActivator(LogicalKeyboardKey.keyF, meta: true): () {
-            _showWebSearchDialog(context);
-          },
-          const SingleActivator(LogicalKeyboardKey.keyO, meta: true): () {
-            context.pickFolder();
-          },
-          const SingleActivator(LogicalKeyboardKey.keyV, meta: true): () async {
+          _cmdP: () => _showPathSearchDialog(context),
+          _cmdF: () => _showWebSearchDialog(context),
+          _cmdO: () => context.pickFolder(),
+          _cmdShiftV: () async {
             final reader = await ClipboardService.read();
             if (reader == null || !context.mounted) return;
             context.handleDataReaders([reader]);
           },
         };
-        return CallbackShortcuts(
-          bindings: bindings,
-          child: FocusScope(
-            node: context.read(),
-            autofocus: true,
-            child: child!,
-          ),
+        return FocusScopeNode(
+          skipTraversal: true,
+          onKeyEvent: (node, event) {
+            var result = KeyEventResult.ignored;
+            for (final ShortcutActivator activator in bindings.keys) {
+              if (activator.accepts(event, HardwareKeyboard.instance)) {
+                bindings[activator]!.call();
+                result = KeyEventResult.handled;
+              }
+            }
+            return result;
+          },
+        );
+      },
+    );
+
+    return MultiProvider(
+      providers: [
+        ValueProvider<ValueNotifier<_PromptCopiedEvent?>>(
+          create: (_) => ValueNotifier(null),
+        ),
+        focusScopeNodeProvider,
+      ],
+      builder: (context, child) {
+        return FocusScope(
+          node: context.read<FocusScopeNode>(),
+          autofocus: true,
+          child: child!,
         );
       },
       child: child,
@@ -70,3 +75,12 @@ class _KeyboardListener extends StatelessWidget {
 
 // Just a marker class to indicate that the prompt has been copied.
 final class _PromptCopiedEvent {}
+
+const _cmdShiftC =
+    SingleActivator(LogicalKeyboardKey.keyC, meta: true, shift: true);
+const _cmdE = SingleActivator(LogicalKeyboardKey.keyE, meta: true);
+const _cmdP = SingleActivator(LogicalKeyboardKey.keyP, meta: true);
+const _cmdF = SingleActivator(LogicalKeyboardKey.keyF, meta: true);
+const _cmdO = SingleActivator(LogicalKeyboardKey.keyO, meta: true);
+const _cmdShiftV =
+    SingleActivator(LogicalKeyboardKey.keyV, meta: true, shift: true);
