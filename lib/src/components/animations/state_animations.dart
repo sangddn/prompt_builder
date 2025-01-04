@@ -40,6 +40,35 @@ abstract class AnimatedStatelessWidget extends StatelessWidget {
       buildAnimation(context, buildChild(context));
 }
 
+/// An animated, stateless version of Flutter's [FutureBuilder].
+///
+/// The default animation is a [SizeFadeSwitcher].
+class AnimatedFutureBuilder<T> extends StatelessWidget {
+  const AnimatedFutureBuilder({
+    super.key,
+    this.initialData,
+    required this.future,
+    this.transitionBuilder,
+    required this.builder,
+  });
+
+  final T? initialData;
+  final Future<T>? future;
+  final TransitionWidgetBuilder? transitionBuilder;
+  final AsyncWidgetBuilder<T> builder;
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder(
+        future: future,
+        initialData: initialData,
+        builder: (context, snapshot) {
+          final child = builder(context, snapshot);
+          return transitionBuilder?.call(context, child) ??
+              StateAnimations.sizeFade(child);
+        },
+      );
+}
+
 /// Pre-built high-quality animations to be used with StateAnimations.
 ///
 class StateAnimations {
