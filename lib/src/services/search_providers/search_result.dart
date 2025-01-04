@@ -35,7 +35,7 @@ final class SearchResult {
       url: json['url'] as String,
       faviconUrl: (json['thumbnail']?['original'] ?? json['thumbnail']?['src'])
           as String?,
-      text: json['description'] as String?,
+      text: null, // This is a marker to indicate that the text is not immediately available at this time.
       highlights: (json['extra_snippets'] as List?)?.cast<String>() ?? const [],
       publishedDate: (json['page_fetched'] as String?)?.let(DateTime.tryParse),
       author: json['profile']?['name'] as String?,
@@ -50,6 +50,23 @@ final class SearchResult {
   final String? text;
   final List<String> highlights;
   final String? summary;
+
+  Future<String> getContent(SearchProvider provider) async {
+    final text = this.text ?? await provider.fetchWebpage(url);
+    return '# Title: $title\n'
+      '**Url:** $url\n'
+      '**Published:** $publishedDate\n'
+      '**Author:** $author\n\n'
+      '---\n\n'
+      '## Highlights\n'
+      '${highlights.join('\n')}\n\n'
+      '---\n\n'
+      '## Summary\n'
+      '$summary\n\n'
+      '---\n\n'
+      '## Full Text\n'
+      '$text\n';
+  }
 
   @override
   String toString() {
@@ -79,4 +96,26 @@ final class SearchResult {
         highlights,
         summary,
       );
+
+  SearchResult copyWith({
+    String? title,
+    String? url,
+    String? faviconUrl,
+    DateTime? publishedDate,
+    String? author,
+    String? text,
+    List<String>? highlights,
+    String? summary,
+  }) {
+    return SearchResult(
+      title: title ?? this.title,
+      url: url ?? this.url,
+      faviconUrl: faviconUrl ?? this.faviconUrl,
+      publishedDate: publishedDate ?? this.publishedDate,
+      author: author ?? this.author,
+      text: text ?? this.text,
+      highlights: highlights ?? this.highlights,
+      summary: summary ?? this.summary,
+    );
+  }
 }

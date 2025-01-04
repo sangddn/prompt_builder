@@ -16,9 +16,6 @@ final class Brave extends SearchProvider {
   String get apiKeyKey => 'brave_api_key';
 
   @override
-  List<SearchFunction> get functions => [SearchFunction.webSearch];
-
-  @override
   Future<List<SearchResult>> _search(String query) async {
     final apiKey = getApiKey();
     final response = await http.get(
@@ -50,9 +47,8 @@ final class Brave extends SearchProvider {
         .map(SearchResult.fromBrave)
         .toList();
   }
-  
+
   @override
-  Future<String> _fetchWebpage(String url) {
-    throw UnsupportedError('Brave does not support fetching webpages.');
-  }
+  Future<String> _fetchWebpage(String url) =>
+      throw UnsupportedError('Brave does not support fetching webpages.');
 }

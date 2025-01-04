@@ -15,10 +15,6 @@ final class Exa extends SearchProvider {
   String get apiKeyKey => 'exa_api_key';
 
   @override
-  List<SearchFunction> get functions =>
-      [SearchFunction.webSearch, SearchFunction.fetchWebpage];
-
-  @override
   Future<List<SearchResult>> _search(String query) async {
     final apiKey = getApiKey();
     final response = await http.post(
@@ -63,7 +59,9 @@ final class Exa extends SearchProvider {
         'x-api-key': apiKey,
         'Content-Type': 'application/json',
       },
-      body: jsonEncode({'ids': [url]}),
+      body: jsonEncode({
+        'ids': [url]
+      }),
     );
 
     if (response.statusCode != 200) {
@@ -75,9 +73,11 @@ final class Exa extends SearchProvider {
     }
 
     final data = jsonDecode(response.body);
-    final result = ((data['results'] as List).firstOrNull as Map<String, dynamic>?)
-        ?.let(SearchResult.fromExa);
-    final text = result?.let((result) => '${result.text}\n\nHighlights:\n${result.highlights.join('\n')}');
+    final result =
+        ((data['results'] as List).firstOrNull as Map<String, dynamic>?)
+            ?.let(SearchResult.fromExa);
+    final text = result?.let((result) =>
+        '${result.text}\n\nHighlights:\n${result.highlights.join('\n')}');
     if (text == null) {
       throw SearchException('No text found in Exa response.', provider: this);
     }

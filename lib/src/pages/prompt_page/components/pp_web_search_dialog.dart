@@ -85,7 +85,7 @@ class _PPWebSearchDialog extends StatelessWidget {
         alignment: const Alignment(0.0, -0.4),
         child: Container(
           decoration: ShapeDecoration(
-            color: context.colorScheme.popover,
+            color: context.brightSurface,
             shape: Superellipse(
               cornerRadius: 12.0,
               side: BorderSide(
@@ -149,9 +149,12 @@ class _SearchBar extends StatelessWidget {
               return GrayShimmer(
                 enableShimmer: isLoading,
                 child: provider == null
-                    ? const ShadImage.square(
-                        HugeIcons.strokeRoundedGlobe02,
-                        size: 20.0,
+                    ? const Padding(
+                        padding: k12HPadding,
+                        child: ShadImage.square(
+                          HugeIcons.strokeRoundedGlobe02,
+                          size: 20.0,
+                        ),
                       )
                     : ProviderPicker.searchWithDefaultUpdate(
                         initialProvider: provider,
@@ -170,7 +173,7 @@ class _SearchBar extends StatelessWidget {
         hintText: 'Search',
         border: InputBorder.none,
         filled: true,
-        fillColor: context.colorScheme.popover,
+        fillColor: context.brightSurface,
         contentPadding: k24APadding,
       ),
       style: context.textTheme.list,
@@ -208,18 +211,14 @@ class _UnderneathSearchBarText extends AnimatedStatelessWidget {
     }
     final provider = context.watch<SearchProvider?>();
     final intent = context.watchIntent();
-    if (provider != null && !intent.worksWith(provider)) {
-      return Padding(
-        key: const ValueKey('unsupported-provider'),
-        padding: k16H8VPadding,
-        child: Text('${provider.name} does not support this.'),
-      );
-    }
     if (provider == null) {
       return const Padding(
         key: ValueKey('no-provider'),
         padding: k16H8VPadding,
-        child: Text('Please set up a search provider in Settings.'),
+        child: Text(
+          'Set up a search provider in Settings to search.\nYou can still add URLs and YouTube videos.',
+          textAlign: TextAlign.center,
+        ),
       );
     }
     final hasText = context.hasText();
@@ -281,11 +280,17 @@ class _WebSearchResult extends StatelessWidget {
       create: (_) => ShadPopoverController(),
       child: HoverTapBuilder(
         builder: (context, isHovered) {
+          final provider = context.searchProvider;
+          if (provider == null) return const SizedBox.shrink();
           Future<void> add() async {
             if (context.prompt?.id case final id?) {
               final toaster = context.toaster;
               try {
-                await context.db.createWebBlockFromResult(id, result);
+                await context.db.createWebBlockFromResult(
+                  id,
+                  result,
+                  provider,
+                );
                 toaster.show(
                   ShadToast(
                     title: Text('Added content from ${result.url}.'),
@@ -312,14 +317,30 @@ class _WebSearchResult extends StatelessWidget {
           return ShadPopover(
             controller: controller,
             popover: (context) {
-              return ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 500),
-                child: SingleChildScrollView(
-                  child: Text(
-                    result.copyableContent,
-                    style: context.textTheme.p,
-                  ),
-                ),
+              return FutureProvider<String?>(
+                initialData: null,
+                create: (_) => result.getContent(provider),
+                builder: (context, _) {
+                  final content = context.watch<String?>();
+                  return ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 500,
+                      minWidth: 300,
+                      minHeight: 200,
+                      maxHeight: 700,
+                    ),
+                    child: SingleChildScrollView(
+                      child: content == null
+                          ? const Center(
+                              child: CircularProgressIndicator.adaptive(),
+                            )
+                          : Text(
+                              content,
+                              style: context.textTheme.p,
+                            ),
+                    ),
+                  );
+                },
               );
             },
             child: ShadContextMenuRegion(
@@ -402,11 +423,6 @@ enum _SearchBarIntent {
   genericUrl,
   youtubeUrl,
   ;
-
-  bool worksWith(SearchProvider provider) => switch (provider) {
-        Brave() => this != _SearchBarIntent.genericUrl,
-        Exa() => true,
-      };
 }
 
 enum _WebSearchState {
@@ -467,33 +483,12 @@ extension _WebSearchSectionExtension on BuildContext {
       switch (intent) {
         case _SearchBarIntent.search:
           if (searchProvider == null) return;
-          if (!intent.worksWith(searchProvider)) {
-            toaster.show(
-              ShadToast.destructive(
-                title:
-                    Text('${searchProvider.name} does not support web search.'),
-              ),
-            );
-            return;
-          }
           final results = await searchProvider.search(text);
           if (mounted) webResultsNotifier.value = IList(results);
           return;
         case _SearchBarIntent.genericUrl:
           controller.clear();
-          if (searchProvider == null) {
-            throw Exception('Missing search provider.');
-          }
-          final (_, content) =
-              await db.createWebBlock(promptId, text, searchProvider) ??
-                  (null, null);
-          if (content == null) return;
-          toaster.show(
-            ShadToast(
-              title: Text('Added content from $text.'),
-              description: Text('"$content"', maxLines: 10),
-            ),
-          );
+          await createWebBlock(text);
           return;
         case _SearchBarIntent.youtubeUrl:
           controller.clear();

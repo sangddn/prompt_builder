@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../../core/core.dart';
 import '../../database/database.dart';
-import '../llm_providers/llm_providers.dart';
+import '../services.dart';
 
 part 'search_result.dart';
 
@@ -17,8 +17,6 @@ final kAllSearchProviders = [Exa(), Brave()];
 
 sealed class SearchProvider with ProviderWithApiKey {
   const SearchProvider();
-
-  List<SearchFunction> get functions;
 
   /// Searches for results based on the given query.
   ///
@@ -64,6 +62,9 @@ sealed class SearchProvider with ProviderWithApiKey {
         'Invalid response format from $runtimeType API.',
         provider: this,
       );
+    } on UnsupportedError {
+      debugPrint('$runtimeType does not support fetching webpages. Falling back to `WebService.fetchMarkdown`.');
+      return WebService.fetchMarkdown(url);
     } catch (e) {
       throw SearchException(
         'Unexpected error while fetching webpage from $runtimeType: $e.',
@@ -173,11 +174,6 @@ abstract final class SearchProviderPreference {
   static void setProvider(SearchProvider provider) {
     Database().stringRef.put(_preferenceKey, provider.name);
   }
-}
-
-enum SearchFunction {
-  webSearch,
-  fetchWebpage,
 }
 
 final _infoMap = {
