@@ -15,8 +15,10 @@ Future<void> main() async {
   };
 
   // Initialize Sparkle
-  await UpdateService.initialize();
-  await UpdateService.checkForUpdates();
+  if (kReleaseMode) {
+    await UpdateService.initialize();
+    await UpdateService.checkForUpdates();
+  }
 
   // Initialize the local database
   await Database().initialize();

@@ -2,7 +2,7 @@ name: prompt_builder
 description: "Prompt Builder"
 publish_to: 'none'
 
-version: 0.0.1+2
+version: 0.0.1+5
 
 environment:
   sdk: ^3.5.4
@@ -17,6 +17,7 @@ dependencies:
   fast_immutable_collections: ^11.0.0
   process_run: ^1.2.2+1
   mime: ^2.0.0
+  html: ^0.15.5
   http: ^1.2.2
   http_parser: ^4.1.1
   path: ^1.9.0
