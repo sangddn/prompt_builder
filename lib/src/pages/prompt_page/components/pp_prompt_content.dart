@@ -71,10 +71,7 @@ class _PromptContentEditMode extends StatelessWidget {
                   },
           ),
         ),
-        if (i == count - 1)
-          const _NewBlockActions.last()
-        else
-          _NewBlockActions(i),
+        if (i != count - 1) _NewBlockActions(i),
       ],
     ).expand((e) => e).toList();
 
@@ -82,6 +79,7 @@ class _PromptContentEditMode extends StatelessWidget {
       slivers: [
         const SliverGap(12.0),
         SuperSliverList.list(children: widgets),
+        const SliverToBoxAdapter(child: _NewBlockActions.last()),
         const SliverGap(64.0),
       ],
     );
