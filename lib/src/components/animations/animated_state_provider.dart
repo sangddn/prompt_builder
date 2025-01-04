@@ -6,19 +6,22 @@ import '../../core/core.dart';
 /// An animated version of [StateProvider] that animates the changes of the
 /// contained value.
 ///
-class AnimatedStateProvider<T>
-    extends ChangeNotifierProvider<ValueNotifier<T>> {
+class AnimatedStateProvider<T> extends StateProvider<T> {
   AnimatedStateProvider({
     Duration duration = Effects.shortDuration,
     Curve curve = Effects.snappyOutCurve,
-    required T Function(BuildContext context) createInitialValue,
+    required super.createInitialValue,
+    super.onValueChanged,
+    super.initState,
+    super.dispose,
     required T Function(T? oldValue, T newValue, double t) lerp,
     TransitionBuilder? builder,
+    super.valueBuilder,
+    super.updateShouldNotify,
     super.lazy,
     Widget? child,
     super.key,
   }) : super(
-          create: (context) => ValueNotifier(createInitialValue(context)),
           child: _AnimatedConsumer<T>(
             duration: duration,
             curve: curve,
