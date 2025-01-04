@@ -210,23 +210,27 @@ class _GeneratePromptButton extends StatelessWidget {
       popover: (context) => ValueProvider<TextEditingController>(
         create: (_) => TextEditingController(),
         builder: (context, footer) {
-          return ShadCard(
+          return SizedBox(
             width: 300.0,
-            shadows: const [],
-            border: const Border(),
-            padding: k8APadding,
-            title: const Text('Generate Prompt'),
-            footer: footer,
-            child: Padding(
-              padding: k16VPadding,
-              child: ShadInput(
-                controller: context.read(),
-                minLines: 3,
-                maxLines: 10,
-                placeholder: const Text(
-                  'Instructions for the prompt. For example, what you want the model to do?',
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  autofocus: true,
+                  controller: context.read(),
+                  minLines: 3,
+                  maxLines: 10,
+                  style: context.textTheme.p,
+                  decoration: InputDecoration(
+                    hintText:
+                        'Describe the desired prompt, such as what you want the model to do.',
+                    hintStyle: context.textTheme.muted,
+                    border: InputBorder.none,
+                  ),
                 ),
-              ),
+                const Gap(16.0),
+                footer!,
+              ],
             ),
           );
         },

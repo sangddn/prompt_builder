@@ -66,7 +66,7 @@ class _PPPathSearchDialog extends StatelessWidget {
             alignment: const Alignment(0.0, -0.4),
             child: Container(
               decoration: ShapeDecoration(
-                color: context.colorScheme.popover,
+                color: context.brightSurface,
                 shape: Superellipse(
                   cornerRadius: 12.0,
                   side: BorderSide(
@@ -141,7 +141,7 @@ class _FileSearchField extends StatelessWidget {
         hintText: 'Search files…',
         border: InputBorder.none,
         filled: true,
-        fillColor: context.colorScheme.popover,
+        fillColor: context.brightSurface,
         contentPadding: k24APadding,
       ),
       style: context.textTheme.list,

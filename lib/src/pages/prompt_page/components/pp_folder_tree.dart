@@ -43,7 +43,9 @@ class _SelectFolderButton extends StatelessWidget {
     final style = context.textTheme.muted;
     final folderPath = context.watchFolderPath();
     final noneSelected = folderPath == null;
-    final lightGray = PColors.opaqueLightGray.resolveFrom(context);
+    final lightGray =
+        (noneSelected ? PColors.lightGray : PColors.opaqueLightGray)
+            .resolveFrom(context);
     return Material(
       color: Colors.transparent,
       shape: Superellipse.border8,
