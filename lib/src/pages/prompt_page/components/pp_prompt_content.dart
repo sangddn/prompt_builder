@@ -47,37 +47,36 @@ class _PromptContentEditMode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final blocks = context.watchBlockKeys();
-    final widgets = blocks
-        .indexedExpand(
-          (i, e) => [
-            if (i == 0) const _NewBlockActions.first(),
-            Builder(
-              key: e.$2,
-              builder: (context) => PromptBlockCard(
-                padding: k32HPadding + const EdgeInsets.only(top: 4.0),
-                database: context.db,
-                prompt: context.watch<Prompt?>(),
-                block: context.watchBlock(e.$1)!,
-                onMovedUp: i == 0
-                    ? null
-                    : () {
-                        context.read<_BlockReorderCallback>()(i, i - 1);
-                      },
-                onMovedDown: i == blocks.length - 1
-                    ? null
-                    : () {
-                        context.read<_BlockReorderCallback>()(i, i + 1);
-                      },
-              ),
-            ),
-            if (i == blocks.length - 1)
-              const _NewBlockActions.last()
-            else
-              _NewBlockActions(i),
-          ],
-        )
-        .toList();
+    final count = context.selectBlocks((bs) => bs.length);
+    final widgets = List.generate(
+      growable: false,
+      count,
+      (i) => [
+        if (i == 0) const _NewBlockActions.first(),
+        Builder(
+          builder: (context) => PromptBlockCard(
+            padding: k32HPadding + const EdgeInsets.only(top: 4.0),
+            database: context.db,
+            prompt: context.watch<Prompt?>(),
+            block: context.watchBlock(i)!,
+            onMovedUp: i == 0
+                ? null
+                : () {
+                    context.read<_BlockReorderCallback>()(i, i - 1);
+                  },
+            onMovedDown: i == count - 1
+                ? null
+                : () {
+                    context.read<_BlockReorderCallback>()(i, i + 1);
+                  },
+          ),
+        ),
+        if (i == count - 1)
+          const _NewBlockActions.last()
+        else
+          _NewBlockActions(i),
+      ],
+    ).expand((e) => e).toList();
 
     return CustomScrollView(
       slivers: [

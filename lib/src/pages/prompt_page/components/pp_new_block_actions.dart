@@ -38,6 +38,7 @@ class _NewBlockActions extends StatelessWidget {
               Builder(
                 builder: (context) {
                   return StateAnimations.fade(
+                    duration: Effects.veryShortDuration,
                     alwaysShow ||
                             isHovered ||
                             context.watch<ShadPopoverController>().isOpen ||
