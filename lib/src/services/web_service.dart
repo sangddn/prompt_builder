@@ -1,8 +1,11 @@
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:http/http.dart' as http;
 
+import 'other_services/html_to_markdown.dart';
+
 /// Service for fetching web content and metadata
 abstract final class WebService {
+  /// {@template services.other_services.web_service.fetchContent}
   /// Fetches raw HTML content from a URL.
   /// 
   /// Takes a [url] string parameter and returns the HTML content as a [String].
@@ -13,6 +16,7 @@ abstract final class WebService {
   /// ```dart
   /// final content = await WebService.fetchContent('https://example.com');
   /// ```
+  /// {@endtemplate}
   static Future<String> fetchContent(String url) async {
     final resp = await http.get(Uri.parse(url));
     if (resp.statusCode == 200) {
@@ -22,6 +26,20 @@ abstract final class WebService {
         'Failed to fetch content from $url, status: ${resp.statusCode}',
       );
     }
+  }
+
+  /// Fetches the HTML content of a URL and parses it into Markdown.
+  /// 
+  /// Example:
+  /// ```dart
+  /// final markdown = await WebService.fetchMarkdown('https://example.com');
+  /// ```
+  /// 
+  /// See also:
+  /// - [fetchContent]
+  static Future<String> fetchMarkdown(String url) async {
+    final html = await fetchContent(url);
+    return htmlToMarkdown(html);
   }
 
   /// Fetches preview metadata for a URL.
