@@ -6,7 +6,7 @@
 ![Open Issues](https://img.shields.io/github/issues/sangddn/prompt_builder)
 [![Follow @sangddn](https://img.shields.io/twitter/follow/sangddn?style=social)](https://twitter.com/sangddn)
 
-[Website](https://promptbuilder.site). [Download for macOS](https://github.com/sangddn/prompt_builder/releases/download/v0.0.2/prompt-builder-macos-universal-v0.0.2.zip).
+[Website](https://promptbuilder.site). [Download for macOS](https://github.com/sangddn/prompt_builder/releases/download/v0.0.2/prompt-builder-macos-universal-v0.0.2+2.zip).
 
 ## What is Prompt Builder?
 
