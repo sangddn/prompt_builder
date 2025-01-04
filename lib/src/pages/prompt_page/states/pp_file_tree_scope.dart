@@ -297,5 +297,13 @@ List<String> _loadFilePaths(String givenPath) {
   final isDirectory = FileSystemEntity.isDirectorySync(givenPath);
   if (!isDirectory) return [givenPath];
   final dir = Directory(givenPath);
-  return dir.listSync().map((e) => e.path).toList();
+  return dir.listSync(recursive: true).map((e) => e.path).toList();
 }
+
+/// Handles raw data formats (SimpleFileFormat from super_drag_n_drop)
+// Future<void> _handleDataFormat(BuildContext context, SimpleFileFormat format) async {
+//   final reader = context.read<DataReader>();
+//   final data = await reader.read(format);
+//   if (data == null) return;
+//   final blocks = await context.db.createBlocksFromData(data, context.prompt!.id);
+// }

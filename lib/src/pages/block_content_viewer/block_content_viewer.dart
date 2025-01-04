@@ -93,6 +93,7 @@ class _BlockContentViewerState extends State<BlockContentViewer> {
         summary: block.summary,
         transcript: block.transcript,
         filePath: filePath,
+        textContent: block.textContent,
       );
     }
     final text = block.textContent;

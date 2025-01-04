@@ -7,12 +7,13 @@ class BCVLocal extends StatelessWidget {
     this.transcript,
     this.caption,
     this.title,
+    this.textContent,
     required this.filePath,
     super.key,
   });
 
   final List<Widget>? actions;
-  final String? title, summary, transcript, caption;
+  final String? title, summary, transcript, caption, textContent;
   final String filePath;
 
   static bool isSupportedFile(String filePath) =>
@@ -82,6 +83,15 @@ class BCVLocal extends StatelessWidget {
                 child: Text(caption!),
               ),
               child: const Text('Description'),
+            ),
+          if (textContent != null)
+            ShadTab(
+              value: 'textContent',
+              content: ShadCard(
+                title: const Text('Extracted Content'),
+                child: Text(textContent!),
+              ),
+              child: const Text('Extracted Content'),
             ),
         ],
       ),

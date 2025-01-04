@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 import 'package:super_clipboard/super_clipboard.dart';
+
+import 'other_services.dart';
 
 bool canBeRepresentedAsText(String filePath) {
   // If is code or markdown, return true
@@ -9,8 +13,15 @@ bool canBeRepresentedAsText(String filePath) {
   final mimeType = lookupMimeType(filePath);
   if (mimeType == null) return false;
 
+  return canMimeTypeBeRepresentedAsText(mimeType);
+}
+
+bool canMimeTypeBeRepresentedAsText(String mimeType) {
   // Text-based MIME types
   if (mimeType.startsWith('text/')) return true;
+
+  // Email MIME types
+  if (emlFileFormat.mimeTypes!.contains(mimeType)) return true;
 
   // Common text-based application MIME types
   const textBasedApplicationTypes = {
@@ -44,6 +55,24 @@ bool canBeRepresentedAsText(String filePath) {
   return textBasedApplicationTypes.contains(mimeType);
 }
 
+/// Reads a file as text, converting EML files to Markdown.
+///
+/// Throws an [AssertionError] if the file cannot be represented as text.
+///
+/// See also:
+/// - [canBeRepresentedAsText]
+Future<(String? displayName, String? textContent)> readFileAsText(
+  String filePath,
+) async {
+  assert(canBeRepresentedAsText(filePath));
+  final mimeType = lookupMimeType(filePath);
+  final text = await File(filePath).readAsString();
+  if (emlFileFormat.mimeTypes!.contains(mimeType)) {
+    return convertEmlToPlainText(text);
+  }
+  return (null, text);
+}
+
 bool isAudioFile(String filePath) {
   final mimeType = lookupMimeType(filePath);
   return mimeType != null && mimeType.startsWith('audio/');
@@ -73,6 +102,8 @@ bool isMarkdownFile(String filePath) {
   final extension = path.extension(filePath).replaceAll('.', '').toLowerCase();
   return extension == 'md' || extension == 'markdown';
 }
+
+String? mimeToExtension(String mimeType) => extensionFromMime(mimeType);
 
 String? getCodeLanguage(String fileExtension) =>
     _codeFileExtensions[fileExtension];
@@ -173,6 +204,39 @@ const _codeFileExtensions = {
   'gn': 'gn',
 };
 
+/// Format for .eml files.
+const emlFileFormat = SimpleFileFormat(
+  // Apple platforms often label email messages as "public.email-message"
+  // or "com.apple.mail.email". The UTI is not always present by default.
+  uniformTypeIdentifiers: [
+    'public.email-message',
+    'com.apple.mail.email',
+    'com.apple.mail.PasteboardTypeMessageTransfer',
+    'com.apple.mail.PasteboardTypeAutomator',
+  ],
+
+  // ! Windows does not have a known clipboard format name for .eml.
+  windowsFormats: [],
+
+  // The most common MIME type for .eml is "message/rfc822".
+  // Some servers or systems may also use "application/eml" or "text/eml".
+  mimeTypes: ['message/rfc822', 'application/eml', 'text/eml'],
+);
+
+final kAllowedFileFormats = [
+  ...Formats.standardFormats,
+  emlFileFormat,
+];
+
+final kTextBasedFileFormats = kAllowedFileFormats
+    .where(
+      (e) =>
+          e is SimpleFileFormat &&
+          (e.mimeTypes?.any((m) => canMimeTypeBeRepresentedAsText(m)) ?? false),
+    )
+    .toList()
+    .cast<SimpleFileFormat>();
+
 DataFormat? getDataFormat(String filePath) {
   final extension = filePath.split('.').last.toLowerCase();
 
@@ -227,6 +291,7 @@ DataFormat? getDataFormat(String filePath) {
     'exe' => Formats.exe,
     'msi' => Formats.msi,
     'dll' => Formats.dll,
+    'eml' => emlFileFormat,
     _ => null,
   };
 }

@@ -133,4 +133,148 @@ extension _PromptBlockScopeExtension on BuildContext {
       sortOrder: sortOrder,
     );
   }
+
+  /// Create a new block from a web URL.
+  Future<int?> createWebBlock(String url) async {
+    final promptId = prompt?.id;
+    if (promptId == null) return null;
+    final toaster = this.toaster;
+    final searchProvider =
+        SearchProviderPreference.getValidProviderWithFallback();
+    try {
+      final (id, content) =
+          await db.createWebBlock(promptId, url, searchProvider) ??
+              (null, null);
+      if (content == null) return null;
+      toaster.show(
+        ShadToast(
+          title: Text('Added content from $url.'),
+          description: Text('"$content"', maxLines: 10),
+        ),
+      );
+      return id;
+    } on HttpException catch (e) {
+      debugPrint('Failed to create web block: $e');
+      toaster.show(
+        const ShadToast.destructive(
+          title: Text('Failed to fetch web content.'),
+        ),
+      );
+      return null;
+    }
+  }
+
+  /// Handle [DataReader]s -- results from drop events or paste events.
+  Future<void> handleDataReaders(Iterable<DataReader> readers) async {
+    final toaster = this.toaster;
+    for (final reader in readers) {
+      // Local files with a file path.
+      if (reader.canProvide(Formats.fileUri)) {
+        reader.getValue(Formats.fileUri, (value) async {
+          if (value == null || !mounted) return;
+          await _handleNodeSelection(
+            this,
+            reloadNode: true,
+            fullPath: value.toFilePath(),
+            isSelected: true,
+          );
+        });
+        return;
+      }
+      // A special case for .eml files.
+      if (reader.canProvide(emlFileFormat)) {
+        reader.getFile(
+          emlFileFormat,
+          (file) async {
+            if (!mounted) return;
+            final content = await utf8.decodeStream(file.getStream());
+            await createTextBlockAtIndex(
+              promptBlocks.length,
+              displayName: file.fileName ?? 'Email',
+              textContent: content,
+            );
+            toaster.show(
+              ShadToast(
+                title: const Text('Added email content.'),
+                description: Text(
+                  '"$content"',
+                  maxLines: 10,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            );
+          },
+          onError: (error) {
+            debugPrint('Error reading email: $error');
+          },
+        );
+        return;
+      }
+      // For data without a file path, we can only handle text-based formats.
+      final availableFormats = reader.getFormats(kTextBasedFileFormats);
+      if (availableFormats.isNotEmpty) {
+        reader.getFile(availableFormats.first as SimpleFileFormat,
+            (file) async {
+          if (!mounted) return;
+          final content = await utf8.decodeStream(file.getStream());
+          await createTextBlockAtIndex(
+            promptBlocks.length,
+            displayName:
+                file.fileName ?? (await reader.getSuggestedName()) ?? 'File',
+            textContent: content,
+          );
+          toaster.show(
+            ShadToast(
+              title: const Text('Added file content.'),
+              description: Text(
+                '"$content"',
+                maxLines: 10,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          );
+        });
+        return;
+      }
+
+      // We consider value-based formats last because they are the most general.
+      var somethingAdded = false;
+
+      if (reader.canProvide(Formats.htmlText)) {
+        reader.getValue(Formats.htmlText, (value) async {
+          if (value == null || !mounted || somethingAdded) return;
+          await createTextBlockAtIndex(
+            promptBlocks.length,
+            displayName: await reader.getSuggestedName() ?? 'HTML',
+            textContent: htmlToMarkdown(value),
+          );
+          somethingAdded = true;
+        });
+      }
+      // We consider URIs last because they are the most general format.
+      if (reader.canProvide(Formats.uri)) {
+        reader.getValue(Formats.uri, (value) async {
+          final uri = value?.uri;
+          if (uri == null || !mounted || somethingAdded) return;
+          if ((uri.scheme == 'http' || uri.scheme == 'https') &&
+              uri.host.isNotEmpty) {
+            await createWebBlock(uri.toString());
+            somethingAdded = true;
+          }
+        });
+      }
+      if (reader.canProvide(Formats.plainText)) {
+        reader.getValue(Formats.plainText, (value) async {
+          if (value == null || !mounted || somethingAdded) return;
+          await createTextBlockAtIndex(
+            promptBlocks.length,
+            displayName: await reader.getSuggestedName() ?? 'Text',
+            textContent: value,
+          );
+          somethingAdded = true;
+        });
+      }
+      return;
+    }
+  }
 }

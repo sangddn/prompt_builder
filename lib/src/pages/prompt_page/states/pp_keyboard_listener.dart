@@ -48,6 +48,11 @@ class _KeyboardListener extends StatelessWidget {
           const SingleActivator(LogicalKeyboardKey.keyO, meta: true): () {
             context.pickFolder();
           },
+          const SingleActivator(LogicalKeyboardKey.keyV, meta: true): () async {
+            final reader = await ClipboardService.read();
+            if (reader == null || !context.mounted) return;
+            context.handleDataReaders([reader]);
+          },
         };
         return CallbackShortcuts(
           bindings: bindings,

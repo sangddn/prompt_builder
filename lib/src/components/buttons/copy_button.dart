@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:super_clipboard/super_clipboard.dart';
 
 import '../../core/core.dart';
+import '../../services/clipboard_service.dart';
 import '../components.dart';
 
 class CopyButton extends StatelessWidget {
@@ -71,13 +72,7 @@ class CopyButton extends StatelessWidget {
         Future<void> callback() async {
           try {
             final data = await Future.value(this.data());
-            if (data is String) {
-              Clipboard.setData(ClipboardData(text: data));
-            } else if (data is DataWriterItem) {
-              SystemClipboard.instance?.write([data]);
-            } else {
-              throw UnsupportedError('Unsupported data type');
-            }
+            await ClipboardService.write(data);
             if (context.mounted) {
               show(true);
             }

@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:mime/mime.dart';
 import 'package:super_clipboard/super_clipboard.dart';
+
 import '../../core/core.dart';
-import '../../services/other_services/mime_utils.dart';
 import '../../services/services.dart';
 import '../database.dart';
 
@@ -448,9 +448,9 @@ extension PromptBlockCreation on Database {
       filePaths.indexedMap((index, filePath) async {
         final mimeType = lookupMimeType(filePath);
 
-        final text = canBeRepresentedAsText(filePath)
-            ? await File(filePath).readAsString()
-            : null;
+        final (name, text) = canBeRepresentedAsText(filePath)
+            ? await readFileAsText(filePath)
+            : (null, null);
 
         return PromptBlocksCompanion.insert(
           promptId: promptId,
@@ -466,6 +466,7 @@ extension PromptBlockCreation on Database {
               .name,
           filePath: Value(filePath),
           textContent: Value(text),
+          displayName: name != null ? Value(name) : const Value.absent(),
           mimeType: Value(mimeType),
           sortOrder: Value(lastSortOrder + 100.0 * (index + 1)),
         );
@@ -508,11 +509,12 @@ extension PromptBlockCreation on Database {
   /// Returns a tuple of (blockId, content) if successful, or null if not.
   Future<(int, String)?> createWebBlock(
     int promptId,
-    String url,
-    SearchProvider searchProvider,
-  ) async {
+    String url, [
+    SearchProvider? searchProvider,
+  ]) async {
     final lastSortOrder = await _inferLastSortOrder(promptId);
-    final content = await searchProvider.fetchWebpage(url);
+    final content = await (searchProvider?.fetchWebpage(url) ??
+        WebService.fetchMarkdown(url));
     if (content.isEmpty) return null;
     final blockId = await createBlock(
       promptId: promptId,
@@ -528,9 +530,10 @@ extension PromptBlockCreation on Database {
   Future<(int, String)?> createWebBlockFromResult(
     int promptId,
     SearchResult result,
+    SearchProvider provider,
   ) async {
     final lastSortOrder = await _inferLastSortOrder(promptId);
-    final content = result.copyableContent;
+    final content = await result.getContent(provider);
     final blockId = await createBlock(
       promptId: promptId,
       blockType: BlockType.webUrl,
@@ -540,20 +543,4 @@ extension PromptBlockCreation on Database {
     );
     return (blockId, content);
   }
-}
-
-extension WebResultContentExtension on SearchResult {
-  String get copyableContent => '# Title: $title\n'
-      '**Url:** $url\n'
-      '**Published:** $publishedDate\n'
-      '**Author:** $author\n\n'
-      '---\n\n'
-      '## Highlights\n'
-      '${highlights.join('\n')}\n\n'
-      '---\n\n'
-      '## Summary\n'
-      '$summary\n\n'
-      '---\n\n'
-      '## Full Text\n'
-      '$text\n';
 }

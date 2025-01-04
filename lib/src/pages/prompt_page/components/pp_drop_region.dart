@@ -14,25 +14,13 @@ class _PPDropRegionState extends State<_PPDropRegion> {
 
   Future<void> _performDrop(PerformDropEvent event) async {
     final readers = event.session.items.map((e) => e.dataReader).nonNulls;
-    for (final reader in readers) {
-      if (reader.canProvide(Formats.fileUri)) {
-        reader.getValue(Formats.fileUri, (value) async {
-          if (mounted && value != null) {
-            await _handleNodeSelection(
-              context,
-              reloadNode: true,
-              fullPath: value.toFilePath(),
-              isSelected: true,
-            );
-            maybeSetState(() => _state = _ProcessingState.received);
-            Future.delayed(
-              Effects.mediumDuration,
-              () => maybeSetState(() => _state = _ProcessingState.idle),
-            );
-          }
-        });
-      }
-    }
+    maybeSetState(() => _state = _ProcessingState.receiving);
+    await context.handleDataReaders(readers.toList());
+    maybeSetState(() => _state = _ProcessingState.received);
+    Future.delayed(
+            Effects.mediumDuration,
+            () => maybeSetState(() => _state = _ProcessingState.idle),
+          );
   }
 
   @override
@@ -68,6 +56,11 @@ class _PPDropRegionState extends State<_PPDropRegion> {
               left: 16.0,
               child: Builder(
                 builder: (context) {
+                  final text = _state.isReceived
+                      ? 'Added!'
+                      : _state.isReceiving
+                          ? 'Adding...'
+                          : 'Drop anything';
                   return AnimatedContainer(
                     duration: Effects.shortDuration,
                     curve: Curves.easeInOut,
@@ -80,9 +73,9 @@ class _PPDropRegionState extends State<_PPDropRegion> {
                         TranslationSwitcher.top(
                           duration: Effects.veryShortDuration,
                           child: Text(
-                            _state.isReceived ? 'Added!' : 'Drop anything',
+                            text,
                             style: context.textTheme.h3,
-                            key: ValueKey(_state.isReceived),
+                            key: ValueKey(text),
                           ),
                         ),
                         const Gap(4.0),
@@ -104,11 +97,13 @@ enum _ProcessingState {
   idle,
   inviting,
   readyToReceive,
+  receiving,
   received,
   ;
 
   bool get isIdle => this == _ProcessingState.idle;
   bool get isInviting => this == _ProcessingState.inviting;
   bool get isReadyToReceive => this == _ProcessingState.readyToReceive;
+  bool get isReceiving => this == _ProcessingState.receiving;
   bool get isReceived => this == _ProcessingState.received;
 }
