@@ -17,7 +17,6 @@ class _PPFolderTree extends AnimatedStatelessWidget {
             SliverToBoxAdapter(
               child: Padding(padding: k4HPadding, child: _WebSearchButton()),
             ),
-            SliverGap(8.0),
             PinnedHeaderSliver(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 12.0),

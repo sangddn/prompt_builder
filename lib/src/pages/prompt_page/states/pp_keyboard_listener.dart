@@ -7,7 +7,7 @@ class _KeyboardListener extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final focusScopeNodeProvider = ListenableProvider<FocusScopeNode>(
+    final focusNodeProvider = ListenableProvider<FocusNode>(
       create: (context) {
         final bindings = {
           _cmdShiftC: () async {
@@ -38,7 +38,7 @@ class _KeyboardListener extends StatelessWidget {
             context.handleDataReaders([reader]);
           },
         };
-        return FocusScopeNode(
+        return FocusNode(
           skipTraversal: true,
           onKeyEvent: (node, event) {
             var result = KeyEventResult.ignored;
@@ -59,13 +59,18 @@ class _KeyboardListener extends StatelessWidget {
         ValueProvider<ValueNotifier<_PromptCopiedEvent?>>(
           create: (_) => ValueNotifier(null),
         ),
-        focusScopeNodeProvider,
+        focusNodeProvider,
       ],
       builder: (context, child) {
-        return FocusScope(
-          node: context.read<FocusScopeNode>(),
-          autofocus: true,
-          child: child!,
+        return Focus(
+          focusNode: context.read<FocusNode>(),
+          canRequestFocus: false,
+          child: FocusScope(
+            autofocus: true,
+            descendantsAreFocusable: true,
+            descendantsAreTraversable: true,
+            child: child!,
+          ),
         );
       },
       child: child,
