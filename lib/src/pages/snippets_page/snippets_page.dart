@@ -50,7 +50,7 @@ class SnippetsPage extends StatelessWidget {
               SliverPadding(padding: k16HPadding, sliver: _SNPSearchBar()),
               SliverGap(16.0),
               _SNPSnippetList(),
-              SliverGap(64.0),
+              SliverGap(128.0),
             ],
           ),
         ),

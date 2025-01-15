@@ -42,6 +42,7 @@ class LibraryPage extends StatelessWidget {
             _LPFilterBar(),
             SliverGap(16.0),
             _LPPromptList(),
+            SliverGap(128.0),
           ],
         ),
       ),
