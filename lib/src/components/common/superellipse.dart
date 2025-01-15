@@ -265,7 +265,7 @@ class Superellipse extends ShapeBorder {
     // The ratio of the declared corner radius to the total affected pixels to
     // render the corner. For example if the declared radius were 25px then
     // totalAffectedCornerPixelRatio * 25 (~38) pixels would be affected.
-    const double totalAffectedCornerPixelRatio = 1.52865;
+    const totalAffectedCornerPixelRatio = 1.52865;
 
     // The radius multiplier where the resulting shape will concave with a
     // height and width of any value.
@@ -288,7 +288,7 @@ class Superellipse extends ShapeBorder {
     // small extent value. It can be less than 'maxMultiplier' because there
     // are not enough pixels to render the clipping of the shape at this size so
     // it appears to still be concave (whereas mathematically it's convex).
-    const double minimalEdgeLengthSideToCornerRadiusRatio = 2.0;
+    const minimalEdgeLengthSideToCornerRadiusRatio = 2.0;
 
     // The minimum edge length at which the corner radius multiplier must be at
     // its maximum so as to maintain the appearance of a perfectly concave,
@@ -297,7 +297,7 @@ class Superellipse extends ShapeBorder {
     // If the smallest edge length is less than this value, the dynamic radius
     // value can be made smaller than the 'maxMultiplier' while the rendered
     // shape still does not visually clip.
-    const double minRadiusEdgeLength = 200.0;
+    const minRadiusEdgeLength = 200.0;
 
     final double minSideLength = math.min(rect.width, rect.height);
 
@@ -381,7 +381,7 @@ class Superellipse extends ShapeBorder {
     if (runtimeType != other.runtimeType) {
       return false;
     }
-    final Superellipse typedOther =
+    final typedOther =
         // ignore: test_types_in_equals
         other as Superellipse;
     return side == typedOther.side && cornerRadius == typedOther.cornerRadius;
@@ -499,7 +499,7 @@ class SquircleStadiumBorder extends ShapeBorder {
     // This value comes from the website where the other equations and curves
     // were found
     // (https://www.paintcodeapp.com/news/code-for-ios-7-rounded-rectangles).
-    const double totalAffectedCornerPixelRatio = 1.52865;
+    const totalAffectedCornerPixelRatio = 1.52865;
 
     // The ratio of the radius to the magnitude of pixels on a given side that
     // are used to construct the two corners.
@@ -511,7 +511,7 @@ class SquircleStadiumBorder extends ShapeBorder {
 
     // The maximum aspect ratio of the width and height of the given rect before
     // clamping on one dimension will occur. Roughly 0.79.
-    const double maxEdgeLengthAspectRatio = 0.79;
+    const maxEdgeLengthAspectRatio = 0.79;
 
     final double rectWidth = rectangle.width;
     final double rectHeight = rectangle.height;

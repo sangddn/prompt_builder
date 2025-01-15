@@ -17,7 +17,7 @@ Subject: A simple email
 Hello world, this is plain text.
 ''';
 
-      final message = await parseEml(rawEml);
+      final message = parseEml(rawEml);
 
       expect(message.subject, 'A simple email');
       expect(message.from.first.email, 'john@example.com');
@@ -38,7 +38,7 @@ Content-Type: text/html
 <html><body><h1>Big Title</h1><p>Some HTML content.</p></body></html>
 ''';
 
-      final message = await parseEml(rawEml);
+      final message = parseEml(rawEml);
       expect(message.textBody.isEmpty, isTrue);
       expect(message.htmlBody, contains('Big Title'));
       expect(message.htmlBody, contains('Some HTML content.'));
@@ -54,7 +54,7 @@ Content-Type: text/plain
 Just checking in
 ''';
 
-      final message = await parseEml(rawEml);
+      final message = parseEml(rawEml);
       // "Hello ¡ World!"
       expect(message.subject, contains('Hello ¡ World!'));
       expect(message.from.first.name, 'Alice');
@@ -80,7 +80,7 @@ Content-Type: text/html
 --ABC123--
 ''';
 
-      final message = await parseEml(rawEml);
+      final message = parseEml(rawEml);
       expect(message.textBody, contains('Hello from plain text.'));
       expect(message.htmlBody, contains('<b>HTML</b>'));
     });
@@ -108,7 +108,7 @@ $rawBytes
 --BOUNDARY--
 ''';
 
-      final message = await parseEml(rawEml);
+      final message = parseEml(rawEml);
       expect(message.attachments.length, 1);
       final attachment = message.attachments.first;
       expect(attachment.fileName, 'myfile.bin');
@@ -129,7 +129,7 @@ $rawBytes
       final exampleEml =
           await File('test/test_data/aeon_email_example.eml').readAsString();
 
-      final message = await parseEml(exampleEml);
+      final message = parseEml(exampleEml);
 
       // We expect non-empty text body
       expect(

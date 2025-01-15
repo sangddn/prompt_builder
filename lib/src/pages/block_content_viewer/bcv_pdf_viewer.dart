@@ -76,7 +76,6 @@ class __BCVPdfViewerState extends State<_BCVPdfViewer> {
               return ShadButton.outline(
                 onPressed: () => _saveDocumentAndDispose(context, setState),
                 child: TranslationSwitcher.top(
-                  duration: Effects.shortDuration,
                   child: _isSaving
                       ? const GrayShimmer(child: Text('Saving…'))
                       : _isSaved

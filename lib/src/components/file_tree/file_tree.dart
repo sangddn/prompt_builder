@@ -160,7 +160,7 @@ class _FileTreeState extends State<FileTree> with _WatchDirectoryMixin {
                               0,
                           onItemSelected: (isSelected) async =>
                               NodeSelectionNotification(
-                                      node.data!.path, isSelected)
+                                      node.data!.path, isSelected,)
                                   .dispatch(context),
                           node: node,
                         );

@@ -60,7 +60,7 @@ final class Exa extends SearchProvider {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'ids': [url]
+        'ids': [url],
       }),
     );
 
@@ -76,8 +76,10 @@ final class Exa extends SearchProvider {
     final result =
         ((data['results'] as List).firstOrNull as Map<String, dynamic>?)
             ?.let(SearchResult.fromExa);
-    final text = result?.let((result) =>
-        '${result.text}\n\nHighlights:\n${result.highlights.join('\n')}');
+    final text = result?.let(
+      (result) =>
+          '${result.text}\n\nHighlights:\n${result.highlights.join('\n')}',
+    );
     if (text == null) {
       throw SearchException('No text found in Exa response.', provider: this);
     }

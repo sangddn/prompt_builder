@@ -64,7 +64,7 @@ sealed class SearchProvider with ProviderWithApiKey {
       );
     } on UnsupportedError {
       debugPrint(
-          '$runtimeType does not support fetching webpages. Falling back to `WebService.fetchMarkdown`.');
+          '$runtimeType does not support fetching webpages. Falling back to `WebService.fetchMarkdown`.',);
       return WebService.fetchMarkdown(url);
     } catch (e) {
       throw SearchException(

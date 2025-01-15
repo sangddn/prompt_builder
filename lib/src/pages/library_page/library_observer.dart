@@ -62,7 +62,8 @@ class LibraryObserverState extends State<LibraryObserver> {
   }
 
   void removePromptTitleOrDescriptionChangedListener(
-      ValueChanged<int> listener) {
+    ValueChanged<int> listener,
+  ) {
     _promptTitleOrDescriptionChangedListeners.remove(listener);
   }
 
