@@ -32,7 +32,17 @@ class BCVLocal extends StatelessWidget {
       enterDuration: Effects.veryShortDuration,
       exitDuration: Effects.veryShortDuration,
       child: ShadTabs(
-        value: 'content',
+        value: isSupportedFile(filePath)
+            ? 'content'
+            : textContent != null
+                ? 'textContent'
+                : transcript != null
+                    ? 'transcript'
+                    : summary != null
+                        ? 'summary'
+                        : caption != null
+                            ? 'caption'
+                            : 'content',
         // expandContent: true,
         tabs: [
           ShadTab(
