@@ -353,7 +353,10 @@ extension PromptBlockExtension on PromptBlock {
     }
     final preferSummary = summary != null && this.preferSummary;
     final (tag, info) = switch ((type, preferSummary)) {
-      (BlockType.text, _) => ('instructions', 'label="$displayName"'),
+      (BlockType.text, _) => (
+          displayName.isNotEmpty ? 'text' : 'instructions',
+          displayName.isNotEmpty ? 'label="$displayName"' : '',
+        ),
       (BlockType.localFile, false) => ('file', 'path="$filePath"'),
       (BlockType.localFile, true) => ('file-summary', 'path="$filePath"'),
       (BlockType.webUrl, false) => ('webpage-content', 'url="$url"'),
