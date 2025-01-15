@@ -138,6 +138,7 @@ extension PromptBlocksExtension on Database {
         transcript: transcript ? const Value(null) : const Value.absent(),
         caption: caption ? const Value(null) : const Value.absent(),
         summary: summary ? const Value(null) : const Value.absent(),
+        preferSummary: summary ? const Value(false) : const Value.absent(),
         fullContentTokenCount:
             fullContentTokenCount || fullContentTokenCountMethod
                 ? const Value(null)
