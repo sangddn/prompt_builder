@@ -82,7 +82,7 @@
     </item>
     <item>
       <title>Version 0.0.3</title>
-      <sparkle:version>6</sparkle:version>
+      <sparkle:version>7</sparkle:version>
       <sparkle:shortVersionString>0.0.3</sparkle:shortVersionString>
       <sparkle:releaseNotesLink>
         https://github.com/sangddn/prompt_builder/releases/tag/v0.0.3
