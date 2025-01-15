@@ -114,55 +114,59 @@ class _BCVWebViewState extends State<BCVWebView> {
       constraints: const BoxConstraints(minWidth: 500, maxWidth: 750),
       enterDuration: Effects.veryShortDuration,
       exitDuration: Effects.veryShortDuration,
-      child: Column(
-        children: [
-          if (_isLoading)
-            const Padding(
-              padding: k32VPadding,
-              child: CircularProgressIndicator.adaptive(),
-            ),
-          ShadTabs<String>(
+      child: ShadTabs<String>(
+        value: 'web',
+        tabs: [
+          ShadTab(
             value: 'web',
-            tabs: [
-              ShadTab(
-                value: 'web',
-                content: webView,
-                child: Text(
+            content: webView,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
                   Uri.parse(_currentUrl).host,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              if (widget.textContent != null)
-                ShadTab(
-                  value: 'content',
-                  content: ShadCard(
-                    title: const Text('Content'),
-                    description:
-                        const Text('Extracted content from the web page.'),
-                    child: Text(widget.textContent!),
-                  ),
-                  child: const Text('Content'),
+                TranslationSwitcher.top(
+                  layoutBuilder: alignedLayoutBuilder(Alignment.centerRight),
+                  child: _isLoading
+                      ? const Padding(
+                          padding: k8HPadding,
+                          child: CircularProgressIndicator.adaptive(),
+                        )
+                      : null,
                 ),
-              if (widget.transcript != null)
-                ShadTab(
-                  value: 'transcript',
-                  content: ShadCard(
-                    title: const Text('Transcript'),
-                    child: Text(widget.transcript!),
-                  ),
-                  child: const Text('Transcript'),
-                ),
-              if (widget.summary != null)
-                ShadTab(
-                  value: 'summary',
-                  content: ShadCard(
-                    title: const Text('Summary'),
-                    child: Text(widget.summary!),
-                  ),
-                  child: const Text('Summary'),
-                ),
-            ],
+              ],
+            ),
           ),
+          if (widget.textContent != null)
+            ShadTab(
+              value: 'content',
+              content: ShadCard(
+                title: const Text('Content'),
+                description: const Text('Extracted content from the web page.'),
+                child: SelectableText(widget.textContent!),
+              ),
+              child: const Text('Content'),
+            ),
+          if (widget.transcript != null)
+            ShadTab(
+              value: 'transcript',
+              content: ShadCard(
+                title: const Text('Transcript'),
+                child: SelectableText(widget.transcript!),
+              ),
+              child: const Text('Transcript'),
+            ),
+          if (widget.summary != null)
+            ShadTab(
+              value: 'summary',
+              content: ShadCard(
+                title: const Text('Summary'),
+                child: SelectableText(widget.summary!),
+              ),
+              child: const Text('Summary'),
+            ),
         ],
       ),
     );
