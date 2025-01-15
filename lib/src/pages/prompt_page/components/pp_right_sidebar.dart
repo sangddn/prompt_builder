@@ -120,7 +120,7 @@ class _PromptTags extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(tag),
+                    Text(tag, style: context.textTheme.small.addWeight(-1)),
                     CButton(
                       tooltip: 'Remove tag',
                       onTap: () => removeTag(tag),
@@ -158,6 +158,7 @@ class _PromptTags extends StatelessWidget {
                 hintText: 'Enter to add',
                 hintStyle: context.textTheme.muted,
               ),
+              style: context.textTheme.p,
               onEditingComplete: () {},
               onSubmitted: (value) {
                 if (value.isNotEmpty) {

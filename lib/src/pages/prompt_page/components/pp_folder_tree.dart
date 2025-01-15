@@ -24,8 +24,6 @@ class _PPFolderTree extends AnimatedStatelessWidget {
               ),
             ),
             SliverPadding(padding: k4HPadding, sliver: _FileTree()),
-            // SliverGap(32.0),
-            // SliverToBoxAdapter(child: _AddOtherFilesButton()),
             SliverGap(64.0),
           ],
         ),

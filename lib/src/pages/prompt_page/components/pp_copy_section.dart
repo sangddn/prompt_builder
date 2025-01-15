@@ -36,7 +36,7 @@ class _EstimatedTokenCount extends StatelessWidget {
     );
     return Row(
       children: [
-        const Expanded(child: Text('Estimated Tokens')),
+        Expanded(child: Text('Estimated Tokens', style: context.textTheme.p)),
         _TokenEstimation(tokenCount, true),
       ],
     );

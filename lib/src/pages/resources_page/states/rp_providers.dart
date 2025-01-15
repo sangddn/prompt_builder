@@ -10,14 +10,16 @@ class _RPProviders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final toaster = context.toaster;
     return MultiProvider(
       providers: [
         Provider<Database>.value(value: db),
         FutureProvider<SnippetResources?>(
           initialData: null,
+          create: (_) => SnippetResourceService.fetchSnippetResources(),
           catchError: (context, error) {
             debugPrint('Error fetching snippet resources: $error');
-            context.toaster.show(
+            toaster.show(
               ShadToast.destructive(
                 title: const Text('Failed to fetch snippet resources.'),
                 description: Text(error.toString()),
@@ -25,7 +27,6 @@ class _RPProviders extends StatelessWidget {
             );
             return null;
           },
-          create: (_) => SnippetResourceService.fetchSnippetResources(),
         ),
         ProxyProvider<SnippetResources?, _OrganizedResources?>(
           update: (_, r, __) => r?.let(_organize),

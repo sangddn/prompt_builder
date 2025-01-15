@@ -17,11 +17,16 @@ abstract final class SnippetResourceService {
   /// Throws [HttpException] if the request fails
   /// Throws [FormatException] if the response cannot be parsed
   static Future<SnippetResources> fetchSnippetResources() async {
-    final response = await http
-        .get(Uri.parse(_resourceUrl))
-        .timeout(const Duration(seconds: 10));
+    late final http.Response? response;
+    try {
+      response = await http
+          .get(Uri.parse(_resourceUrl))
+          .timeout(const Duration(seconds: 10));
+    } on http.ClientException {
+      response = null;
+    }
     final data = jsonDecode(
-      response.statusCode == 200
+      response != null && response.statusCode == 200
           ? response.body
           : await rootBundle.loadString('assets/snippet_resources.json'),
     ) as Map<String, dynamic>;
