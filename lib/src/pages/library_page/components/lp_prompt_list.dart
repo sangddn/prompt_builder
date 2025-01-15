@@ -13,7 +13,11 @@ class _LPPromptList extends StatelessWidget {
       itemBuilder: (context, index, prompt) => PromptTile(
         db: context.db,
         onTap: () => context.router.push(PromptRoute(id: prompt.id)),
-        onDeleted: () => controller._refresh(),
+        onDeleted: () {
+          final c = controller.pagingController;
+          c.itemList = List.of(c.itemList ?? [])
+            ..removeWhere((p) => p.id == prompt.id);
+        },
         prompt: prompt,
       )
           .animate()

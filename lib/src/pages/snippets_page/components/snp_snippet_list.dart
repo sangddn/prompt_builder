@@ -14,7 +14,11 @@ class _SNPSnippetList extends StatelessWidget {
         key: ValueKey(snippet.id),
         database: context.read<Database>(),
         snippet: snippet,
-        onDelete: () => controller._refresh(),
+        onDelete: () {
+          final c = controller.pagingController;
+          c.itemList = List.of(c.itemList ?? [])
+            ..removeWhere((s) => s.id == snippet.id);
+        },
       ),
     );
   }

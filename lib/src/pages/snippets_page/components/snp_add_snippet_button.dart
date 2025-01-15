@@ -8,9 +8,11 @@ class _SPAddSnippetButton extends StatelessWidget {
     return ShadButton.ghost(
       onPressed: () async {
         final db = context.read<Database>();
-        await db.createSnippet();
+        final id = await db.createSnippet();
+        final snippet = await db.getSnippet(id);
         if (!context.mounted) return;
-        context.read<_SnippetsController>()._refresh();
+        final c = context.read<_SnippetsController>().pagingController;
+        c.itemList = List.of(c.itemList ?? [])..insert(0, snippet);
         context.read<_SortByNotifier>().value =
             (SnippetSortBy.createdAt, false);
       },

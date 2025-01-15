@@ -16,8 +16,23 @@ class _LPProviders extends StatefulWidget {
 class _LPProvidersState extends State<_LPProviders> {
   late final _LibraryController _controller;
 
-  void _onNewPromptAddedOrEdited(int id) => WidgetsBinding.instance
-      .addPostFrameCallback((_) => _controller._refresh());
+  void _onPromptEdited(int id) =>
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final c = _controller.pagingController;
+        final newPrompt = await widget.db.getPrompt(id);
+        final index = c.itemList?.indexWhere((p) => p.id == id);
+        if (index == null || index == -1) return;
+        c.itemList = List.of(c.itemList ?? [])
+          ..removeAt(index)
+          ..insert(index, newPrompt);
+      });
+
+  void _onNewPromptAdded(int id) =>
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final c = _controller.pagingController;
+        final newPrompt = await widget.db.getPrompt(id);
+        c.itemList = List.of(c.itemList ?? [])..insert(0, newPrompt);
+      });
 
   @override
   Widget build(BuildContext context) => MultiProvider(
@@ -41,18 +56,17 @@ class _LPProvidersState extends State<_LPProviders> {
                 searchQueryNotifier: context.read(),
               );
               final observer = LibraryObserver.of(context);
-              observer.addNewPromptListener(_onNewPromptAddedOrEdited);
-              observer.addPromptTitleOrDescriptionChangedListener(
-                _onNewPromptAddedOrEdited,
-              );
+              observer.addNewPromptListener(_onNewPromptAdded);
+              observer
+                  .addPromptTitleOrDescriptionChangedListener(_onPromptEdited);
               return _controller;
             },
             dispose: (_, controller) {
               controller.dispose();
               final observer = LibraryObserver.of(context);
-              observer.removeNewPromptListener(_onNewPromptAddedOrEdited);
+              observer.removeNewPromptListener(_onNewPromptAdded);
               observer.removePromptTitleOrDescriptionChangedListener(
-                _onNewPromptAddedOrEdited,
+                _onPromptEdited,
               );
             },
           ),
