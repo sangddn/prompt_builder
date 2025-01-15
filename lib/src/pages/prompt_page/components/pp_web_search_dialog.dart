@@ -60,69 +60,79 @@ class _PPWebSearchDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        StreamProvider<SearchProvider?>(
-          initialData: SearchProviderPreference.getValidProviderWithFallback(),
-          create: (_) =>
-              SearchProviderPreference.streamValidProviderWithFallback(),
-        ),
-        ValueProvider<ValueNotifier<_WebSearchState>>(
-          create: (_) => ValueNotifier(_WebSearchState.idle),
-        ),
-        ValueProvider<ValueNotifier<_SearchBarIntent>>(
-          create: (_) => ValueNotifier(_SearchBarIntent.search),
-        ),
-        ValueProvider<TextEditingController>(
-          create: (_) => TextEditingController(),
-          onNotified: _inferIntent,
-        ),
-        ValueProvider<_WebResultsNotifier>(
-          create: (_) => _WebResultsNotifier(const IList.empty()),
-        ),
-      ],
-      child: Align(
-        alignment: const Alignment(0.0, -0.4),
-        child: Container(
-          decoration: ShapeDecoration(
-            color: context.brightSurface,
-            shape: Superellipse(
-              cornerRadius: 12.0,
-              side: BorderSide(
-                width: .15,
-                color: PColors.opagueGray.resolveFrom(context),
-              ),
-            ),
-            shadows: [
-              ...mediumShadows(),
-              BoxShadow(
-                color: Colors.black.replaceOpacity(.1),
-                blurRadius: 48.0,
-                spreadRadius: 8.0,
-              ),
-            ],
+    return FocusScope(
+      child: MultiProvider(
+        providers: [
+          StreamProvider<SearchProvider?>(
+            initialData:
+                SearchProviderPreference.getValidProviderWithFallback(),
+            create: (_) =>
+                SearchProviderPreference.streamValidProviderWithFallback(),
           ),
-          width: 600.0,
-          height: 500.0,
-          clipBehavior: Clip.hardEdge,
-          child: const Material(
-            color: Colors.transparent,
-            child: CustomScrollView(
-              slivers: [
-                PinnedHeaderSliver(
-                  child: Column(
-                    children: [
-                      _SearchBar(),
-                      Divider(height: 1.0, thickness: 1.0),
+          ValueProvider<ValueNotifier<_WebSearchState>>(
+            create: (_) => ValueNotifier(_WebSearchState.idle),
+          ),
+          ValueProvider<ValueNotifier<_SearchBarIntent>>(
+            create: (_) => ValueNotifier(_SearchBarIntent.search),
+          ),
+          ValueProvider<TextEditingController>(
+            create: (_) => TextEditingController(),
+            onNotified: _inferIntent,
+          ),
+          ListenableProvider(create: (_) => FocusNode()),
+          ValueProvider<_WebResultsNotifier>(
+            create: (_) => _WebResultsNotifier(const IList.empty()),
+          ),
+        ],
+        child: Align(
+          alignment: const Alignment(0.0, -0.4),
+          child: Container(
+            decoration: ShapeDecoration(
+              color: context.brightSurface,
+              shape: Superellipse(
+                cornerRadius: 12.0,
+                side: BorderSide(
+                  width: .15,
+                  color: PColors.opagueGray.resolveFrom(context),
+                ),
+              ),
+              shadows: [
+                ...mediumShadows(),
+                BoxShadow(
+                  color: Colors.black.replaceOpacity(.1),
+                  blurRadius: 48.0,
+                  spreadRadius: 8.0,
+                ),
+              ],
+            ),
+            width: 600.0,
+            height: 500.0,
+            clipBehavior: Clip.hardEdge,
+            child: const Material(
+              color: Colors.transparent,
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  CustomScrollView(
+                    slivers: [
+                      PinnedHeaderSliver(
+                        child: Column(
+                          children: [
+                            _SearchBar(),
+                            Divider(height: 1.0, thickness: 1.0),
+                          ],
+                        ),
+                      ),
+                      SliverGap(8.0),
+                      SliverToBoxAdapter(child: _UnderneathSearchBarText()),
+                      SliverGap(8.0),
+                      _WebSearchResultList(),
+                      SliverGap(128.0),
                     ],
                   ),
-                ),
-                SliverGap(8.0),
-                SliverToBoxAdapter(child: _UnderneathSearchBarText()),
-                SliverGap(8.0),
-                _WebSearchResultList(),
-                SliverGap(32.0),
-              ],
+                  _ActionBar(),
+                ],
+              ),
             ),
           ),
         ),
@@ -138,6 +148,7 @@ class _SearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       controller: context.read(),
+      focusNode: context.read(),
       autofocus: true,
       decoration: InputDecoration(
         prefixIcon: Padding(
@@ -210,7 +221,6 @@ class _UnderneathSearchBarText extends AnimatedStatelessWidget {
       return const SizedBox.shrink();
     }
     final provider = context.watch<SearchProvider?>();
-    final intent = context.watchIntent();
     if (provider == null) {
       return const Padding(
         key: ValueKey('no-provider'),
@@ -221,25 +231,106 @@ class _UnderneathSearchBarText extends AnimatedStatelessWidget {
         ),
       );
     }
-    final hasText = context.hasText();
-    if (!hasText) {
-      return const Padding(
-        key: ValueKey('idle-no-text'),
+    return const SizedBox.shrink();
+  }
+}
+
+class _ActionBar extends AnimatedStatelessWidget {
+  const _ActionBar();
+
+  @override
+  Widget buildChild(BuildContext context) {
+    return const Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Divider(height: 1.0),
+        Gap(12.0),
+        _SearchActions(),
+        Gap(12.0),
+      ],
+    );
+  }
+}
+
+class _SearchActions extends AnimatedStatelessWidget {
+  const _SearchActions();
+
+  @override
+  Widget buildAnimation(BuildContext context, Widget child) =>
+      TranslationSwitcher.top(
+        offset: .2,
+        duration: Effects.veryShortDuration,
+        child: child,
+      );
+
+  @override
+  Widget buildChild(BuildContext context) {
+    if (!context.hasText()) {
+      return Padding(
         padding: k16H8VPadding,
-        child: Text('Search web or paste a URL (webpage or YouTube).'),
+        child: Text(
+          'Search web or paste a URL (webpage or YouTube)',
+          style: context.textTheme.muted,
+        ),
       );
     }
-    final query = context.selectController((c) => c.text);
+    final intent = context.watchIntent();
     final text = switch (intent) {
-      _SearchBarIntent.search => 'Hit Enter to search',
-      _SearchBarIntent.genericUrl => 'Hit Enter to add content from "$query"',
-      _SearchBarIntent.youtubeUrl =>
-        'Hit Enter to add YouTube transcript from "$query"',
+      _SearchBarIntent.search => 'Search',
+      _SearchBarIntent.genericUrl => 'Extract & Add',
+      _SearchBarIntent.youtubeUrl => 'Add Transcript',
     };
-    return Padding(
-      key: const ValueKey('idle-text'),
-      padding: k16H8VPadding,
-      child: Text(text),
+    final canAddMore = intent == _SearchBarIntent.genericUrl ||
+        intent == _SearchBarIntent.youtubeUrl;
+    var shouldAddMore = false;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (canAddMore)
+          StatefulBuilder(
+            builder: (context, setState) {
+              final side = BorderSide(
+                color: PColors.darkGray.resolveFrom(context),
+              );
+              return ShadCheckbox(
+                value: shouldAddMore,
+                decoration: ShadDecoration(
+                  border: ShadBorder(
+                    radius: BorderRadius.circular(6.0),
+                    top: side,
+                    bottom: side,
+                    left: side,
+                    right: side,
+                  ),
+                ),
+                onChanged: (value) => setState(() => shouldAddMore = value),
+                padding: k4APadding,
+                label: const Text('Add more'),
+              );
+            },
+          ),
+        const Gap(16.0),
+        CButton(
+          tooltip: null,
+          color: context.theme.primaryButtonTheme.backgroundColor,
+          padding: k16H4VPadding,
+          onTap: () {
+            context._search();
+            if (canAddMore && shouldAddMore) {
+              context.read<FocusNode>().requestFocus();
+            } else if (canAddMore) {
+              Navigator.of(context).pop();
+            }
+          },
+          child: Text(
+            text,
+            style: context.textTheme.p.copyWith(
+              color: context.theme.primaryButtonTheme.foregroundColor,
+            ),
+          ),
+        ),
+        const Gap(12.0),
+      ],
     );
   }
 }
