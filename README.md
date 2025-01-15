@@ -10,7 +10,7 @@
 
 ## What is Prompt Builder?
 
-Prompt Builder is an ergonomic tool for creating **long, complex prompts** for LLMs. Whether you're coding, journaling, or writing a novel, Prompt Builder helps you **pull together multiple files, transcripts, images, and snippets** all in one prompt—without the headache of manually copying and pasting content or worrying about token counts.
+Prompt Builder is a macOS app for creating **long, complex prompts** for LLMs. Whether you're coding, journaling, or writing a novel, Prompt Builder helps you **pull together multiple files, transcripts, images, and snippets** all in one prompt—without the headache of manually copying and pasting content or worrying about token counts.
 
 **Features**:
 - **Local Files**: Add local files to your prompt with just a click; see estimated token usage.
