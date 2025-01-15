@@ -99,7 +99,7 @@ class BCVLocal extends StatelessWidget {
               value: 'textContent',
               content: ShadCard(
                 title: const Text('Extracted Content'),
-                child: Text(textContent!),
+                child: SelectableText(textContent!),
               ),
               child: const Text('Extracted Content'),
             ),
