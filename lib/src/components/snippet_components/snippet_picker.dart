@@ -97,8 +97,11 @@ class SnippetPicker extends StatelessWidget {
                     ),
                   ),
                   SliverGap(8.0),
-                  _ResultList(),
-                  SliverGap(32.0),
+                  SliverPadding(
+                    padding: k12HPadding,
+                    sliver: _ResultList(),
+                  ),
+                  SliverGap(24.0),
                 ],
               ),
             ),
@@ -114,31 +117,40 @@ class _SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: context.read(),
-      autofocus: true,
-      decoration: InputDecoration(
-        prefixIcon: Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Builder(
-            builder: (context) {
-              final isLoading = context.watch<_SnippetSearchState>() ==
-                  _SnippetSearchState.searching;
-              return GrayShimmer(
-                enableShimmer: isLoading,
-                child: const Icon(
-                  LucideIcons.search,
-                  size: 20.0,
-                ),
-              );
-            },
-          ),
-        ),
-        hintText: 'Search snippets…',
-        border: InputBorder.none,
-        contentPadding: k12VPadding,
+    return Material(
+      clipBehavior: Clip.hardEdge,
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(7.5),
+        topRight: Radius.circular(7.5),
       ),
-      style: context.textTheme.list,
+      child: TextField(
+        controller: context.read(),
+        autofocus: true,
+        decoration: InputDecoration(
+          prefixIcon: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Builder(
+              builder: (context) {
+                final isLoading = context.watch<_SnippetSearchState>() ==
+                    _SnippetSearchState.searching;
+                return GrayShimmer(
+                  enableShimmer: isLoading,
+                  child: const Icon(
+                    LucideIcons.search,
+                    size: 20.0,
+                  ),
+                );
+              },
+            ),
+          ),
+          hintText: 'Search snippets…',
+          filled: true,
+          fillColor: context.colorScheme.popover,
+          border: InputBorder.none,
+          contentPadding: k12VPadding,
+        ),
+        style: context.textTheme.list,
+      ),
     );
   }
 }
@@ -183,7 +195,7 @@ class _SnippetSearchResult extends StatelessWidget {
             ? ShadBadge(onPressed: select, child: const Text('Add'))
             : ShadBadge.secondary(onPressed: select, child: const Text('Add'));
         return CButton(
-          tooltip: 'Add snippet',
+          tooltip: null,
           onTap: select,
           padding: k16H12VPadding,
           child: Row(
