@@ -130,6 +130,7 @@ class _SnippetButton extends StatelessWidget {
           }
         },
       ),
+      padding: EdgeInsets.zero,
       child: CButton(
         tooltip: 'Add Snippet',
         onTap: controller.toggle,
