@@ -6,12 +6,16 @@ class _SNPSnippetList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = context.read<_SnippetsController>();
+    final keys = <int, GlobalKey>{};
     return InfinityAndBeyond(
       controller: controller,
       padding: k16HPadding,
       itemPadding: k16H4VPadding,
       itemBuilder: (context, index, snippet) => SnippetTile(
-        key: ValueKey(snippet.id),
+        key: keys.putIfAbsent(
+          snippet.id,
+          () => GlobalKey(debugLabel: 'Snippet-${snippet.id}'),
+        ),
         database: context.read<Database>(),
         snippet: snippet,
         onDelete: () {
