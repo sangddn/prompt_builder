@@ -32,6 +32,7 @@ class LibraryObserver extends StatefulWidget {
 class LibraryObserverState extends State<LibraryObserver> {
   final List<ValueChanged<int>> _newPromptListeners = [];
   final List<ValueChanged<int>> _promptTitleOrDescriptionChangedListeners = [];
+
   /// Registers a listener to be notified when new prompts are added.
   ///
   /// The listener will receive the ID of the newly added prompt.
@@ -60,7 +61,8 @@ class LibraryObserverState extends State<LibraryObserver> {
     _promptTitleOrDescriptionChangedListeners.add(listener);
   }
 
-  void removePromptTitleOrDescriptionChangedListener(ValueChanged<int> listener) {
+  void removePromptTitleOrDescriptionChangedListener(
+      ValueChanged<int> listener) {
     _promptTitleOrDescriptionChangedListeners.remove(listener);
   }
 

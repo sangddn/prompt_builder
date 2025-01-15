@@ -68,7 +68,8 @@ class PromptBlocks extends Table {
   TextColumn get summaryTokenCountMethod => text().nullable()();
 
   /// Whether this block, when copied, should prefer the summary content.
-  BoolColumn get preferSummary => boolean().withDefault(const Constant(false))();
+  BoolColumn get preferSummary =>
+      boolean().withDefault(const Constant(false))();
 
   /// Main text content for text-based blocks.
   /// Nullable since not all block types contain text.

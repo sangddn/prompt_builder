@@ -131,8 +131,8 @@ class _ResourceCard extends StatelessWidget {
                 ),
                 const Gap(8.0),
                 GestureDetector(
-                  onTap: resource.authorUrl
-                      ?.let((u) => () => launchUrlString(u)),
+                  onTap:
+                      resource.authorUrl?.let((u) => () => launchUrlString(u)),
                   child: Text(
                     resource.author,
                     maxLines: 1,

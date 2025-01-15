@@ -226,7 +226,8 @@ final class Gemini extends LLMProvider {
             'role': 'user',
             'parts': [
               {
-                'text': 'Transcribe the following audio. If possible, such as when you recognize some context around the audio, provide that contextual information. Do not include any other text in your response.',
+                'text':
+                    'Transcribe the following audio. If possible, such as when you recognize some context around the audio, provide that contextual information. Do not include any other text in your response.',
               },
               {
                 'inline_data': {

@@ -35,7 +35,8 @@ final class SearchResult {
       url: json['url'] as String,
       faviconUrl: (json['thumbnail']?['original'] ?? json['thumbnail']?['src'])
           as String?,
-      text: null, // This is a marker to indicate that the text is not immediately available at this time.
+      text:
+          null, // This is a marker to indicate that the text is not immediately available at this time.
       highlights: (json['extra_snippets'] as List?)?.cast<String>() ?? const [],
       publishedDate: (json['page_fetched'] as String?)?.let(DateTime.tryParse),
       author: json['profile']?['name'] as String?,
@@ -54,18 +55,18 @@ final class SearchResult {
   Future<String> getContent(SearchProvider provider) async {
     final text = this.text ?? await provider.fetchWebpage(url);
     return '# Title: $title\n'
-      '**Url:** $url\n'
-      '**Published:** $publishedDate\n'
-      '**Author:** $author\n\n'
-      '---\n\n'
-      '## Highlights\n'
-      '${highlights.join('\n')}\n\n'
-      '---\n\n'
-      '## Summary\n'
-      '$summary\n\n'
-      '---\n\n'
-      '## Full Text\n'
-      '$text\n';
+        '**Url:** $url\n'
+        '**Published:** $publishedDate\n'
+        '**Author:** $author\n\n'
+        '---\n\n'
+        '## Highlights\n'
+        '${highlights.join('\n')}\n\n'
+        '---\n\n'
+        '## Summary\n'
+        '$summary\n\n'
+        '---\n\n'
+        '## Full Text\n'
+        '$text\n';
   }
 
   @override

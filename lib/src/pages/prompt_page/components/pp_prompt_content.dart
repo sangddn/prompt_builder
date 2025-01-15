@@ -80,7 +80,7 @@ class _PromptContentEditMode extends StatelessWidget {
         const SliverGap(12.0),
         SuperSliverList.list(children: widgets),
         const SliverToBoxAdapter(child: _NewBlockActions.last()),
-        const SliverGap(64.0),
+        const SliverGap(128.0),
       ],
     );
   }

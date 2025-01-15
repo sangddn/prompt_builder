@@ -18,9 +18,9 @@ class _PPDropRegionState extends State<_PPDropRegion> {
     await context.handleDataReaders(readers.toList());
     maybeSetState(() => _state = _ProcessingState.received);
     Future.delayed(
-            Effects.mediumDuration,
-            () => maybeSetState(() => _state = _ProcessingState.idle),
-          );
+      Effects.mediumDuration,
+      () => maybeSetState(() => _state = _ProcessingState.idle),
+    );
   }
 
   @override

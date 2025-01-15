@@ -123,13 +123,12 @@ class SummarizeContentUseCase extends LLMUseCase {
   @override
   bool supports(PromptBlock block) =>
       block.summary == null &&
-          (((block.type == BlockType.webUrl ||
-                  block.type == BlockType.localFile) &&
+      (((block.type == BlockType.webUrl || block.type == BlockType.localFile) &&
               block.textContent != null) ||
-      ((block.type == BlockType.audio ||
-              block.type == BlockType.video ||
-              block.type == BlockType.youtube) &&
-          block.transcript != null));
+          ((block.type == BlockType.audio ||
+                  block.type == BlockType.video ||
+                  block.type == BlockType.youtube) &&
+              block.transcript != null));
 
   @override
   (LLMProvider provider, String model)? getProviderAndModel() =>

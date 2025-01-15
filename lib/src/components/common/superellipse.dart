@@ -66,9 +66,9 @@ import 'package:flutter/widgets.dart';
 ///   continuous transition into its two 180º curves.
 /// * [StadiumBorder], which is a rectangle with semi-circles on two parallel
 ///   edges.
-/// 
+///
 /// ! From: https://github.com/flutter/flutter/pull/26295#issue-397432806
-/// 
+///
 class Superellipse extends ShapeBorder {
   /// Creates a continuous cornered rectangle border.
   ///
