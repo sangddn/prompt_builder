@@ -113,6 +113,7 @@ const _codeFileExtensions = {
   // Common web languages
   'js': 'javascript',
   'ts': 'typescript',
+  'astro': 'typescript',
   'html': 'html',
   'css': 'css',
   'scss': 'scss',
@@ -124,6 +125,11 @@ const _codeFileExtensions = {
   'graphql': 'graphql',
   'gql': 'graphql',
   'vue': 'vue',
+  'svelte': 'javascript',
+  'mdx': 'javascript',
+  'eex': 'elixir',
+  'leex': 'elixir',
+  'pm': 'perl',
 
   // Programming languages
   'py': 'python',
