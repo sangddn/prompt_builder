@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prompt Builder</title>
-    <link rel="icon" href="logo.png" type="image/png" />
+    <link rel="icon" href="images/logo.png" type="image/png" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap"
@@ -65,13 +65,14 @@
         main {
             flex: 1;
             width: 100%;
-            max-width: 800px;
             margin: 0 auto;
             padding: 4rem 2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
 
         .icon {
@@ -115,17 +116,42 @@
             margin-bottom: 2rem;
         }
 
+        /* Screenshot styles */
+        .screenshot-container {
+            width: 100%;
+            max-width: 1600px;
+            margin-top: 2rem;
+            position: relative;
+            z-index: -1;
+            overflow: auto;
+        }
+
+        .screenshot {
+            width: 100%;
+            height: auto;
+        }
+
         /* --- FOOTER --- */
         footer {
             width: 100%;
-            max-width: 1200px;
             margin: 0 auto;
             padding: 1rem 2rem;
+            align-items: center;
+            color: #999;
+            position: sticky;
+            bottom: 0;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+        }
+
+        .footer-content {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
             font-size: 0.9rem;
-            color: #999;
         }
 
         .footer-links {
@@ -152,7 +178,7 @@
     <header>
         <div class="logo">
             <a href="./">
-                <img src="logo.png" alt="Prompt Builder Logo" />
+                <img src="images/logo.png" alt="Prompt Builder Logo" />
             </a>
         </div>
         <nav>
@@ -162,7 +188,7 @@
 
     <!-- MAIN CONTENT -->
     <main>
-        <img class="icon" src="logo.png" alt="Icon" />
+        <img class="icon" src="images/logo.png" alt="Icon" />
         <h1>Build rich, multi-file prompts</h1>
         <p class="subtitle">
             Prompt Builder streamlines the process of creating complex prompts for LLMs by
@@ -177,17 +203,22 @@
         <div class="availability">
             Available for macOS
         </div>
+        <div class="screenshot-container">
+            <img class="screenshot" src="images/screenshot.png" alt="Prompt Builder Screenshot" />
+        </div>
     </main>
 
     <!-- FOOTER -->
     <footer>
-        <div>
-            &copy;
-            <script>document.write(new Date().getFullYear())</script> Sang Doan
-        </div>
-        <div class="footer-links">
-            <a href="https://github.com/sangddn/prompt_builder" target="_blank">GitHub</a>
-            <a href="https://x.com/sangddn" target="_blank">Twitter</a>
+        <div class="footer-content">
+            <div>
+                &copy;
+                <script>document.write(new Date().getFullYear())</script> Sang Doan
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/sangddn/prompt_builder" target="_blank">GitHub</a>
+                <a href="https://x.com/sangddn" target="_blank">Twitter</a>
+            </div>
         </div>
     </footer>
 </body>
