@@ -359,4 +359,18 @@ class TranscribeAudioUseCase extends LLMUseCase {
     );
     return db.updateBlock(block.id, transcript: transcript);
   }
+
+  Future<String> transcribeAudio(String path) async {
+    final file = File(path);
+    if (!file.existsSync()) throw const MissingLocalFileException();
+    final bytes = await file.readAsBytes();
+    final (provider, model) = getProviderAndModel() ?? (null, null);
+    if (provider == null) throw MissingProviderException(name);
+    final transcript = await provider.transcribeAudio(
+      bytes,
+      'audio/wav',
+      model,
+    );
+    return transcript;
+  }
 }

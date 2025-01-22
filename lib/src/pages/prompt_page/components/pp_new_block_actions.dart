@@ -12,53 +12,57 @@ class _NewBlockActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final alwaysShow = index == -2;
-    return MultiProvider(
-      providers: [
-        Provider<int>.value(value: index),
-        ChangeNotifierProvider<ShadPopoverController>(
-          create: (_) => ShadPopoverController(),
-        ),
-        ChangeNotifierProvider<_GeneratePromptController>(
-          create: (_) => _GeneratePromptController(),
-        ),
-      ],
-      child: HoverTapBuilder(
-        builder: (context, isHovered) => SizedBox(
-          height: alwaysShow ? 48.0 : 24.0,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              if (index >= 0)
-                const Divider(
-                  height: .5,
-                  thickness: .5,
-                  indent: 16.0,
-                  endIndent: 16.0,
-                ),
-              Builder(
-                builder: (context) {
-                  return StateAnimations.fade(
-                    duration: Effects.veryShortDuration,
-                    alwaysShow ||
-                            isHovered ||
-                            context.watch<ShadPopoverController>().isOpen ||
-                            context.watch<_GeneratePromptController>().isOpen
-                        ? const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _AddTextButton(),
-                              Gap(6.0),
-                              _SnippetButton(),
-                              Gap(6.0),
-                              _GeneratePromptButton(),
-                            ],
-                          )
-                        : const SizedBox.shrink(),
-                  );
-                },
+    return HoverTapBuilder(
+      builder: (context, isHovered) => SizedBox(
+        height: alwaysShow ? 48.0 : 24.0,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            if (index >= 0)
+              const Divider(
+                height: .5,
+                thickness: .5,
+                indent: 16.0,
+                endIndent: 16.0,
               ),
-            ],
-          ),
+            MultiProvider(
+              providers: [
+                Provider<int>.value(value: index),
+                ChangeNotifierProvider<ShadPopoverController>(
+                  create: (_) => ShadPopoverController(),
+                ),
+                ChangeNotifierProvider<_GeneratePromptController>(
+                  create: (_) => _GeneratePromptController(),
+                ),
+                ChangeNotifierProvider<VoiceInputController>(
+                  create: (_) => VoiceInputController(),
+                ),
+              ],
+              builder: (context, child) {
+                final shouldShow = alwaysShow ||
+                    isHovered ||
+                    (context.watch<ShadPopoverController?>()?.isOpen ??
+                        false) ||
+                    (context.watch<_GeneratePromptController?>()?.isOpen ??
+                        false) ||
+                    (context.watch<VoiceInputController?>()?.isOpen ?? false);
+                return StateAnimations.fade(
+                  duration: Effects.veryShortDuration,
+                  shouldShow ? child! : const SizedBox.shrink(),
+                );
+              },
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 6.0,
+                children: [
+                  _AddTextButton(),
+                  _SnippetButton(),
+                  _GeneratePromptButton(),
+                  _VoiceInputButton(),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -262,6 +266,37 @@ class _GeneratePromptButton extends StatelessWidget {
               : PColors.textGray.resolveFrom(context),
         ),
       ),
+    );
+  }
+}
+
+class _VoiceInputButton extends StatelessWidget {
+  const _VoiceInputButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return VoiceInputButton(
+      popoverController: context.watch(),
+      onEnd: (text) async {
+        final toaster = context.toaster;
+        try {
+          await context._createTextBlock(null, text);
+          toaster.show(
+            ShadToast(
+              title: const Text('Text added'),
+              description: Text(text, maxLines: 5),
+            ),
+          );
+        } catch (e) {
+          debugPrint('Error updating block: $e');
+          toaster.show(
+            ShadToast.destructive(
+              title: const Text('Error adding text.'),
+              description: Text('$e'),
+            ),
+          );
+        }
+      },
     );
   }
 }

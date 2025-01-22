@@ -1,5 +1,6 @@
 export 'animated_circular_progress.dart';
 export 'app_bar.dart';
+export 'audio_recorder.dart';
 export 'dotted_line.dart';
 export 'highlighted_text.dart';
 export 'infinite_list.dart';

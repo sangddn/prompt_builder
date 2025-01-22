@@ -29,7 +29,7 @@ final class Database extends _$Database {
     return driftDatabase(
       name: name,
       native: DriftNativeOptions(
-        databasePath: () async => '${await _getPath()}/$name.sqlite',
+        databasePath: () async => '${await getApplicationPath()}/$name.sqlite',
       ),
     );
   }
@@ -48,7 +48,7 @@ final class Database extends _$Database {
 
     debugPrint('Initializing AppDatabase...');
 
-    Hive.init(await _getPath());
+    Hive.init(await getApplicationPath());
     boolRef = await Hive.openBox<bool>('boolMap');
     stringRef = await Hive.openBox<String>('stringMap');
     doubleRef = await Hive.openBox<double>('doubleMap');
@@ -94,5 +94,5 @@ final class MockDatabase extends Database {
   }
 }
 
-Future<String> _getPath() async =>
+Future<String> getApplicationPath() async =>
     '${(await getApplicationDocumentsDirectory()).path}/${kDebugMode ? 'Prompt Builder (Debug)' : 'Prompt Builder'}';

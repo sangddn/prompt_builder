@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
+import 'package:record/record.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:super_clipboard/super_clipboard.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
