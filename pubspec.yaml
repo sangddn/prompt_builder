@@ -2,8 +2,8 @@ name: prompt_builder
 description: "Prompt Builder"
 publish_to: 'none'
 
-version: 0.0.3
-# number: 8
+version: 0.0.5
+# number: 9
 
 environment:
   sdk: ^3.5.4

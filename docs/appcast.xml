@@ -95,5 +95,20 @@
         length="46154905"
         type="application/octet-stream" />
     </item>
+    <item>
+      <title>Version 0.0.4</title>
+      <sparkle:version>8</sparkle:version>
+      <sparkle:shortVersionString>0.0.4</sparkle:shortVersionString>
+      <sparkle:releaseNotesLink>
+        https://github.com/sangddn/prompt_builder/releases/tag/v0.0.4
+      </sparkle:releaseNotesLink>
+
+      <enclosure
+        url="https://github.com/sangddn/prompt_builder/releases/download/v0.0.4/prompt-builder-macos-universal-v0.0.4.zip"
+        sparkle:edSignature="4vAtmLqEjs0mK62cuR2ZH4p/jgC5ktYgfEytfZx1BGbZG+JRD7e+UiH+1IKWsbkqJ4SjILiCRNbLRy5WawZzCg=="
+        sparkle:os="macos"
+        length="46373237"
+        type="application/octet-stream" />
+    </item>
   </channel>
 </rss>
