@@ -85,7 +85,12 @@ class _LLMActionState extends AnimatedState<_LLMAction> {
                 final toaster = context.toaster;
                 try {
                   setState(() => _loading = true);
-                  await useCase.apply(context.db, context.block);
+                  final db = context.db;
+                  final block = context.block;
+                  await useCase.apply(db, block);
+                  if (useCase is SummarizeContentUseCase) {
+                    await db.updateBlock(block.id, preferSummary: true);
+                  }
                 } catch (e) {
                   debugPrint('Error using LLM: $e');
                   toaster.show(
