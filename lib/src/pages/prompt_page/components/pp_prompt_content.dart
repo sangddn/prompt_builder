@@ -54,22 +54,29 @@ class _PromptContentEditMode extends StatelessWidget {
       (i) => [
         if (i == 0) const _NewBlockActions.first(),
         Builder(
-          builder: (context) => PromptBlockCard(
-            padding: k32HPadding + const EdgeInsets.only(top: 4.0),
-            database: context.db,
-            prompt: context.watch<Prompt?>(),
-            block: context.watchBlock(i)!,
-            onMovedUp: i == 0
-                ? null
-                : () {
-                    context.read<_BlockReorderCallback>()(i, i - 1);
-                  },
-            onMovedDown: i == count - 1
-                ? null
-                : () {
-                    context.read<_BlockReorderCallback>()(i, i + 1);
-                  },
-          ),
+          builder: (context) {
+            final block = context.watchBlock(i)!;
+            return PromptBlockCard(
+              key: context.read<Map<String, GlobalKey>>().putIfAbsent(
+                    'PromptBlock-${block.id}',
+                    () => GlobalKey(debugLabel: 'PromptBlock-${block.id}'),
+                  ),
+              padding: k32HPadding + const EdgeInsets.only(top: 4.0),
+              database: context.db,
+              prompt: context.watch<Prompt?>(),
+              block: block,
+              onMovedUp: i == 0
+                  ? null
+                  : () {
+                      context.read<_BlockReorderCallback>()(i, i - 1);
+                    },
+              onMovedDown: i == count - 1
+                  ? null
+                  : () {
+                      context.read<_BlockReorderCallback>()(i, i + 1);
+                    },
+            );
+          },
         ),
         if (i != count - 1) _NewBlockActions(i),
       ],
@@ -78,7 +85,10 @@ class _PromptContentEditMode extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         const SliverGap(12.0),
-        SuperSliverList.list(children: widgets),
+        Provider<Map<String, GlobalKey>>(
+          create: (_) => {},
+          child: SuperSliverList.list(children: widgets),
+        ),
         const SliverToBoxAdapter(child: _NewBlockActions.last()),
         const SliverGap(128.0),
       ],
