@@ -65,11 +65,15 @@ class _PromptTileContent extends StatelessWidget {
                 isUntitled ? 'Untitled' : prompt.title,
                 style: textTheme.large
                     .copyWith(color: isUntitled ? textGray : null),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
               Text(
                 hasNoDescription ? 'No description' : prompt.notes,
                 style: textTheme.p
                     .copyWith(color: hasNoDescription ? darkGray : null),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
