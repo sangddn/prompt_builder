@@ -230,7 +230,8 @@ extension PromptsExtension on Database {
       );
       await updateBlock(
         blockId,
-        fullContentTokenCountAndMethod: originalBlock.fullContentTokenCountAndMethod,
+        fullContentTokenCountAndMethod:
+            originalBlock.fullContentTokenCountAndMethod,
         summaryTokenCountAndMethod: originalBlock.summaryTokenCountAndMethod,
         preferSummary: originalBlock.preferSummary,
       );
@@ -242,9 +243,25 @@ extension PromptsExtension on Database {
 /// Basic extensions for prompts
 extension PromptExtension on Prompt {
   /// Returns the content of the prompt as a string.
-  Future<String> getContent(Database db) async {
+  Future<String> getContent(Database db, {int? characterLimit}) async {
     final blocks = await db.getBlocksByPrompt(id);
-    return blocks.map((b) => b.copyToPrompt()).nonNulls.join('\n\n');
+    if (characterLimit == null) {
+      return blocks.map((b) => b.copyToPrompt()).nonNulls.join('\n\n');
+    }
+    int limit = characterLimit;
+    final buffer = StringBuffer();
+    for (final block in blocks) {
+      if (limit <= 0) break;
+      final text = block.copyToPrompt();
+      if (text == null) continue;
+      if (text.length >= limit) {
+        buffer.write(text.substring(0, limit));
+        break;
+      }
+      buffer.write(text);
+      limit -= text.length;
+    }
+    return buffer.toString();
   }
 }
 

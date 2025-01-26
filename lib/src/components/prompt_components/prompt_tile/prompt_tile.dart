@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +9,7 @@ import '../../components.dart';
 
 class PromptTile extends StatelessWidget {
   const PromptTile({
+    this.decoration,
     this.onTap,
     this.onDeleted,
     this.onDuplicated,
@@ -22,6 +22,7 @@ class PromptTile extends StatelessWidget {
   final VoidCallback? onDeleted;
   final void Function(int newPromptId)? onDuplicated;
   final Database db;
+  final Decoration? decoration;
   final Prompt prompt;
 
   @override
@@ -30,15 +31,39 @@ class PromptTile extends StatelessWidget {
       providers: [
         Provider<Database>.value(value: db),
         Provider<Prompt>.value(value: prompt),
+        FutureProvider<String?>(
+          initialData: null,
+          create: (_) => prompt.getContent(db, characterLimit: 1000),
+        ),
+        ChangeNotifierProvider<ShadContextMenuController>(
+          create: (_) => ShadContextMenuController(),
+        ),
       ],
-      child: _PromptContextMenu(
+      builder: (context, child) => _PromptContextMenu(
+        controller: context.read(),
         onDeleted: onDeleted,
         onDuplicated: onDuplicated,
-        child: CButton(
-          tooltip: 'Open Prompt',
-          onTap: onTap,
+        child: child!,
+      ),
+      child: HoverTapBuilder(
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        focusColor: Colors.transparent,
+        onClicked: onTap,
+        builder: (_, isHovering) => AnimatedContainer(
+          duration: Effects.shortDuration,
+          curve: Effects.snappyOutCurve,
+          decoration: ShapeDecoration(
+            shape: Superellipse.border12,
+            color: context.colorScheme.card,
+            shadows: isHovering
+                ? [
+                    ...mediumShadows(),
+                    ...broadShadows(context, elevation: 5.0),
+                  ]
+                : focusedShadows(elevation: 0.5),
+          ),
           padding: k16H12VPadding,
-          cornerRadius: 16.0,
           child: _PromptTileContent(prompt),
         ),
       ),
@@ -57,28 +82,59 @@ class _PromptTileContent extends StatelessWidget {
     final isUntitled = prompt.title.let((t) => t.isEmpty);
     final hasNoDescription = prompt.notes.let((d) => d.isEmpty);
     final textGray = PColors.textGray.resolveFrom(context);
-    final darkGray = PColors.darkGray.resolveFrom(context);
 
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
+        Row(
+          children: [
+            Expanded(
+              child: Text(
                 isUntitled ? 'Untitled' : prompt.title,
                 style: textTheme.large
                     .copyWith(color: isUntitled ? textGray : null),
               ),
-              Text(
-                hasNoDescription ? 'No description' : prompt.notes,
-                style: textTheme.p
-                    .copyWith(color: hasNoDescription ? darkGray : null),
+            ),
+            CButton(
+              tooltip: 'More',
+              onTap: () {
+                context.read<ShadContextMenuController>().toggle();
+              },
+              padding: k4APadding,
+              child: const ShadImage.square(
+                LucideIcons.ellipsis,
+                size: 16.0,
               ),
-            ],
+            ),
+          ],
+        ),
+        if (!hasNoDescription)
+          Text(
+            prompt.notes,
+            style: textTheme.p,
+          ),
+        const Divider(),
+        Expanded(
+          child: Builder(
+            builder: (context) {
+              final string = context.watch<String?>();
+              if (string == null) {
+                return const ContainerShimmer(
+                  height: double.infinity,
+                  radius: 4.0,
+                );
+              }
+              return Padding(
+                padding: k4APadding,
+                child: Text(
+                  string,
+                  style: textTheme.p.apply(fontSizeFactor: .5),
+                  overflow: TextOverflow.fade,
+                ),
+              );
+            },
           ),
         ),
-        const CupertinoListTileChevron(),
       ],
     );
   }
@@ -86,11 +142,13 @@ class _PromptTileContent extends StatelessWidget {
 
 class _PromptContextMenu extends StatelessWidget {
   const _PromptContextMenu({
+    required this.controller,
     required this.onDeleted,
     required this.onDuplicated,
     required this.child,
   });
 
+  final ShadContextMenuController controller;
   final VoidCallback? onDeleted;
   final void Function(int newPromptId)? onDuplicated;
   final Widget child;
@@ -98,6 +156,7 @@ class _PromptContextMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ShadContextMenuRegion(
+      controller: controller,
       constraints: const BoxConstraints(minWidth: 200.0, maxWidth: 300.0),
       items: [
         ShadContextMenuItem(

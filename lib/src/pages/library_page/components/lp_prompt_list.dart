@@ -6,10 +6,12 @@ class _LPPromptList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = context.read<_LibraryController>();
-    return InfinityAndBeyond(
+    return InfinityAndBeyond.grid(
       controller: controller,
-      padding: k16HPadding,
       itemPadding: k16H4VPadding,
+      childAspectRatio: 3.5 / 4,
+      mainAxisSpacing: 16.0,
+      crossAxisSpacing: 0.0,
       itemBuilder: (context, index, prompt) => PromptTile(
         db: context.db,
         onTap: () => context.router.push(PromptRoute(id: prompt.id)),
@@ -24,18 +26,7 @@ class _LPPromptList extends StatelessWidget {
           c.itemList = List.of(c.itemList ?? [])..insert(0, newPrompt);
         },
         prompt: prompt,
-      )
-          .animate()
-          .fadeIn(
-            delay: 50.ms * (index % _kPageSize),
-            duration: 200.milliseconds,
-          )
-          .slideY(
-            begin: 0.1,
-            end: 0,
-            delay: 50.ms * (index % _kPageSize),
-            duration: 200.milliseconds,
-          ),
+      ),
     );
   }
 }
