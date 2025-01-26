@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 class HoverTapBuilder extends StatefulWidget {
   const HoverTapBuilder({
+    this.hoverColor,
+    this.focusColor,
+    this.highlightColor,
     this.hitTestBehavior = HitTestBehavior.deferToChild,
     this.onHoverOrTapEnter,
     this.onHoverOrTapExit,
@@ -10,6 +13,7 @@ class HoverTapBuilder extends StatefulWidget {
     super.key,
   });
 
+  final Color? highlightColor, hoverColor, focusColor;
   final HitTestBehavior hitTestBehavior;
   final VoidCallback? onHoverOrTapEnter, onHoverOrTapExit;
   final VoidCallback? onClicked;
@@ -53,6 +57,9 @@ class _HoverTapBuilderState extends State<HoverTapBuilder> {
         onTapDown: (_) => _isMouse ? null : _onHoverOrTapEnter(),
         onTapUp: (_) => _isMouse ? null : _onHoverOrTapExit(),
         onTapCancel: () => _isMouse ? null : _onHoverOrTapExit(),
+        highlightColor: widget.highlightColor,
+        hoverColor: widget.hoverColor,
+        focusColor: widget.focusColor,
         highlightShape: BoxShape.rectangle,
         splashFactory: NoSplash.splashFactory,
         child: widget.builder(context, _isHovering),

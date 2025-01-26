@@ -5,6 +5,11 @@ import 'package:super_sliver_list/super_sliver_list.dart';
 
 import '../../core/core.dart';
 
+enum _LayoutType {
+  sliverList,
+  sliverGrid,
+}
+
 /// A widget that displays a grid of items that can be scrolled infinitely.
 ///
 /// This widget is a wrapper around the [PagedListView], [PagedMasonryGridView],
@@ -28,8 +33,37 @@ class InfinityAndBeyond<T> extends StatefulWidget {
     required this.itemBuilder,
     required this.controller,
     super.key,
-  });
+  })  : _layoutType = _LayoutType.sliverList,
+        _childAspectRatio = null,
+        _maxCrossAxisExtent = null,
+        _mainAxisSpacing = null,
+        _crossAxisSpacing = null;
 
+  const InfinityAndBeyond.grid({
+    this.itemPadding = const EdgeInsets.all(8.0),
+    double maxCrossAxisExtent = 400.0,
+    double childAspectRatio = 1.0,
+    double mainAxisSpacing = 8.0,
+    double crossAxisSpacing = 8.0,
+    this.buildEmpty = _defaultBuildEmpty,
+    this.buildError = _defaultBuildError,
+    this.progressBuilder,
+    required this.itemBuilder,
+    required this.controller,
+    super.key,
+  })  : _layoutType = _LayoutType.sliverGrid,
+        padding = EdgeInsets.zero,
+        _childAspectRatio = childAspectRatio,
+        _maxCrossAxisExtent = maxCrossAxisExtent,
+        _mainAxisSpacing = mainAxisSpacing,
+        _crossAxisSpacing = crossAxisSpacing,
+        shrinkWrap = false,
+        separatorBuilder = null,
+        extentEstimation = null,
+        listController = null,
+        extentPrecalculationPolicy = null;
+
+  final _LayoutType _layoutType;
   final EdgeInsetsGeometry itemPadding, padding;
   final WidgetBuilder buildEmpty, buildError;
   final bool shrinkWrap;
@@ -40,6 +74,10 @@ class InfinityAndBeyond<T> extends StatefulWidget {
   final ListController? listController;
   final ExtentEstimationProvider? extentEstimation;
   final ExtentPrecalculationPolicy? extentPrecalculationPolicy;
+  final double? _maxCrossAxisExtent,
+      _mainAxisSpacing,
+      _crossAxisSpacing,
+      _childAspectRatio;
 
   @override
   State<InfinityAndBeyond<T>> createState() => _InfinityAndBeyondState<T>();
@@ -76,6 +114,23 @@ class _InfinityAndBeyondState<T> extends State<InfinityAndBeyond<T>> {
       noItemsFoundIndicatorBuilder: widget.buildEmpty,
       noMoreItemsIndicatorBuilder: _buildNoMore,
     );
+
+    if (widget._layoutType == _LayoutType.sliverGrid) {
+      return SliverSafeArea(
+        top: false,
+        bottom: false,
+        sliver: PagedSliverGrid<int, T>(
+          pagingController: _controller.pagingController,
+          builderDelegate: builderDelegate,
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: widget._maxCrossAxisExtent!,
+            mainAxisSpacing: widget._mainAxisSpacing!,
+            crossAxisSpacing: widget._crossAxisSpacing!,
+            childAspectRatio: widget._childAspectRatio ?? 1.0,
+          ),
+        ),
+      );
+    }
 
     if (widget.separatorBuilder case final separatorBuilder?) {
       return SliverSafeArea(
