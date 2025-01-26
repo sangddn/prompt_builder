@@ -18,6 +18,11 @@ class _LPPromptList extends StatelessWidget {
           c.itemList = List.of(c.itemList ?? [])
             ..removeWhere((p) => p.id == prompt.id);
         },
+        onDuplicated: (newPromptId) async {
+          final c = controller.pagingController;
+          final newPrompt = await context.db.getPrompt(newPromptId);
+          c.itemList = List.of(c.itemList ?? [])..insert(0, newPrompt);
+        },
         prompt: prompt,
       )
           .animate()

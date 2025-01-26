@@ -153,10 +153,8 @@ extension PromptsExtension on Database {
     String? notes,
     String? folderPath,
     String? ignorePatterns,
-    bool? isLibrary,
     List<String>? tags,
     DateTime? lastOpenedAt,
-    bool? preferSummaries,
   }) async {
     final now = DateTime.now();
     await (update(prompts)..where((tbl) => tbl.id.equals(promptId))).write(
@@ -201,6 +199,43 @@ extension PromptsExtension on Database {
     }
     // Delete the prompt:
     await (delete(prompts)..where((tbl) => tbl.id.equals(promptId))).go();
+  }
+
+  /// Duplicates a prompt.
+  Future<int> duplicatePrompt(int originalPromptId) async {
+    final originalPrompt = await getPrompt(originalPromptId);
+    final id = await createPrompt(title: '${originalPrompt.title} (Copy)');
+    await updatePrompt(
+      id,
+      tags: originalPrompt.tagsList,
+      notes: originalPrompt.notes,
+      folderPath: originalPrompt.folderPath,
+      ignorePatterns: originalPrompt.ignorePatterns,
+    );
+    final originalBlocks = await getBlocksByPrompt(originalPromptId);
+    for (final originalBlock in originalBlocks) {
+      final blockId = await createBlock(
+        promptId: id,
+        displayName: originalBlock.displayName,
+        blockType: originalBlock.type,
+        sortOrder: originalBlock.sortOrder,
+        textContent: originalBlock.textContent,
+        filePath: originalBlock.filePath,
+        mimeType: originalBlock.mimeType,
+        fileSize: originalBlock.fileSize,
+        url: originalBlock.url,
+        transcript: originalBlock.transcript,
+        caption: originalBlock.caption,
+        summary: originalBlock.summary,
+      );
+      await updateBlock(
+        blockId,
+        fullContentTokenCountAndMethod: originalBlock.fullContentTokenCountAndMethod,
+        summaryTokenCountAndMethod: originalBlock.summaryTokenCountAndMethod,
+        preferSummary: originalBlock.preferSummary,
+      );
+    }
+    return id;
   }
 }
 
