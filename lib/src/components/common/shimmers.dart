@@ -76,15 +76,15 @@ class ContainerShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GrayShimmer(
-      baseOpacity: 0.6,
-      highlightOpacity: 0.45,
+      baseOpacity: 0.1,
+      highlightOpacity: 0.09,
       enableShimmer: enableShimmer,
       milliseconds: milliseconds,
       child: Container(
         height: height,
         margin: margin,
         decoration: BoxDecoration(
-          color: Colors.grey,
+          color: Colors.white,
           shape: shape ?? BoxShape.rectangle,
           borderRadius: shape == BoxShape.circle
               ? null
