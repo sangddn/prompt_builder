@@ -339,7 +339,10 @@ int _compareEntities(
   switch (prefs.sortOption) {
     case FileTreeSortOption.name:
       return multiplier *
-          path.basename(a.path).compareTo(path.basename(b.path));
+          _compareNaturalOrder(
+            path.basename(a.path),
+            path.basename(b.path),
+          );
     case FileTreeSortOption.dateCreated:
       return multiplier * aStat.changed.compareTo(bStat.changed);
     case FileTreeSortOption.dateModified:
@@ -347,6 +350,30 @@ int _compareEntities(
     case FileTreeSortOption.size:
       return multiplier * aStat.size.compareTo(bStat.size);
   }
+}
+
+int _compareNaturalOrder(String a, String b) {
+  final pattern = RegExp(r'(\d+|\D+)');
+  final aParts = pattern.allMatches(a).map((m) => m.group(0)!).toList();
+  final bParts = pattern.allMatches(b).map((m) => m.group(0)!).toList();
+
+  for (var i = 0; i < math.min(aParts.length, bParts.length); i++) {
+    final aPart = aParts[i];
+    final bPart = bParts[i];
+
+    final aNum = int.tryParse(aPart);
+    final bNum = int.tryParse(bPart);
+
+    if (aNum != null && bNum != null) {
+      final comp = aNum.compareTo(bNum);
+      if (comp != 0) return comp;
+    } else {
+      final comp = aPart.compareTo(bPart);
+      if (comp != 0) return comp;
+    }
+  }
+
+  return aParts.length.compareTo(bParts.length);
 }
 
 // -----------------------------------------------------------------------------
