@@ -55,7 +55,7 @@ class PromptTile extends StatelessWidget {
           curve: Effects.snappyOutCurve,
           decoration: ShapeDecoration(
             shape: Superellipse.border12,
-            color: context.colorScheme.card,
+            color: context.brightSurface,
             shadows: isHovering
                 ? [
                     ...mediumShadows(),
@@ -80,7 +80,7 @@ class _PromptTileContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
     final isUntitled = prompt.title.let((t) => t.isEmpty);
-    final hasNoDescription = prompt.notes.let((d) => d.isEmpty);
+    final hasNoNotes = prompt.notes.let((d) => d.isEmpty);
     final textGray = PColors.textGray.resolveFrom(context);
 
     return Column(
@@ -110,7 +110,7 @@ class _PromptTileContent extends StatelessWidget {
             ),
           ],
         ),
-        if (!hasNoDescription)
+        if (!hasNoNotes)
           Text(
             prompt.notes,
             style: textTheme.muted,
@@ -193,6 +193,20 @@ class _PromptContextMenu extends StatelessWidget {
             size: 16.0,
           ),
           child: const Text('Copy Prompt'),
+        ),
+        ShadContextMenuItem(
+          onPressed: () async {
+            await exportPrompt(
+              context,
+              context.read(),
+              context.read<Prompt>().id,
+            );
+          },
+          trailing: const ShadImage.square(
+            LucideIcons.share,
+            size: 16.0,
+          ),
+          child: const Text('Export…'),
         ),
         if (onDuplicated != null)
           ShadContextMenuItem(

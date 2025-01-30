@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i8;
 import 'package:flutter/cupertino.dart' as _i10;
+import 'package:flutter/material.dart' as _i11;
 import 'package:prompt_builder/src/database/database.dart' as _i9;
 import 'package:prompt_builder/src/pages/library_page/library_page.dart' as _i1;
 import 'package:prompt_builder/src/pages/prompt_page/prompt_page.dart' as _i3;
@@ -142,10 +143,17 @@ class PromptRouteArgs {
 
 /// generated route for
 /// [_i4.ResourcesPage]
-class ResourcesRoute extends _i8.PageRouteInfo<void> {
-  const ResourcesRoute({List<_i8.PageRouteInfo>? children})
-      : super(
+class ResourcesRoute extends _i8.PageRouteInfo<ResourcesRouteArgs> {
+  ResourcesRoute({
+    _i9.Database? db,
+    _i11.Key? key,
+    List<_i8.PageRouteInfo>? children,
+  }) : super(
           ResourcesRoute.name,
+          args: ResourcesRouteArgs(
+            db: db,
+            key: key,
+          ),
           initialChildren: children,
         );
 
@@ -154,9 +162,30 @@ class ResourcesRoute extends _i8.PageRouteInfo<void> {
   static _i8.PageInfo page = _i8.PageInfo(
     name,
     builder: (data) {
-      return const _i4.ResourcesPage();
+      final args = data.argsAs<ResourcesRouteArgs>(
+          orElse: () => const ResourcesRouteArgs());
+      return _i4.ResourcesPage(
+        db: args.db,
+        key: args.key,
+      );
     },
   );
+}
+
+class ResourcesRouteArgs {
+  const ResourcesRouteArgs({
+    this.db,
+    this.key,
+  });
+
+  final _i9.Database? db;
+
+  final _i11.Key? key;
+
+  @override
+  String toString() {
+    return 'ResourcesRouteArgs{db: $db, key: $key}';
+  }
 }
 
 /// generated route for

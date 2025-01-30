@@ -10,11 +10,16 @@ enum SnippetSortBy {
 
 extension SnippetsExtension on Database {
   /// Create a new text-based prompt
-  Future<int> createSnippet({String? title, String? content}) async {
+  Future<int> createSnippet({
+    String? title,
+    String? content,
+    String? summary,
+  }) async {
     final snippetId = await into(snippets).insert(
       SnippetsCompanion(
         title: title != null ? Value(title) : const Value.absent(),
         content: content != null ? Value(content) : const Value.absent(),
+        summary: summary != null ? Value(summary) : const Value.absent(),
       ),
     );
     return snippetId;
@@ -53,7 +58,8 @@ extension SnippetsExtension on Database {
       q.where((t) {
         final titleMatch = t.title.lower().like(searchTerm);
         final contentMatch = t.content.lower().like(searchTerm);
-        return titleMatch | contentMatch;
+        final summaryMatch = t.summary.lower().like(searchTerm);
+        return titleMatch | contentMatch | summaryMatch;
       });
     }
 
@@ -92,11 +98,17 @@ extension SnippetsExtension on Database {
   }
 
   /// Update a snippet by its ID.
-  Future<void> updateSnippet(int id, {String? title, String? content}) async {
+  Future<void> updateSnippet(
+    int id, {
+    String? title,
+    String? content,
+    String? summary,
+  }) async {
     await (update(snippets)..where((t) => t.id.equals(id))).write(
       SnippetsCompanion(
         title: title != null ? Value(title) : const Value.absent(),
         content: content != null ? Value(content) : const Value.absent(),
+        summary: summary != null ? Value(summary) : const Value.absent(),
         updatedAt: Value(DateTime.now()),
       ),
     );

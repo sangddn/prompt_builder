@@ -7,7 +7,7 @@ class _LPAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return const PAppBar(
       title: Text('Library'),
-      actions: [_SortButton()],
+      actions: [_ImportButton(), _SortButton()],
     );
   }
 }
@@ -67,4 +67,19 @@ extension _SortByInformation on PromptSortBy {
         PromptSortBy.lastOpened => 'Last Opened',
         PromptSortBy.title => 'Title',
       };
+}
+
+class _ImportButton extends StatelessWidget {
+  const _ImportButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadButton.ghost(
+      onPressed: () async {
+        await importPrompt(context, context.db);
+      },
+      size: ShadButtonSize.sm,
+      icon: const Icon(LucideIcons.import, size: 16.0),
+    );
+  }
 }

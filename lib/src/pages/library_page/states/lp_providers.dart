@@ -57,15 +57,14 @@ class _LPProvidersState extends State<_LPProviders> {
               );
               final observer = LibraryObserver.of(context);
               observer.addNewPromptListener(_onNewPromptAdded);
-              observer
-                  .addPromptTitleOrDescriptionChangedListener(_onPromptEdited);
+              observer.addPromptTitleOrNotesChangedListener(_onPromptEdited);
               return _controller;
             },
             dispose: (_, controller) {
               controller.dispose();
               final observer = LibraryObserver.of(context);
               observer.removeNewPromptListener(_onNewPromptAdded);
-              observer.removePromptTitleOrDescriptionChangedListener(
+              observer.removePromptTitleOrNotesChangedListener(
                 _onPromptEdited,
               );
             },

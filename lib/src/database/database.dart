@@ -21,7 +21,17 @@ final class Database extends _$Database {
   static final instance = Database.custom('prompt_builder');
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) => m.createAll(),
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.addColumn(snippets, snippets.summary as GeneratedColumn);
+          }
+        },
+      );
 
   static QueryExecutor _openConnection(String name) {
     // `driftDatabase` from `package:drift_flutter` stores the database in

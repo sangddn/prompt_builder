@@ -73,6 +73,7 @@ extension _NewBlockExtension on BuildContext {
   Future<void> _createTextBlock([
     String? displayName,
     String? textContent,
+    String? summary,
   ]) async {
     final index = read<int>();
     await createTextBlockAtIndex(
@@ -83,6 +84,7 @@ extension _NewBlockExtension on BuildContext {
               : index + 1,
       displayName: displayName,
       textContent: textContent,
+      summary: summary,
     );
   }
 }
@@ -121,7 +123,11 @@ class _SnippetButton extends StatelessWidget {
           controller.hide();
           final toaster = context.toaster;
           try {
-            await context._createTextBlock(snippet.title, snippet.content);
+            await context._createTextBlock(
+              snippet.title,
+              snippet.content,
+              snippet.summary,
+            );
             toaster.show(const ShadToast(title: Text('Snippet added')));
           } catch (e) {
             debugPrint('Error updating block: $e');

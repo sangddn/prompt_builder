@@ -11,7 +11,7 @@ class _PPRightSidebar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Gap(12.0),
-          _PromptDescription(),
+          _PromptNotes(),
           Gap(8.0),
           _PromptTags(),
           Spacer(),
@@ -25,14 +25,14 @@ class _PPRightSidebar extends StatelessWidget {
   }
 }
 
-class _PromptDescription extends StatelessWidget {
-  const _PromptDescription();
+class _PromptNotes extends StatelessWidget {
+  const _PromptNotes();
 
   @override
   Widget build(BuildContext context) {
     final style = context.textTheme.p;
-    final description = context.selectPrompt((p) => p?.notes);
-    if (description == null) {
+    final notes = context.selectPrompt((p) => p?.notes);
+    if (notes == null) {
       return GrayShimmer(
         child: Text('Loading…', style: style),
       );
@@ -40,10 +40,10 @@ class _PromptDescription extends StatelessWidget {
     final id = context.selectPrompt((p) => p?.id);
     final db = context.db;
 
-    void updatePromptDescription(String newDescription) {
-      if (id != null && newDescription != description) {
-        db.updatePrompt(id, notes: newDescription);
-        PromptTitleOrDescriptionChangedNotification(id: id).dispatch(context);
+    void updatePromptNotes(String newNotes) {
+      if (id != null && newNotes != notes) {
+        db.updatePrompt(id, notes: newNotes);
+        PromptTitleOrNotesChangedNotification(id: id).dispatch(context);
       }
     }
 
@@ -51,14 +51,14 @@ class _PromptDescription extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Description', style: context.textTheme.muted),
+        Text('Notes', style: context.textTheme.muted),
         const Gap(4.0),
         ValueProvider<TextEditingController>(
-          create: (_) => TextEditingController(text: description),
+          create: (_) => TextEditingController(text: notes),
           onDisposed: (context, controller) {
             final text = controller?.text.trim();
             if (text == null || text.isEmpty) return;
-            updatePromptDescription(text);
+            updatePromptNotes(text);
           },
           builder: (context, child) => TextField(
             controller: context.read(),

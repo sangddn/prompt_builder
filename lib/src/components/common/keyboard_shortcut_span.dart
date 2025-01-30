@@ -13,6 +13,7 @@ TextSpan keyboardShortcutSpan(
       children: [
         if (command)
           WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
             child: Padding(
               padding: const EdgeInsets.only(right: 2.0),
               child: Icon(
@@ -24,6 +25,7 @@ TextSpan keyboardShortcutSpan(
           ),
         if (shift)
           WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
             child: Padding(
               padding: const EdgeInsets.only(right: 2.0),
               child: Icon(

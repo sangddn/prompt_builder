@@ -1,12 +1,12 @@
 # Prompt Builder
 
-![Release](https://img.shields.io/badge/release-prompt_builder%20v0.0.6-green)
+![Release](https://img.shields.io/badge/release-prompt_builder%20v0.0.7-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Stars](https://img.shields.io/github/stars/sangddn/prompt_builder?style=social)
 ![Open Issues](https://img.shields.io/github/issues/sangddn/prompt_builder)
 [![Follow @sangddn](https://img.shields.io/twitter/follow/sangddn?style=social)](https://twitter.com/sangddn)
 
-[Website](https://promptbuilder.site). [Download for macOS](https://github.com/sangddn/prompt_builder/releases/download/v0.0.6/prompt-builder-macos-universal-v0.0.6.zip).
+[Website](https://promptbuilder.site). [Download for macOS](https://github.com/sangddn/prompt_builder/releases/download/v0.0.7/prompt-builder-macos-universal-v0.0.7.zip).
 
 ![Screenshot](docs/images/screenshot-2.png)
 
@@ -26,6 +26,7 @@ Prompt Builder is a macOS app for creating **long, complex prompts** for LLMs. W
 - **Community Snippets**: Explore other users’ snippet libraries (planned feature) to supercharge your own prompt-building.
 - **Local-First & Open Source**: 100% local data ownership. Bring your own API keys for OpenAI, Anthropic, Google, etc.
 - **Automatic Delimiters**: Prompt Builder automatically formats text in XML blocks or triple-backtick code blocks.
+- **Import/Export**: Save your prompts as `.prompt` files and share them with others. Great for collaborating on complex prompts or sharing templates.
 
 ## Why Use Prompt Builder?
 If your workflows involve **lots of reference material**—like dozens (or hundreds) of local files, docs, transcripts, PDFs, images, or even random YouTube tutorials—Prompt Builder helps you quickly compile them into a single prompt. This is especially useful for:

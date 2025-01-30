@@ -75,6 +75,7 @@ extension _PromptBlockScopeExtension on BuildContext {
     int index, {
     String? displayName,
     String? textContent,
+    String? summary,
   }) async {
     final promptId = prompt?.id;
     if (promptId == null) return null;
@@ -87,6 +88,7 @@ extension _PromptBlockScopeExtension on BuildContext {
         blockType: BlockType.text,
         displayName: displayName,
         textContent: textContent,
+        summary: summary,
         sortOrder: sortOrder,
       );
     }
@@ -99,6 +101,7 @@ extension _PromptBlockScopeExtension on BuildContext {
         blockType: BlockType.text,
         displayName: displayName,
         textContent: textContent,
+        summary: summary,
         sortOrder: sortOrder,
       );
     }
@@ -110,6 +113,7 @@ extension _PromptBlockScopeExtension on BuildContext {
       blockType: BlockType.text,
       displayName: displayName,
       textContent: textContent,
+      summary: summary,
       sortOrder: sortOrder,
     );
   }

@@ -28,15 +28,19 @@ extension PromptsExtension on Database {
   /// - [ignorePatterns] Optional patterns to ignore when scanning folder
   Future<int> createPrompt({
     String? title,
+    String? notes,
     String? folderPath,
     String? ignorePatterns,
+    List<String>? tags,
   }) async {
     final now = DateTime.now();
     final id = await into(prompts).insert(
       PromptsCompanion.insert(
         title: Value(title ?? ''),
+        notes: Value(notes ?? ''),
         folderPath: Value(folderPath),
         ignorePatterns: Value(ignorePatterns ?? ''),
+        tags: Value(PromptTagsExtension.tagsToString(tags ?? [])),
         createdAt: Value(now),
       ),
     );
@@ -273,13 +277,20 @@ extension PromptTagsExtension on Prompt {
   /// Converts the stored tags string to a list of individual tags.
   ///
   /// Returns an empty list if no tags are stored.
-  List<String> get tagsList => tags.isEmpty
-      ? []
-      : tags
-          .split(_tagSeparator)
-          .where((t) => t.isNotEmpty)
-          .map((t) => t.trim())
-          .toList();
+  List<String> get tagsList => tagStringToList(tags);
+
+  /// Converts the stored tags string to a list of individual tags.
+  ///
+  /// Returns an empty list if no tags are stored.
+  static List<String> tagStringToList(String tagsString) {
+    return tagsString.isEmpty
+        ? []
+        : tagsString
+            .split(_tagSeparator)
+            .where((t) => t.isNotEmpty)
+            .map((t) => t.trim())
+            .toList();
+  }
 
   /// Converts a list of tags into a storage-ready string.
   ///

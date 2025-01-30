@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../main.dart';
+import '../../core/core.dart';
+import '../../database/database.dart';
+import '../../services/services.dart';
 
 /// A top-level observer widget that manages notifications for new prompts added to the library.
 ///
@@ -15,7 +21,14 @@ import 'package:provider/provider.dart';
 /// });
 /// ```
 class LibraryObserver extends StatefulWidget {
-  const LibraryObserver({required this.child, super.key});
+  const LibraryObserver({
+    required this.startFiles,
+    required this.child,
+    super.key,
+  });
+
+  /// The files imported at startup.
+  final List<String> startFiles;
 
   /// The child widget that will be wrapped by this observer.
   final Widget child;
@@ -31,7 +44,7 @@ class LibraryObserver extends StatefulWidget {
 /// The state for [LibraryObserver] that manages prompt listeners and notifications.
 class LibraryObserverState extends State<LibraryObserver> {
   final List<ValueChanged<int>> _newPromptListeners = [];
-  final List<ValueChanged<int>> _promptTitleOrDescriptionChangedListeners = [];
+  final List<ValueChanged<int>> _promptTitleOrNotesChangedListeners = [];
 
   /// Registers a listener to be notified when new prompts are added.
   ///
@@ -51,26 +64,72 @@ class LibraryObserverState extends State<LibraryObserver> {
     }
   }
 
-  void _notifyPromptTitleOrDescriptionChangedListeners(int id) {
-    for (final listener in _promptTitleOrDescriptionChangedListeners) {
+  void _notifyPromptTitleOrNotesChangedListeners(int id) {
+    for (final listener in _promptTitleOrNotesChangedListeners) {
       listener(id);
     }
   }
 
-  void addPromptTitleOrDescriptionChangedListener(ValueChanged<int> listener) {
-    _promptTitleOrDescriptionChangedListeners.add(listener);
+  void addPromptTitleOrNotesChangedListener(ValueChanged<int> listener) {
+    _promptTitleOrNotesChangedListeners.add(listener);
   }
 
-  void removePromptTitleOrDescriptionChangedListener(
+  void removePromptTitleOrNotesChangedListener(
     ValueChanged<int> listener,
   ) {
-    _promptTitleOrDescriptionChangedListeners.remove(listener);
+    _promptTitleOrNotesChangedListeners.remove(listener);
+  }
+
+  Future<void> _import(List<String> files) async {
+    if (files.isEmpty) return;
+
+    final toaster = context.toaster;
+    final db = context.read<Database?>() ?? Database();
+    final newIds = <int>[];
+
+    for (final filePath in files) {
+      try {
+        final id = await PromptFileService.importPromptFromFile(
+          db: db,
+          filePath: filePath,
+        );
+        newIds.add(id);
+      } catch (e) {
+        toaster.show(
+          ShadToast(
+            title: Text('Error importing prompt at $filePath'),
+            description: Text(e.toString(), maxLines: 5),
+          ),
+        );
+      }
+    }
+
+    newIds.forEach(_notifyNewPromptListeners);
+    toaster.show(
+      ShadToast(
+        title: Text('Imported ${newIds.length} prompts.'),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _import(widget.startFiles);
+    });
+    kMethodChannel.setMethodCallHandler((call) async {
+      if (call.method == 'handleOpenFiles') {
+        final files = (call.arguments as List<dynamic>).cast<String>();
+        _import(files);
+      }
+    });
   }
 
   @override
   void dispose() {
     _newPromptListeners.clear();
-    _promptTitleOrDescriptionChangedListeners.clear();
+    _promptTitleOrNotesChangedListeners.clear();
     super.dispose();
   }
 
@@ -82,8 +141,8 @@ class LibraryObserverState extends State<LibraryObserver> {
             case NewPromptAddedNotification():
               _notifyNewPromptListeners(notification.id);
               return true;
-            case PromptTitleOrDescriptionChangedNotification():
-              _notifyPromptTitleOrDescriptionChangedListeners(notification.id);
+            case PromptTitleOrNotesChangedNotification():
+              _notifyPromptTitleOrNotesChangedListeners(notification.id);
               return true;
           }
         },
@@ -106,7 +165,6 @@ final class NewPromptAddedNotification extends LibraryNotification {
 }
 
 /// A notification that is dispatched when the title or description of a prompt is changed.
-final class PromptTitleOrDescriptionChangedNotification
-    extends LibraryNotification {
-  const PromptTitleOrDescriptionChangedNotification({required super.id});
+final class PromptTitleOrNotesChangedNotification extends LibraryNotification {
+  const PromptTitleOrNotesChangedNotification({required super.id});
 }
