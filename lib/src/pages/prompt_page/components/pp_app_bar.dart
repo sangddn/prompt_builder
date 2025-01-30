@@ -37,7 +37,7 @@ class _PromptTitle extends StatelessWidget {
     void updatePromptTitle(String newTitle) {
       if (id != null && newTitle.trim() != title) {
         db.updatePrompt(id, title: newTitle);
-        PromptTitleOrDescriptionChangedNotification(id: id).dispatch(context);
+        PromptTitleOrNotesChangedNotification(id: id).dispatch(context);
       }
     }
 

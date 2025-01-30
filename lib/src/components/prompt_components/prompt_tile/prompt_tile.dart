@@ -80,7 +80,7 @@ class _PromptTileContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
     final isUntitled = prompt.title.let((t) => t.isEmpty);
-    final hasNoDescription = prompt.notes.let((d) => d.isEmpty);
+    final hasNoNotes = prompt.notes.let((d) => d.isEmpty);
     final textGray = PColors.textGray.resolveFrom(context);
 
     return Column(
@@ -110,7 +110,7 @@ class _PromptTileContent extends StatelessWidget {
             ),
           ],
         ),
-        if (!hasNoDescription)
+        if (!hasNoNotes)
           Text(
             prompt.notes,
             style: textTheme.muted,
