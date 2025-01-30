@@ -8,7 +8,7 @@
 PRODUCT_NAME = Prompt Builder
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.promptBuilder
+PRODUCT_BUNDLE_IDENTIFIER = site.promptBuilder
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2024 Sang Doan. All rights reserved.

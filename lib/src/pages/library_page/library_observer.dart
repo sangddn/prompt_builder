@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../main.dart';
+import '../../core/core.dart';
+import '../../database/database.dart';
+import '../../services/services.dart';
 
 /// A top-level observer widget that manages notifications for new prompts added to the library.
 ///
@@ -15,7 +21,14 @@ import 'package:provider/provider.dart';
 /// });
 /// ```
 class LibraryObserver extends StatefulWidget {
-  const LibraryObserver({required this.child, super.key});
+  const LibraryObserver({
+    required this.startFiles,
+    required this.child,
+    super.key,
+  });
+
+  /// The files imported at startup.
+  final List<String> startFiles;
 
   /// The child widget that will be wrapped by this observer.
   final Widget child;
@@ -65,6 +78,52 @@ class LibraryObserverState extends State<LibraryObserver> {
     ValueChanged<int> listener,
   ) {
     _promptTitleOrNotesChangedListeners.remove(listener);
+  }
+
+  Future<void> _import(List<String> files) async {
+    if (files.isEmpty) return;
+
+    final toaster = context.toaster;
+    final db = context.read<Database?>() ?? Database();
+    final newIds = <int>[];
+
+    for (final filePath in files) {
+      try {
+        final id = await PromptFileService.importPromptFromFile(
+          db: db,
+          filePath: filePath,
+        );
+        newIds.add(id);
+      } catch (e) {
+        toaster.show(
+          ShadToast(
+            title: Text('Error importing prompt at $filePath'),
+            description: Text(e.toString(), maxLines: 5),
+          ),
+        );
+      }
+    }
+
+    newIds.forEach(_notifyNewPromptListeners);
+    toaster.show(
+      ShadToast(
+        title: Text('Imported ${newIds.length} prompts.'),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _import(widget.startFiles);
+    });
+    kMethodChannel.setMethodCallHandler((call) async {
+      if (call.method == 'handleOpenFiles') {
+        final files = (call.arguments as List<dynamic>).cast<String>();
+        _import(files);
+      }
+    });
   }
 
   @override
