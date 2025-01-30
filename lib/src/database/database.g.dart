@@ -1506,6 +1506,12 @@ class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant(''));
+  static const VerificationMeta _summaryMeta =
+      const VerificationMeta('summary');
+  @override
+  late final GeneratedColumn<String> summary = GeneratedColumn<String>(
+      'summary', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -1528,7 +1534,7 @@ class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, title, content, createdAt, updatedAt, lastUsedAt];
+      [id, title, content, summary, createdAt, updatedAt, lastUsedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1549,6 +1555,10 @@ class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
     if (data.containsKey('content')) {
       context.handle(_contentMeta,
           content.isAcceptableOrUnknown(data['content']!, _contentMeta));
+    }
+    if (data.containsKey('summary')) {
+      context.handle(_summaryMeta,
+          summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta));
     }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
@@ -1579,6 +1589,8 @@ class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
           .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
       content: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
+      summary: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}summary']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -1595,16 +1607,36 @@ class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
 }
 
 class Snippet extends DataClass implements Insertable<Snippet> {
+  /// Primary key and unique identifier for the snippet
   final int id;
+
+  /// User-defined title of the snippet
+  /// This can be empty but defaults to an empty string
   final String title;
+
+  /// Main content of the snippet (e.g., code, text, etc.)
+  /// This can be empty but defaults to an empty string
   final String content;
+
+  /// Optional AI-generated or user-provided summary of the content
+  /// This can be null if no summary is available
+  final String? summary;
+
+  /// When the snippet was first created
   final DateTime createdAt;
+
+  /// When the snippet was last modified
+  /// Can be null if never modified after creation
   final DateTime? updatedAt;
+
+  /// When the snippet was last accessed/used
+  /// Can be null if never used after creation
   final DateTime? lastUsedAt;
   const Snippet(
       {required this.id,
       required this.title,
       required this.content,
+      this.summary,
       required this.createdAt,
       this.updatedAt,
       this.lastUsedAt});
@@ -1614,6 +1646,9 @@ class Snippet extends DataClass implements Insertable<Snippet> {
     map['id'] = Variable<int>(id);
     map['title'] = Variable<String>(title);
     map['content'] = Variable<String>(content);
+    if (!nullToAbsent || summary != null) {
+      map['summary'] = Variable<String>(summary);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -1629,6 +1664,9 @@ class Snippet extends DataClass implements Insertable<Snippet> {
       id: Value(id),
       title: Value(title),
       content: Value(content),
+      summary: summary == null && nullToAbsent
+          ? const Value.absent()
+          : Value(summary),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -1646,6 +1684,7 @@ class Snippet extends DataClass implements Insertable<Snippet> {
       id: serializer.fromJson<int>(json['id']),
       title: serializer.fromJson<String>(json['title']),
       content: serializer.fromJson<String>(json['content']),
+      summary: serializer.fromJson<String?>(json['summary']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
       lastUsedAt: serializer.fromJson<DateTime?>(json['lastUsedAt']),
@@ -1658,6 +1697,7 @@ class Snippet extends DataClass implements Insertable<Snippet> {
       'id': serializer.toJson<int>(id),
       'title': serializer.toJson<String>(title),
       'content': serializer.toJson<String>(content),
+      'summary': serializer.toJson<String?>(summary),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
       'lastUsedAt': serializer.toJson<DateTime?>(lastUsedAt),
@@ -1668,6 +1708,7 @@ class Snippet extends DataClass implements Insertable<Snippet> {
           {int? id,
           String? title,
           String? content,
+          Value<String?> summary = const Value.absent(),
           DateTime? createdAt,
           Value<DateTime?> updatedAt = const Value.absent(),
           Value<DateTime?> lastUsedAt = const Value.absent()}) =>
@@ -1675,6 +1716,7 @@ class Snippet extends DataClass implements Insertable<Snippet> {
         id: id ?? this.id,
         title: title ?? this.title,
         content: content ?? this.content,
+        summary: summary.present ? summary.value : this.summary,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
         lastUsedAt: lastUsedAt.present ? lastUsedAt.value : this.lastUsedAt,
@@ -1684,6 +1726,7 @@ class Snippet extends DataClass implements Insertable<Snippet> {
       id: data.id.present ? data.id.value : this.id,
       title: data.title.present ? data.title.value : this.title,
       content: data.content.present ? data.content.value : this.content,
+      summary: data.summary.present ? data.summary.value : this.summary,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       lastUsedAt:
@@ -1697,6 +1740,7 @@ class Snippet extends DataClass implements Insertable<Snippet> {
           ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('content: $content, ')
+          ..write('summary: $summary, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastUsedAt: $lastUsedAt')
@@ -1705,8 +1749,8 @@ class Snippet extends DataClass implements Insertable<Snippet> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, title, content, createdAt, updatedAt, lastUsedAt);
+  int get hashCode => Object.hash(
+      id, title, content, summary, createdAt, updatedAt, lastUsedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1714,6 +1758,7 @@ class Snippet extends DataClass implements Insertable<Snippet> {
           other.id == this.id &&
           other.title == this.title &&
           other.content == this.content &&
+          other.summary == this.summary &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.lastUsedAt == this.lastUsedAt);
@@ -1723,6 +1768,7 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
   final Value<int> id;
   final Value<String> title;
   final Value<String> content;
+  final Value<String?> summary;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<DateTime?> lastUsedAt;
@@ -1730,6 +1776,7 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
     this.id = const Value.absent(),
     this.title = const Value.absent(),
     this.content = const Value.absent(),
+    this.summary = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.lastUsedAt = const Value.absent(),
@@ -1738,6 +1785,7 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
     this.id = const Value.absent(),
     this.title = const Value.absent(),
     this.content = const Value.absent(),
+    this.summary = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.lastUsedAt = const Value.absent(),
@@ -1746,6 +1794,7 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
     Expression<int>? id,
     Expression<String>? title,
     Expression<String>? content,
+    Expression<String>? summary,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? lastUsedAt,
@@ -1754,6 +1803,7 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
       if (id != null) 'id': id,
       if (title != null) 'title': title,
       if (content != null) 'content': content,
+      if (summary != null) 'summary': summary,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (lastUsedAt != null) 'last_used_at': lastUsedAt,
@@ -1764,6 +1814,7 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
       {Value<int>? id,
       Value<String>? title,
       Value<String>? content,
+      Value<String?>? summary,
       Value<DateTime>? createdAt,
       Value<DateTime?>? updatedAt,
       Value<DateTime?>? lastUsedAt}) {
@@ -1771,6 +1822,7 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
       id: id ?? this.id,
       title: title ?? this.title,
       content: content ?? this.content,
+      summary: summary ?? this.summary,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       lastUsedAt: lastUsedAt ?? this.lastUsedAt,
@@ -1788,6 +1840,9 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
     }
     if (content.present) {
       map['content'] = Variable<String>(content.value);
+    }
+    if (summary.present) {
+      map['summary'] = Variable<String>(summary.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -1807,6 +1862,7 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
           ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('content: $content, ')
+          ..write('summary: $summary, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastUsedAt: $lastUsedAt')
@@ -2639,6 +2695,7 @@ typedef $$SnippetsTableCreateCompanionBuilder = SnippetsCompanion Function({
   Value<int> id,
   Value<String> title,
   Value<String> content,
+  Value<String?> summary,
   Value<DateTime> createdAt,
   Value<DateTime?> updatedAt,
   Value<DateTime?> lastUsedAt,
@@ -2647,6 +2704,7 @@ typedef $$SnippetsTableUpdateCompanionBuilder = SnippetsCompanion Function({
   Value<int> id,
   Value<String> title,
   Value<String> content,
+  Value<String?> summary,
   Value<DateTime> createdAt,
   Value<DateTime?> updatedAt,
   Value<DateTime?> lastUsedAt,
@@ -2669,6 +2727,9 @@ class $$SnippetsTableFilterComposer
 
   ColumnFilters<String> get content => $composableBuilder(
       column: $table.content, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get summary => $composableBuilder(
+      column: $table.summary, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -2698,6 +2759,9 @@ class $$SnippetsTableOrderingComposer
   ColumnOrderings<String> get content => $composableBuilder(
       column: $table.content, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get summary => $composableBuilder(
+      column: $table.summary, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 
@@ -2725,6 +2789,9 @@ class $$SnippetsTableAnnotationComposer
 
   GeneratedColumn<String> get content =>
       $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<String> get summary =>
+      $composableBuilder(column: $table.summary, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -2762,6 +2829,7 @@ class $$SnippetsTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> content = const Value.absent(),
+            Value<String?> summary = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime?> updatedAt = const Value.absent(),
             Value<DateTime?> lastUsedAt = const Value.absent(),
@@ -2770,6 +2838,7 @@ class $$SnippetsTableTableManager extends RootTableManager<
             id: id,
             title: title,
             content: content,
+            summary: summary,
             createdAt: createdAt,
             updatedAt: updatedAt,
             lastUsedAt: lastUsedAt,
@@ -2778,6 +2847,7 @@ class $$SnippetsTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> content = const Value.absent(),
+            Value<String?> summary = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime?> updatedAt = const Value.absent(),
             Value<DateTime?> lastUsedAt = const Value.absent(),
@@ -2786,6 +2856,7 @@ class $$SnippetsTableTableManager extends RootTableManager<
             id: id,
             title: title,
             content: content,
+            summary: summary,
             createdAt: createdAt,
             updatedAt: updatedAt,
             lastUsedAt: lastUsedAt,
