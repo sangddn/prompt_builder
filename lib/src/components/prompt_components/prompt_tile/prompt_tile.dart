@@ -55,7 +55,7 @@ class PromptTile extends StatelessWidget {
           curve: Effects.snappyOutCurve,
           decoration: ShapeDecoration(
             shape: Superellipse.border12,
-            color: context.colorScheme.card,
+            color: context.brightSurface,
             shadows: isHovering
                 ? [
                     ...mediumShadows(),
