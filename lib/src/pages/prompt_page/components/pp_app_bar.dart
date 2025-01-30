@@ -12,6 +12,10 @@ class _PPAppBar extends StatelessWidget {
         children: [
           Center(child: _PromptTitle()),
           MaybeBackButton(),
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: _ExportButton(),
+          ),
         ],
       ),
     );
@@ -62,6 +66,31 @@ class _PromptTitle extends StatelessWidget {
             textAlign: TextAlign.center,
           );
         },
+      ),
+    );
+  }
+}
+
+class _ExportButton extends StatelessWidget {
+  const _ExportButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 1.0,
+      child: Padding(
+        padding: k8APadding,
+        child: CButton(
+          tooltip: 'Export',
+          cornerRadius: 12.0,
+          onTap: () async {
+            final promptId = context.prompt?.id;
+            if (promptId == null) return;
+            final db = context.db;
+            await exportPrompt(context, db, promptId);
+          },
+          child: const Icon(LucideIcons.share, size: 16.0),
+        ),
       ),
     );
   }

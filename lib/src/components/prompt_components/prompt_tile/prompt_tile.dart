@@ -194,6 +194,20 @@ class _PromptContextMenu extends StatelessWidget {
           ),
           child: const Text('Copy Prompt'),
         ),
+        ShadContextMenuItem(
+          onPressed: () async {
+            await exportPrompt(
+              context,
+              context.read(),
+              context.read<Prompt>().id,
+            );
+          },
+          trailing: const ShadImage.square(
+            LucideIcons.share,
+            size: 16.0,
+          ),
+          child: const Text('Export…'),
+        ),
         if (onDuplicated != null)
           ShadContextMenuItem(
             onPressed: () async {
