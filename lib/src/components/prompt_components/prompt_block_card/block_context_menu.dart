@@ -57,7 +57,7 @@ class _CopyAction extends StatelessWidget {
       data: () => context.block.copyToPrompt(),
       builder: (_, __, copy) => _ContextMenuAction(
         HugeIcons.strokeRoundedCopy01,
-        'Copy Text',
+        'Copy Prompt Text',
         copy,
       ),
     );
