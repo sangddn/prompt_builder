@@ -21,7 +21,7 @@ class ShellPage extends StatelessWidget {
         LibraryRoute(),
         SnippetsRoute(),
         const SettingsRoute(),
-        const ResourcesRoute(),
+        ResourcesRoute(),
       ],
       transitionBuilder: (context, child, animation) {
         final position = Tween<Offset>(
