@@ -15,6 +15,7 @@ class ShellPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var lastIndex = 0;
     return AutoTabsRouter(
       homeIndex: 0,
       routes: [
@@ -24,8 +25,12 @@ class ShellPage extends StatelessWidget {
         ResourcesRoute(),
       ],
       transitionBuilder: (context, child, animation) {
+        final newIndex = AutoTabsRouter.of(context).activeIndex;
+        if (animation.isCompleted || animation.isDismissed) {
+          lastIndex = newIndex;
+        }
         final position = Tween<Offset>(
-          begin: const Offset(0.0, 0.05),
+          begin: Offset(0.0, lastIndex < newIndex ? 0.05 : -0.05),
           end: Offset.zero,
         ).animate(
           CurvedAnimation(
