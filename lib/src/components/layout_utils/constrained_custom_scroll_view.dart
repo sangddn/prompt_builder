@@ -3,6 +3,7 @@ import 'dart:math' show max;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 
 import '../components.dart';
 
@@ -52,38 +53,71 @@ class ConstrainedCustomScrollView extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) {
           final availableWidth = constraints.maxWidth;
-          const maxWidth = 700.0;
+          final maxWidth = maxCrossAxisExtent;
           final horizontalPadding =
               max((availableWidth - maxWidth) / 2, minCrossAxisPadding);
-          return CustomScrollView(
-            controller: controller,
-            scrollDirection: scrollDirection,
-            reverse: reverse,
-            primary: primary,
-            physics: physics,
-            scrollBehavior: scrollBehavior,
-            shrinkWrap: shrinkWrap,
-            center: center,
-            anchor: anchor,
-            cacheExtent: cacheExtent,
-            semanticChildCount: semanticChildCount,
-            dragStartBehavior: dragStartBehavior,
-            keyboardDismissBehavior: keyboardDismissBehavior,
-            restorationId: restorationId,
-            clipBehavior: clipBehavior,
-            slivers: slivers
-                .map(
-                  (e) => e is SliverGap
-                      ? e
-                      : SliverPadding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: horizontalPadding,
+          return Provider<_Constraints>.value(
+            value: _Constraints(availableWidth),
+            child: CustomScrollView(
+              controller: controller,
+              scrollDirection: scrollDirection,
+              reverse: reverse,
+              primary: primary,
+              physics: physics,
+              scrollBehavior: scrollBehavior,
+              shrinkWrap: shrinkWrap,
+              center: center,
+              anchor: anchor,
+              cacheExtent: cacheExtent,
+              semanticChildCount: semanticChildCount,
+              dragStartBehavior: dragStartBehavior,
+              keyboardDismissBehavior: keyboardDismissBehavior,
+              restorationId: restorationId,
+              clipBehavior: clipBehavior,
+              slivers: slivers
+                  .map(
+                    (e) => e is SliverGap || e is ConstrainedSliver
+                        ? e
+                        : SliverPadding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: horizontalPadding,
+                            ),
+                            sliver: e,
                           ),
-                          sliver: e,
-                        ),
-                )
-                .toList(),
+                  )
+                  .toList(),
+            ),
           );
         },
       );
+}
+
+class _Constraints {
+  const _Constraints(this.maxWidth);
+  final double maxWidth;
+}
+
+class ConstrainedSliver extends StatelessWidget {
+  const ConstrainedSliver({
+    super.key,
+    this.maxCrossAxisExtent = double.infinity,
+    this.minCrossAxisPadding = 0.0,
+    required this.sliver,
+  });
+
+  final double maxCrossAxisExtent;
+  final double minCrossAxisPadding;
+  final Widget sliver;
+
+  @override
+  Widget build(BuildContext context) {
+    final maxWidth = context.watch<_Constraints>().maxWidth;
+    final horizontalPadding =
+        max((maxWidth - maxCrossAxisExtent) / 2, minCrossAxisPadding);
+    debugPrint('max width: $maxWidth, horizontal padding: $horizontalPadding');
+    return SliverPadding(
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+      sliver: sliver,
+    );
+  }
 }
