@@ -145,6 +145,30 @@ extension ColorTintsShades on Color {
     return _fromRgb(shadedRgb[0], shadedRgb[1], shadedRgb[2], a);
   }
 
+  /// Dynamically create a tint or shade of the Color based on brightness.
+  ///
+  /// If the theme is light, the Color will be tinted with [tintFactor].
+  /// If the theme is dark, the Color will be shaded with [shadeFactor], or [tintFactor]
+  /// if [shadeFactor] is not provided.
+  Color adjustForBrightness(
+    BuildContext context,
+    double tintFactor, [
+    double? shadeFactor,
+  ]) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? shade(shadeFactor ?? tintFactor) : tint(tintFactor);
+  }
+
+  /// Dynamically create a tint of the Color based on brightness.
+  Color resolveTint(
+    BuildContext context,
+    double lightFactor,
+    double darkFactor,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? tint(darkFactor) : tint(lightFactor);
+  }
+
   // Tint methods
   Color get tint10 => tint(0.1);
   Color get tint20 => tint(0.2);
