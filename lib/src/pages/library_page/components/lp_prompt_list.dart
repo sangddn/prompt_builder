@@ -9,10 +9,10 @@ class _LPPromptList extends StatelessWidget {
     final keys = <int, GlobalKey>{};
     return InfinityAndBeyond.grid(
       controller: controller,
-      itemPadding: k16H4VPadding,
       childAspectRatio: 3.5 / 4,
-      mainAxisSpacing: 16.0,
-      crossAxisSpacing: 0.0,
+      maxCrossAxisExtent: 300.0,
+      mainAxisSpacing: 12.0,
+      crossAxisSpacing: 12.0,
       itemBuilder: (context, index, prompt) => PromptTile(
         key: keys.putIfAbsent(prompt.id, () => GlobalKey()),
         db: context.db,

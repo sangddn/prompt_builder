@@ -35,6 +35,7 @@ class LibraryPage extends StatelessWidget {
       db: database ?? Database(),
       child: const Scaffold(
         body: ConstrainedCustomScrollView(
+          maxCrossAxisExtent: 1400.0,
           slivers: [
             _LPAppBar(),
             SliverPadding(padding: k16HPadding, sliver: _LPSearchBar()),
