@@ -22,17 +22,12 @@ part 'components/lp_filter_bar.dart';
 
 @RoutePage()
 class LibraryPage extends StatelessWidget {
-  const LibraryPage({
-    this.database,
-    super.key,
-  });
-
-  final Database? database;
+  const LibraryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return _LPProviders(
-      db: database ?? Database(),
+      db: context.read<Database>(),
       child: const Scaffold(
         body: ConstrainedCustomScrollView(
           maxCrossAxisExtent: 1400.0,

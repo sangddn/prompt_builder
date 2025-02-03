@@ -20,14 +20,12 @@ part 'components/snp_search_bar.dart';
 
 @RoutePage()
 class SnippetsPage extends StatelessWidget {
-  const SnippetsPage({this.db, super.key});
-
-  final Database? db;
+  const SnippetsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return _SNPProviders(
-      db: db ?? Database(),
+      db: context.read<Database>(),
       child: ShadContextMenuRegion(
         items: [
           Builder(

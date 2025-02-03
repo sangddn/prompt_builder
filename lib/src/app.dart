@@ -20,15 +20,13 @@ class _AppState extends State<App> {
   final _appRouter = AppRouter();
 
   @override
-  void dispose() {
-    Database().closeBoxes();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<Database>(
+          create: (context) => Database(),
+          dispose: (context, db) => db.dispose(),
+        ),
         StreamProvider<ThemeMode>(
           initialData: kInitialThemeMode,
           create: (context) => streamThemeMode(),

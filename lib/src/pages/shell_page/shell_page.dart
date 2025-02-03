@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../../components/components.dart';
 import '../../core/core.dart';
@@ -145,7 +146,7 @@ class _NewPromptButton extends StatelessWidget {
 }
 
 Future<void> _openNewPrompt(BuildContext context) async {
-  final id = await Database().createPrompt();
+  final id = await context.read<Database>().createPrompt();
   if (!context.mounted) return;
   NewPromptAddedNotification(id: id).dispatch(context);
   context.router.popAndPush(PromptRoute(id: id));

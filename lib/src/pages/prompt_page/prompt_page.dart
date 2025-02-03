@@ -43,19 +43,14 @@ part 'states/pp_providers.dart';
 
 @RoutePage()
 class PromptPage extends StatelessWidget {
-  const PromptPage({
-    this.database,
-    required this.id,
-    super.key,
-  });
+  const PromptPage({required this.id, super.key});
 
-  final Database? database;
   final int id;
 
   @override
   Widget build(BuildContext context) {
     return _PPProviders(
-      db: database ?? Database(),
+      db: context.read<Database>(),
       id: id,
       child: const Scaffold(
         body: _PPDropRegion(

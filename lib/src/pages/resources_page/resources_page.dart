@@ -20,14 +20,12 @@ part 'components/rp_snippet_list.dart';
 
 @RoutePage()
 class ResourcesPage extends StatelessWidget {
-  const ResourcesPage({this.db, super.key});
-
-  final Database? db;
+  const ResourcesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return _RPProviders(
-      db: db ?? Database(),
+      db: context.read<Database>(),
       child: const Scaffold(
         body: ShadResizablePanelGroup(
           resetOnDoubleTap: true,
