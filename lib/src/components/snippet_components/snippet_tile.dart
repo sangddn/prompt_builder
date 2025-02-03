@@ -11,52 +11,49 @@ import '../components.dart';
 class SnippetTile extends StatelessWidget {
   const SnippetTile({
     this.onDelete,
-    required this.database,
+    this.onExpanded,
     required this.snippet,
     super.key,
   });
 
   final VoidCallback? onDelete;
-  final Database database;
+  final VoidCallback? onExpanded;
   final Snippet snippet;
 
   @override
   Widget build(BuildContext context) {
-    return StateProvider<_TileState>(
-      createInitialValue: (_) => _TileState.collapsed,
-      child: StateProvider<IMap<String, String>>(
-        createInitialValue: (_) => IMap(snippet.variables),
-        child: MultiProvider(
-          providers: [
-            Provider<Database>.value(value: database),
-            Provider<Snippet>.value(value: snippet),
-            ValueProvider<TextEditingController>(
-              create: (_) => TextEditingController(text: snippet.content),
-              onNotified: (context, controller) {
-                context.db.updateSnippet(
-                  context.snippet.id,
-                  content: controller?.text ?? '',
-                );
-                context.variablesNotifier.value = IMap(
-                  SnippetExtension.parseVariables(controller?.text ?? ''),
-                );
-              },
-            ),
-            ListenableProvider(create: (_) => FocusNode()),
-          ],
-          child: ShadContextMenuRegion(
-            items: [
-              ShadContextMenuItem(
-                onPressed: () async {
-                  await database.deleteSnippet(snippet.id);
-                  onDelete?.call();
-                },
-                trailing: const ShadImage.square(LucideIcons.trash, size: 16),
-                child: const Text('Delete'),
-              ),
-            ],
-            child: const _Content(),
+    return StateProvider<IMap<String, String>>(
+      createInitialValue: (_) => IMap(snippet.variables),
+      child: MultiProvider(
+        providers: [
+          Provider<Snippet>.value(value: snippet),
+          Provider<VoidCallback?>.value(value: onExpanded),
+          ValueProvider<TextEditingController>(
+            create: (_) => TextEditingController(text: snippet.content),
+            onNotified: (context, controller) {
+              context.db.updateSnippet(
+                context.snippet.id,
+                content: controller?.text ?? '',
+              );
+              context.variablesNotifier.value = IMap(
+                SnippetExtension.parseVariables(controller?.text ?? ''),
+              );
+            },
           ),
+          ListenableProvider(create: (_) => FocusNode()),
+        ],
+        child: ShadContextMenuRegion(
+          items: [
+            ShadContextMenuItem(
+              onPressed: () async {
+                await context.db.deleteSnippet(snippet.id);
+                onDelete?.call();
+              },
+              trailing: const ShadImage.square(LucideIcons.trash, size: 16),
+              child: const Text('Delete'),
+            ),
+          ],
+          child: const _Content(),
         ),
       ),
     );
@@ -81,7 +78,7 @@ class _Content extends StatelessWidget {
             children: [
               Expanded(child: _TitleField()),
               Gap(8.0),
-              _ExpansionToggler(),
+              _ExpansionButton(),
             ],
           ),
           Gap(6.0),
@@ -100,35 +97,44 @@ class _TitleField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      initialValue: context.snippet.title,
-      decoration: InputDecoration.collapsed(
-        hintText: 'Title',
-        hintStyle: context.textTheme.muted,
-      ),
-      style: context.textTheme.muted,
-      onChanged: (value) => context.db.updateSnippet(
-        context.snippet.id,
-        title: value,
-      ),
+    return ValueProvider<TextEditingController>(
+      create: (_) => TextEditingController(text: context.snippet.title),
+      onNotified: (context, controller) {
+        context.db.updateSnippet(
+          context.snippet.id,
+          title: controller?.text ?? '',
+        );
+      },
+      builder: (context, _) {
+        final controller = context.read<TextEditingController>();
+        if (context.snippet.title != controller.text) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            controller.text = context.snippet.title;
+          });
+        }
+        return TextField(
+          controller: controller,
+          decoration: InputDecoration.collapsed(
+            hintText: 'Title',
+            hintStyle: context.textTheme.muted,
+          ),
+          style: context.textTheme.muted,
+        );
+      },
     );
   }
 }
 
-class _ExpansionToggler extends StatelessWidget {
-  const _ExpansionToggler();
+class _ExpansionButton extends StatelessWidget {
+  const _ExpansionButton();
 
   @override
   Widget build(BuildContext context) {
-    final isExpanded = context.isExpanded();
     return CButton(
-      tooltip: isExpanded ? 'Collapse' : 'Expand',
-      onTap: () => context.toggleExpanded(),
+      tooltip: 'Open',
+      onTap: context.watch<VoidCallback?>(),
       padding: k8APadding,
-      child: ShadImage.square(
-        isExpanded ? LucideIcons.chevronsDownUp : LucideIcons.chevronsUpDown,
-        size: 16.0,
-      ),
+      child: const ShadImage.square(LucideIcons.bookOpenText, size: 16.0),
     );
   }
 }
@@ -138,9 +144,15 @@ class _ContentField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isExpanded = context.isExpanded();
+    final isFocused = context.isFocused();
+    final controller = context.read<TextEditingController>();
+    if (context.snippet.content != controller.text) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.text = context.snippet.content;
+      });
+    }
     return TextField(
-      controller: context.read(),
+      controller: controller,
       focusNode: context.read(),
       decoration: InputDecoration.collapsed(
         hintText: 'Content',
@@ -148,7 +160,7 @@ class _ContentField extends StatelessWidget {
       ),
       style: context.textTheme.p,
       minLines: 2,
-      maxLines: isExpanded ? null : 3,
+      maxLines: isFocused ? null : 3,
     );
   }
 }
@@ -159,52 +171,15 @@ class _Variables extends AnimatedStatelessWidget {
   @override
   Widget buildChild(BuildContext context) {
     final variables = context.watch<IMap<String, String>>();
-    if (variables.isEmpty) {
-      final hasFocus = context.watch<FocusNode>().hasFocus;
-      if (!hasFocus) return const SizedBox.shrink();
-      return Text(
-        'Use {{X=Y}} to insert variable `X` with default value `Y`.',
-        style: context.textTheme.muted,
-      );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Variables', style: context.textTheme.muted),
-        const Gap(8.0),
-        ...variables.entries.indexedExpand(
-          (i, e) => [
-            Row(
-              children: [
-                Text(e.key),
-                const Spacer(),
-                Text(e.value, style: context.textTheme.muted),
-              ],
-            ),
-            if (i < variables.length - 1) const Gap(4.0),
-          ],
-        ),
-      ],
-    );
+    final hasFocus = context.watch<FocusNode>().hasFocus;
+    if (variables.isEmpty && !hasFocus) return const SizedBox.shrink();
+    return SnippetVariables(variables: variables);
   }
-}
-
-enum _TileState {
-  collapsed,
-  expanded,
-  ;
-
-  bool get isExpanded => this == _TileState.expanded;
 }
 
 extension _TileStateExtension on BuildContext {
   Database get db => read();
   Snippet get snippet => read();
   ValueNotifier<IMap<String, String>> get variablesNotifier => read();
-  bool isExpanded() => watch<_TileState>().isExpanded;
-  void toggleExpanded() {
-    final notifier = read<ValueNotifier<_TileState>>();
-    notifier.value =
-        notifier.value.isExpanded ? _TileState.collapsed : _TileState.expanded;
-  }
+  bool isFocused() => watch<FocusNode>().hasFocus;
 }

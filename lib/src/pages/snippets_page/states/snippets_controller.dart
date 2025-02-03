@@ -7,12 +7,13 @@ final class _SnippetsController implements InfinityController<Snippet> {
     required this.db,
     required this.searchQueryNotifier,
     required this.sortByNotifier,
+    required this.filterTagNotifier,
   });
 
   final Database db;
   final _SearchQueryNotifier searchQueryNotifier;
   final _SortByNotifier sortByNotifier;
-
+  final TagFilterNotifier filterTagNotifier;
   @override
   final pagingController = PagingController<int, Snippet>(firstPageKey: 0);
 
@@ -21,6 +22,7 @@ final class _SnippetsController implements InfinityController<Snippet> {
     pagingController.addPageRequestListener(_fetchPage);
     searchQueryNotifier.addListener(_refresh);
     sortByNotifier.addListener(_refresh);
+    filterTagNotifier.addListener(_refresh);
   }
 
   @override
@@ -28,6 +30,7 @@ final class _SnippetsController implements InfinityController<Snippet> {
     pagingController.dispose();
     searchQueryNotifier.removeListener(_refresh);
     sortByNotifier.removeListener(_refresh);
+    filterTagNotifier.removeListener(_refresh);
   }
 
   void _refresh() {
@@ -41,6 +44,7 @@ final class _SnippetsController implements InfinityController<Snippet> {
         ascending: sortByNotifier.value.$2,
         offset: pageKey * _kPageSize,
         searchQuery: searchQueryNotifier.text,
+        tags: filterTagNotifier.value != null ? [filterTagNotifier.value!] : [],
       );
       final isLastPage = snippets.length < _kPageSize;
       if (isLastPage) {

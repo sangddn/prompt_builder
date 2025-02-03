@@ -9,11 +9,13 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../components/components.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';
+import '../../router/router.gr.dart';
 
 part 'states/snp_providers.dart';
 part 'states/snippets_controller.dart';
 
 part 'components/snp_app_bar.dart';
+part 'components/snp_filter_bar.dart';
 part 'components/snp_add_snippet_button.dart';
 part 'components/snp_snippet_list.dart';
 part 'components/snp_search_bar.dart';
@@ -25,7 +27,6 @@ class SnippetsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _SNPProviders(
-      db: context.read<Database>(),
       child: ShadContextMenuRegion(
         items: [
           Builder(
@@ -46,6 +47,8 @@ class SnippetsPage extends StatelessWidget {
             slivers: [
               _SNPAppBar(),
               SliverPadding(padding: k16HPadding, sliver: _SNPSearchBar()),
+              SliverGap(16.0),
+              _SNPFilterBar(),
               SliverGap(16.0),
               _SNPSnippetList(),
               SliverGap(128.0),
