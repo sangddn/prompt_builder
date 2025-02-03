@@ -255,12 +255,14 @@ class ShellRoute extends _i11.PageRouteInfo<void> {
 /// [_i9.SnippetPage]
 class SnippetRoute extends _i11.PageRouteInfo<SnippetRouteArgs> {
   SnippetRoute({
+    _i12.VoidCallback? onSaved,
     required int id,
     _i12.Key? key,
     List<_i11.PageRouteInfo>? children,
   }) : super(
           SnippetRoute.name,
           args: SnippetRouteArgs(
+            onSaved: onSaved,
             id: id,
             key: key,
           ),
@@ -274,6 +276,7 @@ class SnippetRoute extends _i11.PageRouteInfo<SnippetRouteArgs> {
     builder: (data) {
       final args = data.argsAs<SnippetRouteArgs>();
       return _i9.SnippetPage(
+        onSaved: args.onSaved,
         id: args.id,
         key: args.key,
       );
@@ -283,9 +286,12 @@ class SnippetRoute extends _i11.PageRouteInfo<SnippetRouteArgs> {
 
 class SnippetRouteArgs {
   const SnippetRouteArgs({
+    this.onSaved,
     required this.id,
     this.key,
   });
+
+  final _i12.VoidCallback? onSaved;
 
   final int id;
 
@@ -293,7 +299,7 @@ class SnippetRouteArgs {
 
   @override
   String toString() {
-    return 'SnippetRouteArgs{id: $id, key: $key}';
+    return 'SnippetRouteArgs{onSaved: $onSaved, id: $id, key: $key}';
   }
 }
 
@@ -312,6 +318,25 @@ class SnippetsRoute extends _i11.PageRouteInfo<void> {
     name,
     builder: (data) {
       return const _i10.SnippetsPage();
+    },
+  );
+}
+
+/// generated route for
+/// [_i2.SnippetsShellPage]
+class SnippetsShellRoute extends _i11.PageRouteInfo<void> {
+  const SnippetsShellRoute({List<_i11.PageRouteInfo>? children})
+      : super(
+          SnippetsShellRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'SnippetsShellRoute';
+
+  static _i11.PageInfo page = _i11.PageInfo(
+    name,
+    builder: (data) {
+      return const _i2.SnippetsShellPage();
     },
   );
 }
