@@ -25,7 +25,10 @@ class ProjectCard extends MultiProviderWidget {
     final textTheme = theme.textTheme;
     return ListTile(
       leading: const _Leading(),
-      title: Text(project.title.isEmpty ? 'Untitled' : project.title),
+      title: Text(
+        project.title.isEmpty ? 'Untitled' : project.title,
+        style: textTheme.p,
+      ),
       subtitle: DefaultTextStyle(
         style: textTheme.muted,
         maxLines: 1,

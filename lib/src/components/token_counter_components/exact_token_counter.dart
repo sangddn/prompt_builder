@@ -142,33 +142,37 @@ class _ExactTokenCounts extends StatelessWidget {
     }
     final textTheme = context.textTheme;
     return IntrinsicWidth(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (final MapEntry(key: provider, :value) in counts.entries)
-            Row(
-              children: [
-                Text(value?.$2 ?? provider.name),
-                const Spacer(),
-                const Gap(8.0),
-                if (value != null)
-                  Text(
-                    '${value.$1}',
-                    style: textTheme.list.copyWith(fontWeight: FontWeight.bold),
-                  )
-                else
-                  Text('n/a', style: textTheme.muted),
-              ],
-            ),
-          if (hasContentChanged) ...[
-            const Gap(4.0),
-            Text(
-              'May be outdated. Recount to update.',
-              style: textTheme.muted,
-            ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minWidth: 200.0, maxWidth: 500.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final MapEntry(key: provider, :value) in counts.entries)
+              Row(
+                children: [
+                  Text(value?.$2 ?? provider.name),
+                  const Spacer(),
+                  const Gap(8.0),
+                  if (value != null)
+                    Text(
+                      '${value.$1}',
+                      style:
+                          textTheme.list.copyWith(fontWeight: FontWeight.bold),
+                    )
+                  else
+                    Text('n/a', style: textTheme.muted),
+                ],
+              ),
+            if (hasContentChanged) ...[
+              const Gap(4.0),
+              Text(
+                'May be outdated. Recount to update.',
+                style: textTheme.muted,
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
