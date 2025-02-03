@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../core/core.dart';
@@ -30,7 +31,7 @@ part 'unsupported_block.dart';
 part 'summary_explanation.dart';
 part 'block_utils.dart';
 
-class PromptBlockCard extends StatelessWidget {
+class PromptBlockCard extends MultiProviderWidget {
   const PromptBlockCard({
     this.padding = EdgeInsets.zero,
     this.prompt,
@@ -49,9 +50,7 @@ class PromptBlockCard extends StatelessWidget {
   final PromptBlock block;
 
   @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
+  List<SingleChildWidget> get providers => [
         Provider<Prompt?>.value(value: prompt),
         Provider<Database>.value(value: database),
         Provider<PromptBlock>.value(value: block),
@@ -64,34 +63,36 @@ class PromptBlockCard extends StatelessWidget {
         Provider<(VoidCallback?, VoidCallback?)>.value(
           value: (onMovedUp, onMovedDown),
         ),
-      ],
-      builder: (context, _) => _BlockContextMenu(
-        child: MouseRegion(
-          onEnter: (_) => context.hoverNotifier.value = _BlockHoverState.hover,
-          onExit: (_) => context.hoverNotifier.value = _BlockHoverState.none,
-          child: Padding(
-            padding: padding,
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(child: _BlockDisplayName()),
-                    Gap(8.0),
-                    _BlockInfoBar(),
-                  ],
-                ),
-                Gap(8.0),
-                _BlockContentRouter(),
-                Row(
-                  children: [
-                    _TokenCount(),
-                    Spacer(),
-                    _BlockToolBar(),
-                  ],
-                ),
-              ],
-            ),
+      ];
+
+  @override
+  Widget buildChild(BuildContext context) {
+    return _BlockContextMenu(
+      child: MouseRegion(
+        onEnter: (_) => context.hoverNotifier.value = _BlockHoverState.hover,
+        onExit: (_) => context.hoverNotifier.value = _BlockHoverState.none,
+        child: Padding(
+          padding: padding,
+          child: const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(child: _BlockDisplayName()),
+                  Gap(8.0),
+                  _BlockInfoBar(),
+                ],
+              ),
+              Gap(8.0),
+              _BlockContentRouter(),
+              Row(
+                children: [
+                  _TokenCount(),
+                  Spacer(),
+                  _BlockToolBar(),
+                ],
+              ),
+            ],
           ),
         ),
       ),

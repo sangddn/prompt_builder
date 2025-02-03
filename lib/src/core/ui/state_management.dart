@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
 import '../core.dart';
 
@@ -545,6 +546,20 @@ class _SelectListenableBuilderState<T extends Listenable?, R>
   @override
   Widget build(BuildContext context) =>
       widget.builder(context, _value, widget.child);
+}
+
+abstract class MultiProviderWidget extends StatelessWidget {
+  const MultiProviderWidget({super.key});
+
+  List<SingleChildWidget> get providers;
+
+  Widget buildChild(BuildContext context);
+
+  @override
+  Widget build(BuildContext context) => MultiProvider(
+        providers: providers,
+        builder: (context, _) => buildChild(context),
+      );
 }
 
 // ---------------------------------------------------------------------------
