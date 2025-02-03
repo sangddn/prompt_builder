@@ -53,13 +53,15 @@ sealed class LLMProvider with ProviderWithApiKey, _EstimateTokensMixin {
   /// Different providers may use different tokenization approaches, so the token
   /// count may vary between providers for the same input text.
   Future<(int, String)> countTokens(String text, [String? model]) {
-    try {
-      getApiKey();
-    } on ApiKeyNotSetException catch (e) {
-      debugPrint(
-        'API key not set for ${e.provider}. Falling back to token estimation.',
-      );
-      return SynchronousFuture(estimateTokens(text, model));
+    if (this is! OpenAI) {
+      try {
+        getApiKey();
+      } on ApiKeyNotSetException catch (e) {
+        debugPrint(
+          'API key not set for ${e.provider}. Falling back to token estimation.',
+        );
+        return SynchronousFuture(estimateTokens(text, model));
+      }
     }
     try {
       return _countTokens(text, model);
