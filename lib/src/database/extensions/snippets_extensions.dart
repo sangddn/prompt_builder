@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import '../../core/core.dart';
 import '../database.dart';
 
 enum SnippetSortBy {
@@ -36,12 +37,16 @@ extension SnippetsExtension on Database {
   /// - [ascending] Sort direction (default: false/descending)
   /// - [limit] Maximum number of results to return (default: 50)
   /// - [offset] Number of results to skip for pagination (default: 0)
+  /// - [tags] List of tags to filter by
   /// - [searchQuery] Optional search query to filter by
   ///
   /// If [searchQuery] is not empty, it will be used to filter snippets
   /// case-insensitively in:
   /// - Snippet titles
   /// - Snippet content
+  /// - Snippet summary
+  /// - Snippet tags
+  /// - Snippet notes
   ///
   /// Returns a list of snippets matching the query parameters.
   Future<List<Snippet>> querySnippets({
@@ -49,9 +54,18 @@ extension SnippetsExtension on Database {
     bool ascending = false,
     int limit = 50,
     int offset = 0,
+    List<String> tags = const [],
     String searchQuery = '',
   }) async {
     final q = select(snippets)..limit(limit, offset: offset);
+
+    if (tags.isNotEmpty) {
+      Expression<bool> tagFilter = snippets.tags.like('%${tags[0]}%');
+      for (var i = 1; i < tags.length; i++) {
+        tagFilter = tagFilter | snippets.tags.like('%${tags[i]}%');
+      }
+      q.where((t) => tagFilter);
+    }
 
     if (searchQuery.isNotEmpty) {
       final searchTerm = '%${searchQuery.toLowerCase()}%';
@@ -59,7 +73,13 @@ extension SnippetsExtension on Database {
         final titleMatch = t.title.lower().like(searchTerm);
         final contentMatch = t.content.lower().like(searchTerm);
         final summaryMatch = t.summary.lower().like(searchTerm);
-        return titleMatch | contentMatch | summaryMatch;
+        final tagsMatch = t.tags.lower().like(searchTerm);
+        final notesMatch = t.notes.lower().like(searchTerm);
+        return titleMatch |
+            contentMatch |
+            summaryMatch |
+            tagsMatch |
+            notesMatch;
       });
     }
 
@@ -103,12 +123,18 @@ extension SnippetsExtension on Database {
     String? title,
     String? content,
     String? summary,
+    List<String>? tags,
+    String? notes,
   }) async {
     await (update(snippets)..where((t) => t.id.equals(id))).write(
       SnippetsCompanion(
         title: title != null ? Value(title) : const Value.absent(),
         content: content != null ? Value(content) : const Value.absent(),
         summary: summary != null ? Value(summary) : const Value.absent(),
+        tags: tags != null
+            ? Value(PromptTagsExtension.tagsToString(tags))
+            : const Value.absent(),
+        notes: notes != null ? Value(notes) : const Value.absent(),
         updatedAt: Value(DateTime.now()),
       ),
     );
@@ -123,6 +149,10 @@ extension SnippetsExtension on Database {
 }
 
 extension SnippetExtension on Snippet {
+  /// The tags of the snippet as a list of strings.
+  List<String> get tagsList =>
+      tags?.let(PromptTagsExtension.tagStringToList) ?? [];
+
   /// Parse the variables from the given content.
   ///
   /// Variables can be formatted as:

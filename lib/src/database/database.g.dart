@@ -3,6 +3,387 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
+class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProjectsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+      'notes', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _emojiMeta = const VerificationMeta('emoji');
+  @override
+  late final GeneratedColumn<String> emoji = GeneratedColumn<String>(
+      'emoji', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
+  @override
+  late final GeneratedColumn<int> color = GeneratedColumn<int>(
+      'color', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, title, notes, emoji, color, createdAt, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'projects';
+  @override
+  VerificationContext validateIntegrity(Insertable<Project> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+    }
+    if (data.containsKey('emoji')) {
+      context.handle(
+          _emojiMeta, emoji.isAcceptableOrUnknown(data['emoji']!, _emojiMeta));
+    }
+    if (data.containsKey('color')) {
+      context.handle(
+          _colorMeta, color.isAcceptableOrUnknown(data['color']!, _colorMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Project map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Project(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      notes: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}notes'])!,
+      emoji: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}emoji']),
+      color: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}color']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at']),
+    );
+  }
+
+  @override
+  $ProjectsTable createAlias(String alias) {
+    return $ProjectsTable(attachedDatabase, alias);
+  }
+}
+
+class Project extends DataClass implements Insertable<Project> {
+  /// Primary key and unique identifier for the project
+  final int id;
+
+  /// User-defined title of the project
+  final String title;
+
+  /// User notes/description for the project
+  final String notes;
+
+  /// Emoji icon for the project (stored as unicode string)
+  final String? emoji;
+
+  /// Color for the project (stored as integer ARGB)
+  final int? color;
+
+  /// When the project was created
+  final DateTime createdAt;
+
+  /// When the project was last modified
+  final DateTime? updatedAt;
+  const Project(
+      {required this.id,
+      required this.title,
+      required this.notes,
+      this.emoji,
+      this.color,
+      required this.createdAt,
+      this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['title'] = Variable<String>(title);
+    map['notes'] = Variable<String>(notes);
+    if (!nullToAbsent || emoji != null) {
+      map['emoji'] = Variable<String>(emoji);
+    }
+    if (!nullToAbsent || color != null) {
+      map['color'] = Variable<int>(color);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    return map;
+  }
+
+  ProjectsCompanion toCompanion(bool nullToAbsent) {
+    return ProjectsCompanion(
+      id: Value(id),
+      title: Value(title),
+      notes: Value(notes),
+      emoji:
+          emoji == null && nullToAbsent ? const Value.absent() : Value(emoji),
+      color:
+          color == null && nullToAbsent ? const Value.absent() : Value(color),
+      createdAt: Value(createdAt),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+    );
+  }
+
+  factory Project.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Project(
+      id: serializer.fromJson<int>(json['id']),
+      title: serializer.fromJson<String>(json['title']),
+      notes: serializer.fromJson<String>(json['notes']),
+      emoji: serializer.fromJson<String?>(json['emoji']),
+      color: serializer.fromJson<int?>(json['color']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'title': serializer.toJson<String>(title),
+      'notes': serializer.toJson<String>(notes),
+      'emoji': serializer.toJson<String?>(emoji),
+      'color': serializer.toJson<int?>(color),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+    };
+  }
+
+  Project copyWith(
+          {int? id,
+          String? title,
+          String? notes,
+          Value<String?> emoji = const Value.absent(),
+          Value<int?> color = const Value.absent(),
+          DateTime? createdAt,
+          Value<DateTime?> updatedAt = const Value.absent()}) =>
+      Project(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        notes: notes ?? this.notes,
+        emoji: emoji.present ? emoji.value : this.emoji,
+        color: color.present ? color.value : this.color,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+      );
+  Project copyWithCompanion(ProjectsCompanion data) {
+    return Project(
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      emoji: data.emoji.present ? data.emoji.value : this.emoji,
+      color: data.color.present ? data.color.value : this.color,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Project(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('notes: $notes, ')
+          ..write('emoji: $emoji, ')
+          ..write('color: $color, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, title, notes, emoji, color, createdAt, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Project &&
+          other.id == this.id &&
+          other.title == this.title &&
+          other.notes == this.notes &&
+          other.emoji == this.emoji &&
+          other.color == this.color &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ProjectsCompanion extends UpdateCompanion<Project> {
+  final Value<int> id;
+  final Value<String> title;
+  final Value<String> notes;
+  final Value<String?> emoji;
+  final Value<int?> color;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> updatedAt;
+  const ProjectsCompanion({
+    this.id = const Value.absent(),
+    this.title = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.emoji = const Value.absent(),
+    this.color = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  ProjectsCompanion.insert({
+    this.id = const Value.absent(),
+    this.title = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.emoji = const Value.absent(),
+    this.color = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  static Insertable<Project> custom({
+    Expression<int>? id,
+    Expression<String>? title,
+    Expression<String>? notes,
+    Expression<String>? emoji,
+    Expression<int>? color,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (title != null) 'title': title,
+      if (notes != null) 'notes': notes,
+      if (emoji != null) 'emoji': emoji,
+      if (color != null) 'color': color,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  ProjectsCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? title,
+      Value<String>? notes,
+      Value<String?>? emoji,
+      Value<int?>? color,
+      Value<DateTime>? createdAt,
+      Value<DateTime?>? updatedAt}) {
+    return ProjectsCompanion(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      notes: notes ?? this.notes,
+      emoji: emoji ?? this.emoji,
+      color: color ?? this.color,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (emoji.present) {
+      map['emoji'] = Variable<String>(emoji.value);
+    }
+    if (color.present) {
+      map['color'] = Variable<int>(color.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProjectsCompanion(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('notes: $notes, ')
+          ..write('emoji: $emoji, ')
+          ..write('color: $color, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -17,6 +398,15 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _projectIdMeta =
+      const VerificationMeta('projectId');
+  @override
+  late final GeneratedColumn<int> projectId = GeneratedColumn<int>(
+      'project_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES projects (id)'));
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
@@ -75,6 +465,7 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
   @override
   List<GeneratedColumn> get $columns => [
         id,
+        projectId,
         title,
         notes,
         tags,
@@ -96,6 +487,10 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('project_id')) {
+      context.handle(_projectIdMeta,
+          projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta));
     }
     if (data.containsKey('title')) {
       context.handle(
@@ -146,6 +541,8 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
     return Prompt(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      projectId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}project_id']),
       title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
       notes: attachedDatabase.typeMapping
@@ -172,17 +569,58 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
 }
 
 class Prompt extends DataClass implements Insertable<Prompt> {
+  /// Primary key for the prompt.
   final int id;
+
+  /// Optional reference to a project in the [Projects] table.
+  ///
+  /// When null, the prompt is not associated with any specific project.
+  final int? projectId;
+
+  /// User-defined title for the prompt.
+  ///
+  /// Defaults to an empty string if not specified.
   final String title;
+
+  /// Additional notes or description for the prompt.
+  ///
+  /// Defaults to an empty string if not specified.
   final String notes;
+
+  /// "|"-separated list of tags for categorizing the prompt.
+  ///
+  /// Defaults to an empty string if not specified.
   final String tags;
+
+  /// Optional directory path associated with the prompt.
+  ///
+  /// When specified, indicates a folder that should be opened or processed
+  /// when using this prompt.
   final String? folderPath;
+
+  /// Patterns for excluding files when processing the folder path.
+  ///
+  /// Defaults to an empty string if not specified. Multiple patterns
+  /// should be separated by newlines.
   final String ignorePatterns;
+
+  /// Timestamp when the prompt was created.
+  ///
+  /// Automatically set to the current date and time when creating a new prompt.
   final DateTime createdAt;
+
+  /// Timestamp when the prompt was last modified.
+  ///
+  /// Null if the prompt has never been modified after creation.
   final DateTime? updatedAt;
+
+  /// Timestamp when the prompt was last opened or used.
+  ///
+  /// Null if the prompt has never been opened.
   final DateTime? lastOpenedAt;
   const Prompt(
       {required this.id,
+      this.projectId,
       required this.title,
       required this.notes,
       required this.tags,
@@ -195,6 +633,9 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    if (!nullToAbsent || projectId != null) {
+      map['project_id'] = Variable<int>(projectId);
+    }
     map['title'] = Variable<String>(title);
     map['notes'] = Variable<String>(notes);
     map['tags'] = Variable<String>(tags);
@@ -215,6 +656,9 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   PromptsCompanion toCompanion(bool nullToAbsent) {
     return PromptsCompanion(
       id: Value(id),
+      projectId: projectId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(projectId),
       title: Value(title),
       notes: Value(notes),
       tags: Value(tags),
@@ -237,6 +681,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Prompt(
       id: serializer.fromJson<int>(json['id']),
+      projectId: serializer.fromJson<int?>(json['projectId']),
       title: serializer.fromJson<String>(json['title']),
       notes: serializer.fromJson<String>(json['notes']),
       tags: serializer.fromJson<String>(json['tags']),
@@ -252,6 +697,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'projectId': serializer.toJson<int?>(projectId),
       'title': serializer.toJson<String>(title),
       'notes': serializer.toJson<String>(notes),
       'tags': serializer.toJson<String>(tags),
@@ -265,6 +711,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
 
   Prompt copyWith(
           {int? id,
+          Value<int?> projectId = const Value.absent(),
           String? title,
           String? notes,
           String? tags,
@@ -275,6 +722,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
           Value<DateTime?> lastOpenedAt = const Value.absent()}) =>
       Prompt(
         id: id ?? this.id,
+        projectId: projectId.present ? projectId.value : this.projectId,
         title: title ?? this.title,
         notes: notes ?? this.notes,
         tags: tags ?? this.tags,
@@ -288,6 +736,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   Prompt copyWithCompanion(PromptsCompanion data) {
     return Prompt(
       id: data.id.present ? data.id.value : this.id,
+      projectId: data.projectId.present ? data.projectId.value : this.projectId,
       title: data.title.present ? data.title.value : this.title,
       notes: data.notes.present ? data.notes.value : this.notes,
       tags: data.tags.present ? data.tags.value : this.tags,
@@ -308,6 +757,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   String toString() {
     return (StringBuffer('Prompt(')
           ..write('id: $id, ')
+          ..write('projectId: $projectId, ')
           ..write('title: $title, ')
           ..write('notes: $notes, ')
           ..write('tags: $tags, ')
@@ -321,13 +771,14 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   }
 
   @override
-  int get hashCode => Object.hash(id, title, notes, tags, folderPath,
+  int get hashCode => Object.hash(id, projectId, title, notes, tags, folderPath,
       ignorePatterns, createdAt, updatedAt, lastOpenedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Prompt &&
           other.id == this.id &&
+          other.projectId == this.projectId &&
           other.title == this.title &&
           other.notes == this.notes &&
           other.tags == this.tags &&
@@ -340,6 +791,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
 
 class PromptsCompanion extends UpdateCompanion<Prompt> {
   final Value<int> id;
+  final Value<int?> projectId;
   final Value<String> title;
   final Value<String> notes;
   final Value<String> tags;
@@ -350,6 +802,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
   final Value<DateTime?> lastOpenedAt;
   const PromptsCompanion({
     this.id = const Value.absent(),
+    this.projectId = const Value.absent(),
     this.title = const Value.absent(),
     this.notes = const Value.absent(),
     this.tags = const Value.absent(),
@@ -361,6 +814,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
   });
   PromptsCompanion.insert({
     this.id = const Value.absent(),
+    this.projectId = const Value.absent(),
     this.title = const Value.absent(),
     this.notes = const Value.absent(),
     this.tags = const Value.absent(),
@@ -372,6 +826,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
   });
   static Insertable<Prompt> custom({
     Expression<int>? id,
+    Expression<int>? projectId,
     Expression<String>? title,
     Expression<String>? notes,
     Expression<String>? tags,
@@ -383,6 +838,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (projectId != null) 'project_id': projectId,
       if (title != null) 'title': title,
       if (notes != null) 'notes': notes,
       if (tags != null) 'tags': tags,
@@ -396,6 +852,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
 
   PromptsCompanion copyWith(
       {Value<int>? id,
+      Value<int?>? projectId,
       Value<String>? title,
       Value<String>? notes,
       Value<String>? tags,
@@ -406,6 +863,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
       Value<DateTime?>? lastOpenedAt}) {
     return PromptsCompanion(
       id: id ?? this.id,
+      projectId: projectId ?? this.projectId,
       title: title ?? this.title,
       notes: notes ?? this.notes,
       tags: tags ?? this.tags,
@@ -422,6 +880,9 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (projectId.present) {
+      map['project_id'] = Variable<int>(projectId.value);
     }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
@@ -454,6 +915,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
   String toString() {
     return (StringBuffer('PromptsCompanion(')
           ..write('id: $id, ')
+          ..write('projectId: $projectId, ')
           ..write('title: $title, ')
           ..write('notes: $notes, ')
           ..write('tags: $tags, ')
@@ -1491,6 +1953,15 @@ class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _projectIdMeta =
+      const VerificationMeta('projectId');
+  @override
+  late final GeneratedColumn<int> projectId = GeneratedColumn<int>(
+      'project_id', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES projects (id)'));
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
@@ -1511,6 +1982,16 @@ class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
   @override
   late final GeneratedColumn<String> summary = GeneratedColumn<String>(
       'summary', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+      'notes', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _tagsMeta = const VerificationMeta('tags');
+  @override
+  late final GeneratedColumn<String> tags = GeneratedColumn<String>(
+      'tags', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
@@ -1533,8 +2014,18 @@ class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
       'last_used_at', aliasedName, true,
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, title, content, summary, createdAt, updatedAt, lastUsedAt];
+  List<GeneratedColumn> get $columns => [
+        id,
+        projectId,
+        title,
+        content,
+        summary,
+        notes,
+        tags,
+        createdAt,
+        updatedAt,
+        lastUsedAt
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1548,6 +2039,10 @@ class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('project_id')) {
+      context.handle(_projectIdMeta,
+          projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta));
+    }
     if (data.containsKey('title')) {
       context.handle(
           _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
@@ -1559,6 +2054,14 @@ class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
     if (data.containsKey('summary')) {
       context.handle(_summaryMeta,
           summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta));
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+    }
+    if (data.containsKey('tags')) {
+      context.handle(
+          _tagsMeta, tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta));
     }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
@@ -1585,12 +2088,18 @@ class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
     return Snippet(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      projectId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}project_id']),
       title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
       content: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
       summary: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}summary']),
+      notes: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}notes']),
+      tags: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}tags']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -1610,6 +2119,9 @@ class Snippet extends DataClass implements Insertable<Snippet> {
   /// Primary key and unique identifier for the snippet
   final int id;
 
+  /// Optional reference to a project
+  final int? projectId;
+
   /// User-defined title of the snippet
   /// This can be empty but defaults to an empty string
   final String title;
@@ -1621,6 +2133,14 @@ class Snippet extends DataClass implements Insertable<Snippet> {
   /// Optional AI-generated or user-provided summary of the content
   /// This can be null if no summary is available
   final String? summary;
+
+  /// Notes for the snippet
+  /// This can be null if no notes are available
+  final String? notes;
+
+  /// "|"-separated list of tags for categorizing the snippet
+  /// This can be null if no tags are available
+  final String? tags;
 
   /// When the snippet was first created
   final DateTime createdAt;
@@ -1634,9 +2154,12 @@ class Snippet extends DataClass implements Insertable<Snippet> {
   final DateTime? lastUsedAt;
   const Snippet(
       {required this.id,
+      this.projectId,
       required this.title,
       required this.content,
       this.summary,
+      this.notes,
+      this.tags,
       required this.createdAt,
       this.updatedAt,
       this.lastUsedAt});
@@ -1644,10 +2167,19 @@ class Snippet extends DataClass implements Insertable<Snippet> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    if (!nullToAbsent || projectId != null) {
+      map['project_id'] = Variable<int>(projectId);
+    }
     map['title'] = Variable<String>(title);
     map['content'] = Variable<String>(content);
     if (!nullToAbsent || summary != null) {
       map['summary'] = Variable<String>(summary);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    if (!nullToAbsent || tags != null) {
+      map['tags'] = Variable<String>(tags);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
@@ -1662,11 +2194,17 @@ class Snippet extends DataClass implements Insertable<Snippet> {
   SnippetsCompanion toCompanion(bool nullToAbsent) {
     return SnippetsCompanion(
       id: Value(id),
+      projectId: projectId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(projectId),
       title: Value(title),
       content: Value(content),
       summary: summary == null && nullToAbsent
           ? const Value.absent()
           : Value(summary),
+      notes:
+          notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+      tags: tags == null && nullToAbsent ? const Value.absent() : Value(tags),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -1682,9 +2220,12 @@ class Snippet extends DataClass implements Insertable<Snippet> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Snippet(
       id: serializer.fromJson<int>(json['id']),
+      projectId: serializer.fromJson<int?>(json['projectId']),
       title: serializer.fromJson<String>(json['title']),
       content: serializer.fromJson<String>(json['content']),
       summary: serializer.fromJson<String?>(json['summary']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      tags: serializer.fromJson<String?>(json['tags']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
       lastUsedAt: serializer.fromJson<DateTime?>(json['lastUsedAt']),
@@ -1695,9 +2236,12 @@ class Snippet extends DataClass implements Insertable<Snippet> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'projectId': serializer.toJson<int?>(projectId),
       'title': serializer.toJson<String>(title),
       'content': serializer.toJson<String>(content),
       'summary': serializer.toJson<String?>(summary),
+      'notes': serializer.toJson<String?>(notes),
+      'tags': serializer.toJson<String?>(tags),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
       'lastUsedAt': serializer.toJson<DateTime?>(lastUsedAt),
@@ -1706,17 +2250,23 @@ class Snippet extends DataClass implements Insertable<Snippet> {
 
   Snippet copyWith(
           {int? id,
+          Value<int?> projectId = const Value.absent(),
           String? title,
           String? content,
           Value<String?> summary = const Value.absent(),
+          Value<String?> notes = const Value.absent(),
+          Value<String?> tags = const Value.absent(),
           DateTime? createdAt,
           Value<DateTime?> updatedAt = const Value.absent(),
           Value<DateTime?> lastUsedAt = const Value.absent()}) =>
       Snippet(
         id: id ?? this.id,
+        projectId: projectId.present ? projectId.value : this.projectId,
         title: title ?? this.title,
         content: content ?? this.content,
         summary: summary.present ? summary.value : this.summary,
+        notes: notes.present ? notes.value : this.notes,
+        tags: tags.present ? tags.value : this.tags,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
         lastUsedAt: lastUsedAt.present ? lastUsedAt.value : this.lastUsedAt,
@@ -1724,9 +2274,12 @@ class Snippet extends DataClass implements Insertable<Snippet> {
   Snippet copyWithCompanion(SnippetsCompanion data) {
     return Snippet(
       id: data.id.present ? data.id.value : this.id,
+      projectId: data.projectId.present ? data.projectId.value : this.projectId,
       title: data.title.present ? data.title.value : this.title,
       content: data.content.present ? data.content.value : this.content,
       summary: data.summary.present ? data.summary.value : this.summary,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      tags: data.tags.present ? data.tags.value : this.tags,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       lastUsedAt:
@@ -1738,9 +2291,12 @@ class Snippet extends DataClass implements Insertable<Snippet> {
   String toString() {
     return (StringBuffer('Snippet(')
           ..write('id: $id, ')
+          ..write('projectId: $projectId, ')
           ..write('title: $title, ')
           ..write('content: $content, ')
           ..write('summary: $summary, ')
+          ..write('notes: $notes, ')
+          ..write('tags: $tags, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastUsedAt: $lastUsedAt')
@@ -1749,16 +2305,19 @@ class Snippet extends DataClass implements Insertable<Snippet> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, title, content, summary, createdAt, updatedAt, lastUsedAt);
+  int get hashCode => Object.hash(id, projectId, title, content, summary, notes,
+      tags, createdAt, updatedAt, lastUsedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Snippet &&
           other.id == this.id &&
+          other.projectId == this.projectId &&
           other.title == this.title &&
           other.content == this.content &&
           other.summary == this.summary &&
+          other.notes == this.notes &&
+          other.tags == this.tags &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.lastUsedAt == this.lastUsedAt);
@@ -1766,44 +2325,59 @@ class Snippet extends DataClass implements Insertable<Snippet> {
 
 class SnippetsCompanion extends UpdateCompanion<Snippet> {
   final Value<int> id;
+  final Value<int?> projectId;
   final Value<String> title;
   final Value<String> content;
   final Value<String?> summary;
+  final Value<String?> notes;
+  final Value<String?> tags;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<DateTime?> lastUsedAt;
   const SnippetsCompanion({
     this.id = const Value.absent(),
+    this.projectId = const Value.absent(),
     this.title = const Value.absent(),
     this.content = const Value.absent(),
     this.summary = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.tags = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.lastUsedAt = const Value.absent(),
   });
   SnippetsCompanion.insert({
     this.id = const Value.absent(),
+    this.projectId = const Value.absent(),
     this.title = const Value.absent(),
     this.content = const Value.absent(),
     this.summary = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.tags = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.lastUsedAt = const Value.absent(),
   });
   static Insertable<Snippet> custom({
     Expression<int>? id,
+    Expression<int>? projectId,
     Expression<String>? title,
     Expression<String>? content,
     Expression<String>? summary,
+    Expression<String>? notes,
+    Expression<String>? tags,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? lastUsedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (projectId != null) 'project_id': projectId,
       if (title != null) 'title': title,
       if (content != null) 'content': content,
       if (summary != null) 'summary': summary,
+      if (notes != null) 'notes': notes,
+      if (tags != null) 'tags': tags,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (lastUsedAt != null) 'last_used_at': lastUsedAt,
@@ -1812,17 +2386,23 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
 
   SnippetsCompanion copyWith(
       {Value<int>? id,
+      Value<int?>? projectId,
       Value<String>? title,
       Value<String>? content,
       Value<String?>? summary,
+      Value<String?>? notes,
+      Value<String?>? tags,
       Value<DateTime>? createdAt,
       Value<DateTime?>? updatedAt,
       Value<DateTime?>? lastUsedAt}) {
     return SnippetsCompanion(
       id: id ?? this.id,
+      projectId: projectId ?? this.projectId,
       title: title ?? this.title,
       content: content ?? this.content,
       summary: summary ?? this.summary,
+      notes: notes ?? this.notes,
+      tags: tags ?? this.tags,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       lastUsedAt: lastUsedAt ?? this.lastUsedAt,
@@ -1835,6 +2415,9 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
+    if (projectId.present) {
+      map['project_id'] = Variable<int>(projectId.value);
+    }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
     }
@@ -1843,6 +2426,12 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
     }
     if (summary.present) {
       map['summary'] = Variable<String>(summary.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (tags.present) {
+      map['tags'] = Variable<String>(tags.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -1860,9 +2449,12 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
   String toString() {
     return (StringBuffer('SnippetsCompanion(')
           ..write('id: $id, ')
+          ..write('projectId: $projectId, ')
           ..write('title: $title, ')
           ..write('content: $content, ')
           ..write('summary: $summary, ')
+          ..write('notes: $notes, ')
+          ..write('tags: $tags, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastUsedAt: $lastUsedAt')
@@ -1874,6 +2466,7 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
 abstract class _$Database extends GeneratedDatabase {
   _$Database(QueryExecutor e) : super(e);
   $DatabaseManager get managers => $DatabaseManager(this);
+  late final $ProjectsTable projects = $ProjectsTable(this);
   late final $PromptsTable prompts = $PromptsTable(this);
   late final $PromptBlocksTable promptBlocks = $PromptBlocksTable(this);
   late final $SnippetsTable snippets = $SnippetsTable(this);
@@ -1882,11 +2475,358 @@ abstract class _$Database extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [prompts, promptBlocks, snippets];
+      [projects, prompts, promptBlocks, snippets];
 }
 
+typedef $$ProjectsTableCreateCompanionBuilder = ProjectsCompanion Function({
+  Value<int> id,
+  Value<String> title,
+  Value<String> notes,
+  Value<String?> emoji,
+  Value<int?> color,
+  Value<DateTime> createdAt,
+  Value<DateTime?> updatedAt,
+});
+typedef $$ProjectsTableUpdateCompanionBuilder = ProjectsCompanion Function({
+  Value<int> id,
+  Value<String> title,
+  Value<String> notes,
+  Value<String?> emoji,
+  Value<int?> color,
+  Value<DateTime> createdAt,
+  Value<DateTime?> updatedAt,
+});
+
+final class $$ProjectsTableReferences
+    extends BaseReferences<_$Database, $ProjectsTable, Project> {
+  $$ProjectsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$PromptsTable, List<Prompt>> _promptsRefsTable(
+          _$Database db) =>
+      MultiTypedResultKey.fromTable(db.prompts,
+          aliasName:
+              $_aliasNameGenerator(db.projects.id, db.prompts.projectId));
+
+  $$PromptsTableProcessedTableManager get promptsRefs {
+    final manager = $$PromptsTableTableManager($_db, $_db.prompts)
+        .filter((f) => f.projectId.id($_item.id));
+
+    final cache = $_typedResult.readTableOrNull(_promptsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$SnippetsTable, List<Snippet>> _snippetsRefsTable(
+          _$Database db) =>
+      MultiTypedResultKey.fromTable(db.snippets,
+          aliasName:
+              $_aliasNameGenerator(db.projects.id, db.snippets.projectId));
+
+  $$SnippetsTableProcessedTableManager get snippetsRefs {
+    final manager = $$SnippetsTableTableManager($_db, $_db.snippets)
+        .filter((f) => f.projectId.id($_item.id));
+
+    final cache = $_typedResult.readTableOrNull(_snippetsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$ProjectsTableFilterComposer
+    extends Composer<_$Database, $ProjectsTable> {
+  $$ProjectsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get emoji => $composableBuilder(
+      column: $table.emoji, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get color => $composableBuilder(
+      column: $table.color, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> promptsRefs(
+      Expression<bool> Function($$PromptsTableFilterComposer f) f) {
+    final $$PromptsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.prompts,
+        getReferencedColumn: (t) => t.projectId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PromptsTableFilterComposer(
+              $db: $db,
+              $table: $db.prompts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> snippetsRefs(
+      Expression<bool> Function($$SnippetsTableFilterComposer f) f) {
+    final $$SnippetsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.snippets,
+        getReferencedColumn: (t) => t.projectId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SnippetsTableFilterComposer(
+              $db: $db,
+              $table: $db.snippets,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$ProjectsTableOrderingComposer
+    extends Composer<_$Database, $ProjectsTable> {
+  $$ProjectsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get emoji => $composableBuilder(
+      column: $table.emoji, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get color => $composableBuilder(
+      column: $table.color, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ProjectsTableAnnotationComposer
+    extends Composer<_$Database, $ProjectsTable> {
+  $$ProjectsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get emoji =>
+      $composableBuilder(column: $table.emoji, builder: (column) => column);
+
+  GeneratedColumn<int> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  Expression<T> promptsRefs<T extends Object>(
+      Expression<T> Function($$PromptsTableAnnotationComposer a) f) {
+    final $$PromptsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.prompts,
+        getReferencedColumn: (t) => t.projectId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PromptsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.prompts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<T> snippetsRefs<T extends Object>(
+      Expression<T> Function($$SnippetsTableAnnotationComposer a) f) {
+    final $$SnippetsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.snippets,
+        getReferencedColumn: (t) => t.projectId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SnippetsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.snippets,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$ProjectsTableTableManager extends RootTableManager<
+    _$Database,
+    $ProjectsTable,
+    Project,
+    $$ProjectsTableFilterComposer,
+    $$ProjectsTableOrderingComposer,
+    $$ProjectsTableAnnotationComposer,
+    $$ProjectsTableCreateCompanionBuilder,
+    $$ProjectsTableUpdateCompanionBuilder,
+    (Project, $$ProjectsTableReferences),
+    Project,
+    PrefetchHooks Function({bool promptsRefs, bool snippetsRefs})> {
+  $$ProjectsTableTableManager(_$Database db, $ProjectsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ProjectsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ProjectsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ProjectsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<String> notes = const Value.absent(),
+            Value<String?> emoji = const Value.absent(),
+            Value<int?> color = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime?> updatedAt = const Value.absent(),
+          }) =>
+              ProjectsCompanion(
+            id: id,
+            title: title,
+            notes: notes,
+            emoji: emoji,
+            color: color,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<String> notes = const Value.absent(),
+            Value<String?> emoji = const Value.absent(),
+            Value<int?> color = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime?> updatedAt = const Value.absent(),
+          }) =>
+              ProjectsCompanion.insert(
+            id: id,
+            title: title,
+            notes: notes,
+            emoji: emoji,
+            color: color,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) =>
+                  (e.readTable(table), $$ProjectsTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: ({promptsRefs = false, snippetsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (promptsRefs) db.prompts,
+                if (snippetsRefs) db.snippets
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (promptsRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable:
+                            $$ProjectsTableReferences._promptsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$ProjectsTableReferences(db, table, p0)
+                                .promptsRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.projectId == item.id),
+                        typedResults: items),
+                  if (snippetsRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable:
+                            $$ProjectsTableReferences._snippetsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$ProjectsTableReferences(db, table, p0)
+                                .snippetsRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.projectId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$ProjectsTableProcessedTableManager = ProcessedTableManager<
+    _$Database,
+    $ProjectsTable,
+    Project,
+    $$ProjectsTableFilterComposer,
+    $$ProjectsTableOrderingComposer,
+    $$ProjectsTableAnnotationComposer,
+    $$ProjectsTableCreateCompanionBuilder,
+    $$ProjectsTableUpdateCompanionBuilder,
+    (Project, $$ProjectsTableReferences),
+    Project,
+    PrefetchHooks Function({bool promptsRefs, bool snippetsRefs})>;
 typedef $$PromptsTableCreateCompanionBuilder = PromptsCompanion Function({
   Value<int> id,
+  Value<int?> projectId,
   Value<String> title,
   Value<String> notes,
   Value<String> tags,
@@ -1898,6 +2838,7 @@ typedef $$PromptsTableCreateCompanionBuilder = PromptsCompanion Function({
 });
 typedef $$PromptsTableUpdateCompanionBuilder = PromptsCompanion Function({
   Value<int> id,
+  Value<int?> projectId,
   Value<String> title,
   Value<String> notes,
   Value<String> tags,
@@ -1911,6 +2852,19 @@ typedef $$PromptsTableUpdateCompanionBuilder = PromptsCompanion Function({
 final class $$PromptsTableReferences
     extends BaseReferences<_$Database, $PromptsTable, Prompt> {
   $$PromptsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ProjectsTable _projectIdTable(_$Database db) => db.projects
+      .createAlias($_aliasNameGenerator(db.prompts.projectId, db.projects.id));
+
+  $$ProjectsTableProcessedTableManager? get projectId {
+    if ($_item.projectId == null) return null;
+    final manager = $$ProjectsTableTableManager($_db, $_db.projects)
+        .filter((f) => f.id($_item.projectId!));
+    final item = $_typedResult.readTableOrNull(_projectIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
 
   static MultiTypedResultKey<$PromptBlocksTable, List<PromptBlock>>
       _promptBlocksRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
@@ -1963,6 +2917,26 @@ class $$PromptsTableFilterComposer extends Composer<_$Database, $PromptsTable> {
 
   ColumnFilters<DateTime> get lastOpenedAt => $composableBuilder(
       column: $table.lastOpenedAt, builder: (column) => ColumnFilters(column));
+
+  $$ProjectsTableFilterComposer get projectId {
+    final $$ProjectsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.projectId,
+        referencedTable: $db.projects,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ProjectsTableFilterComposer(
+              $db: $db,
+              $table: $db.projects,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 
   Expression<bool> promptBlocksRefs(
       Expression<bool> Function($$PromptBlocksTableFilterComposer f) f) {
@@ -2023,6 +2997,26 @@ class $$PromptsTableOrderingComposer
   ColumnOrderings<DateTime> get lastOpenedAt => $composableBuilder(
       column: $table.lastOpenedAt,
       builder: (column) => ColumnOrderings(column));
+
+  $$ProjectsTableOrderingComposer get projectId {
+    final $$ProjectsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.projectId,
+        referencedTable: $db.projects,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ProjectsTableOrderingComposer(
+              $db: $db,
+              $table: $db.projects,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $$PromptsTableAnnotationComposer
@@ -2061,6 +3055,26 @@ class $$PromptsTableAnnotationComposer
   GeneratedColumn<DateTime> get lastOpenedAt => $composableBuilder(
       column: $table.lastOpenedAt, builder: (column) => column);
 
+  $$ProjectsTableAnnotationComposer get projectId {
+    final $$ProjectsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.projectId,
+        referencedTable: $db.projects,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ProjectsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.projects,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
   Expression<T> promptBlocksRefs<T extends Object>(
       Expression<T> Function($$PromptBlocksTableAnnotationComposer a) f) {
     final $$PromptBlocksTableAnnotationComposer composer = $composerBuilder(
@@ -2094,7 +3108,7 @@ class $$PromptsTableTableManager extends RootTableManager<
     $$PromptsTableUpdateCompanionBuilder,
     (Prompt, $$PromptsTableReferences),
     Prompt,
-    PrefetchHooks Function({bool promptBlocksRefs})> {
+    PrefetchHooks Function({bool projectId, bool promptBlocksRefs})> {
   $$PromptsTableTableManager(_$Database db, $PromptsTable table)
       : super(TableManagerState(
           db: db,
@@ -2107,6 +3121,7 @@ class $$PromptsTableTableManager extends RootTableManager<
               $$PromptsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
+            Value<int?> projectId = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> notes = const Value.absent(),
             Value<String> tags = const Value.absent(),
@@ -2118,6 +3133,7 @@ class $$PromptsTableTableManager extends RootTableManager<
           }) =>
               PromptsCompanion(
             id: id,
+            projectId: projectId,
             title: title,
             notes: notes,
             tags: tags,
@@ -2129,6 +3145,7 @@ class $$PromptsTableTableManager extends RootTableManager<
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
+            Value<int?> projectId = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> notes = const Value.absent(),
             Value<String> tags = const Value.absent(),
@@ -2140,6 +3157,7 @@ class $$PromptsTableTableManager extends RootTableManager<
           }) =>
               PromptsCompanion.insert(
             id: id,
+            projectId: projectId,
             title: title,
             notes: notes,
             tags: tags,
@@ -2153,11 +3171,37 @@ class $$PromptsTableTableManager extends RootTableManager<
               .map((e) =>
                   (e.readTable(table), $$PromptsTableReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({promptBlocksRefs = false}) {
+          prefetchHooksCallback: (
+              {projectId = false, promptBlocksRefs = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [if (promptBlocksRefs) db.promptBlocks],
-              addJoins: null,
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (projectId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.projectId,
+                    referencedTable:
+                        $$PromptsTableReferences._projectIdTable(db),
+                    referencedColumn:
+                        $$PromptsTableReferences._projectIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (promptBlocksRefs)
@@ -2190,7 +3234,7 @@ typedef $$PromptsTableProcessedTableManager = ProcessedTableManager<
     $$PromptsTableUpdateCompanionBuilder,
     (Prompt, $$PromptsTableReferences),
     Prompt,
-    PrefetchHooks Function({bool promptBlocksRefs})>;
+    PrefetchHooks Function({bool projectId, bool promptBlocksRefs})>;
 typedef $$PromptBlocksTableCreateCompanionBuilder = PromptBlocksCompanion
     Function({
   Value<int> id,
@@ -2693,22 +3737,46 @@ typedef $$PromptBlocksTableProcessedTableManager = ProcessedTableManager<
     PrefetchHooks Function({bool promptId})>;
 typedef $$SnippetsTableCreateCompanionBuilder = SnippetsCompanion Function({
   Value<int> id,
+  Value<int?> projectId,
   Value<String> title,
   Value<String> content,
   Value<String?> summary,
+  Value<String?> notes,
+  Value<String?> tags,
   Value<DateTime> createdAt,
   Value<DateTime?> updatedAt,
   Value<DateTime?> lastUsedAt,
 });
 typedef $$SnippetsTableUpdateCompanionBuilder = SnippetsCompanion Function({
   Value<int> id,
+  Value<int?> projectId,
   Value<String> title,
   Value<String> content,
   Value<String?> summary,
+  Value<String?> notes,
+  Value<String?> tags,
   Value<DateTime> createdAt,
   Value<DateTime?> updatedAt,
   Value<DateTime?> lastUsedAt,
 });
+
+final class $$SnippetsTableReferences
+    extends BaseReferences<_$Database, $SnippetsTable, Snippet> {
+  $$SnippetsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ProjectsTable _projectIdTable(_$Database db) => db.projects
+      .createAlias($_aliasNameGenerator(db.snippets.projectId, db.projects.id));
+
+  $$ProjectsTableProcessedTableManager? get projectId {
+    if ($_item.projectId == null) return null;
+    final manager = $$ProjectsTableTableManager($_db, $_db.projects)
+        .filter((f) => f.id($_item.projectId!));
+    final item = $_typedResult.readTableOrNull(_projectIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
 
 class $$SnippetsTableFilterComposer
     extends Composer<_$Database, $SnippetsTable> {
@@ -2731,6 +3799,12 @@ class $$SnippetsTableFilterComposer
   ColumnFilters<String> get summary => $composableBuilder(
       column: $table.summary, builder: (column) => ColumnFilters(column));
 
+  ColumnFilters<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get tags => $composableBuilder(
+      column: $table.tags, builder: (column) => ColumnFilters(column));
+
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
 
@@ -2739,6 +3813,26 @@ class $$SnippetsTableFilterComposer
 
   ColumnFilters<DateTime> get lastUsedAt => $composableBuilder(
       column: $table.lastUsedAt, builder: (column) => ColumnFilters(column));
+
+  $$ProjectsTableFilterComposer get projectId {
+    final $$ProjectsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.projectId,
+        referencedTable: $db.projects,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ProjectsTableFilterComposer(
+              $db: $db,
+              $table: $db.projects,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $$SnippetsTableOrderingComposer
@@ -2762,6 +3856,12 @@ class $$SnippetsTableOrderingComposer
   ColumnOrderings<String> get summary => $composableBuilder(
       column: $table.summary, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get tags => $composableBuilder(
+      column: $table.tags, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 
@@ -2770,6 +3870,26 @@ class $$SnippetsTableOrderingComposer
 
   ColumnOrderings<DateTime> get lastUsedAt => $composableBuilder(
       column: $table.lastUsedAt, builder: (column) => ColumnOrderings(column));
+
+  $$ProjectsTableOrderingComposer get projectId {
+    final $$ProjectsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.projectId,
+        referencedTable: $db.projects,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ProjectsTableOrderingComposer(
+              $db: $db,
+              $table: $db.projects,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $$SnippetsTableAnnotationComposer
@@ -2793,6 +3913,12 @@ class $$SnippetsTableAnnotationComposer
   GeneratedColumn<String> get summary =>
       $composableBuilder(column: $table.summary, builder: (column) => column);
 
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get tags =>
+      $composableBuilder(column: $table.tags, builder: (column) => column);
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -2801,6 +3927,26 @@ class $$SnippetsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get lastUsedAt => $composableBuilder(
       column: $table.lastUsedAt, builder: (column) => column);
+
+  $$ProjectsTableAnnotationComposer get projectId {
+    final $$ProjectsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.projectId,
+        referencedTable: $db.projects,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ProjectsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.projects,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $$SnippetsTableTableManager extends RootTableManager<
@@ -2812,9 +3958,9 @@ class $$SnippetsTableTableManager extends RootTableManager<
     $$SnippetsTableAnnotationComposer,
     $$SnippetsTableCreateCompanionBuilder,
     $$SnippetsTableUpdateCompanionBuilder,
-    (Snippet, BaseReferences<_$Database, $SnippetsTable, Snippet>),
+    (Snippet, $$SnippetsTableReferences),
     Snippet,
-    PrefetchHooks Function()> {
+    PrefetchHooks Function({bool projectId})> {
   $$SnippetsTableTableManager(_$Database db, $SnippetsTable table)
       : super(TableManagerState(
           db: db,
@@ -2827,44 +3973,91 @@ class $$SnippetsTableTableManager extends RootTableManager<
               $$SnippetsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
+            Value<int?> projectId = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> content = const Value.absent(),
             Value<String?> summary = const Value.absent(),
+            Value<String?> notes = const Value.absent(),
+            Value<String?> tags = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime?> updatedAt = const Value.absent(),
             Value<DateTime?> lastUsedAt = const Value.absent(),
           }) =>
               SnippetsCompanion(
             id: id,
+            projectId: projectId,
             title: title,
             content: content,
             summary: summary,
+            notes: notes,
+            tags: tags,
             createdAt: createdAt,
             updatedAt: updatedAt,
             lastUsedAt: lastUsedAt,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
+            Value<int?> projectId = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> content = const Value.absent(),
             Value<String?> summary = const Value.absent(),
+            Value<String?> notes = const Value.absent(),
+            Value<String?> tags = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime?> updatedAt = const Value.absent(),
             Value<DateTime?> lastUsedAt = const Value.absent(),
           }) =>
               SnippetsCompanion.insert(
             id: id,
+            projectId: projectId,
             title: title,
             content: content,
             summary: summary,
+            notes: notes,
+            tags: tags,
             createdAt: createdAt,
             updatedAt: updatedAt,
             lastUsedAt: lastUsedAt,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) =>
+                  (e.readTable(table), $$SnippetsTableReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({projectId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (projectId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.projectId,
+                    referencedTable:
+                        $$SnippetsTableReferences._projectIdTable(db),
+                    referencedColumn:
+                        $$SnippetsTableReferences._projectIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ));
 }
 
@@ -2877,13 +4070,15 @@ typedef $$SnippetsTableProcessedTableManager = ProcessedTableManager<
     $$SnippetsTableAnnotationComposer,
     $$SnippetsTableCreateCompanionBuilder,
     $$SnippetsTableUpdateCompanionBuilder,
-    (Snippet, BaseReferences<_$Database, $SnippetsTable, Snippet>),
+    (Snippet, $$SnippetsTableReferences),
     Snippet,
-    PrefetchHooks Function()>;
+    PrefetchHooks Function({bool projectId})>;
 
 class $DatabaseManager {
   final _$Database _db;
   $DatabaseManager(this._db);
+  $$ProjectsTableTableManager get projects =>
+      $$ProjectsTableTableManager(_db, _db.projects);
   $$PromptsTableTableManager get prompts =>
       $$PromptsTableTableManager(_db, _db.prompts);
   $$PromptBlocksTableTableManager get promptBlocks =>

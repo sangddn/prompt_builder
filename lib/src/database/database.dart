@@ -13,7 +13,7 @@ export 'tables/db_tables.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Prompts, PromptBlocks, Snippets])
+@DriftDatabase(tables: [Prompts, PromptBlocks, Snippets, Projects])
 final class Database extends _$Database {
   factory Database() => instance;
   Database.custom(String name) : super(_openConnection(name));
@@ -21,7 +21,7 @@ final class Database extends _$Database {
   static final instance = Database.custom('prompt_builder');
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -29,6 +29,15 @@ final class Database extends _$Database {
         onUpgrade: (m, from, to) async {
           if (from < 2) {
             await m.addColumn(snippets, snippets.summary as GeneratedColumn);
+          }
+          if (from < 3) {
+            await m.createTable(projects);
+            await m.addColumn(prompts, prompts.projectId as GeneratedColumn);
+            await m.addColumn(snippets, snippets.projectId as GeneratedColumn);
+          }
+          if (from < 4) {
+            await m.addColumn(snippets, snippets.tags as GeneratedColumn);
+            await m.addColumn(snippets, snippets.notes as GeneratedColumn);
           }
         },
       );
@@ -71,7 +80,8 @@ final class Database extends _$Database {
     return;
   }
 
-  void closeBoxes() {
+  void dispose() {
+    close();
     boolRef.close();
     stringRef.close();
     doubleRef.close();
