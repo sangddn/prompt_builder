@@ -27,6 +27,7 @@ extension PromptsExtension on Database {
   /// - [folderPath] Optional file system path for associated folder
   /// - [ignorePatterns] Optional patterns to ignore when scanning folder
   Future<int> createPrompt({
+    int? projectId,
     String? title,
     String? notes,
     String? folderPath,
@@ -36,6 +37,7 @@ extension PromptsExtension on Database {
     final now = DateTime.now();
     final id = await into(prompts).insert(
       PromptsCompanion.insert(
+        projectId: projectId != null ? Value(projectId) : const Value.absent(),
         title: Value(title ?? ''),
         notes: Value(notes ?? ''),
         folderPath: Value(folderPath),
@@ -74,6 +76,7 @@ extension PromptsExtension on Database {
   /// - [offset] Number of results to skip for pagination (default: 0)
   /// - [tags] Optional list of tags to filter by
   /// - [searchQuery] Optional search query to filter by
+  /// - [projectId] Optional project ID to filter by
   ///
   /// If [searchQuery] is not empty, it will be used to filter prompts
   /// case-insensitively in:
@@ -89,6 +92,7 @@ extension PromptsExtension on Database {
     int offset = 0,
     List<String> tags = const [],
     String searchQuery = '',
+    Value<int?> projectId = const Value.absent(),
   }) async {
     final q = select(prompts)..limit(limit, offset: offset);
 
@@ -108,6 +112,10 @@ extension PromptsExtension on Database {
         final tagsMatch = t.tags.lower().like(searchTerm);
         return titleMatch | notesMatch | tagsMatch;
       });
+    }
+
+    if (projectId.present) {
+      q.where((t) => t.projectId.equalsNullable(projectId.value));
     }
 
     switch (sortBy) {
@@ -149,7 +157,6 @@ extension PromptsExtension on Database {
   /// - [title] Optional new title
   /// - [folderPath] Optional new folder path
   /// - [ignorePatterns] Optional new ignore patterns
-  /// - [isLibrary] Optional library status flag
   /// - [tags] Optional list of tags to replace existing tags
   Future<void> updatePrompt(
     int promptId, {

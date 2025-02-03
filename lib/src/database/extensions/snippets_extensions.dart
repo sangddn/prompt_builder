@@ -15,12 +15,14 @@ extension SnippetsExtension on Database {
     String? title,
     String? content,
     String? summary,
+    int? projectId,
   }) async {
     final snippetId = await into(snippets).insert(
       SnippetsCompanion(
         title: title != null ? Value(title) : const Value.absent(),
         content: content != null ? Value(content) : const Value.absent(),
         summary: summary != null ? Value(summary) : const Value.absent(),
+        projectId: projectId != null ? Value(projectId) : const Value.absent(),
       ),
     );
     return snippetId;
@@ -33,6 +35,7 @@ extension SnippetsExtension on Database {
   /// Query snippets with flexible sorting and filtering options.
   ///
   /// Parameters:
+  /// - [projectId] Optional project ID to filter by
   /// - [sortBy] Field to sort results by (default: createdAt)
   /// - [ascending] Sort direction (default: false/descending)
   /// - [limit] Maximum number of results to return (default: 50)
@@ -56,6 +59,7 @@ extension SnippetsExtension on Database {
     int offset = 0,
     List<String> tags = const [],
     String searchQuery = '',
+    Value<int?> projectId = const Value.absent(),
   }) async {
     final q = select(snippets)..limit(limit, offset: offset);
 
@@ -81,6 +85,10 @@ extension SnippetsExtension on Database {
             tagsMatch |
             notesMatch;
       });
+    }
+
+    if (projectId.present) {
+      q.where((t) => t.projectId.equalsNullable(projectId.value));
     }
 
     switch (sortBy) {
