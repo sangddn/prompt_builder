@@ -79,8 +79,8 @@ class _PromptTileContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
-    final isUntitled = prompt.title.let((t) => t.isEmpty);
-    final hasNoNotes = prompt.notes.let((d) => d.isEmpty);
+    final isTitled = prompt.title.let((t) => t.isNotEmpty);
+    final hasNotes = prompt.notes.let((d) => d.isNotEmpty);
     final textGray = PColors.textGray.resolveFrom(context);
 
     return Column(
@@ -90,9 +90,9 @@ class _PromptTileContent extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                isUntitled ? 'Untitled' : prompt.title,
-                style: textTheme.large
-                    .copyWith(color: isUntitled ? textGray : null),
+                isTitled ? prompt.title : 'Untitled',
+                style:
+                    textTheme.large.copyWith(color: isTitled ? null : textGray),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -110,13 +110,17 @@ class _PromptTileContent extends StatelessWidget {
             ),
           ],
         ),
-        if (!hasNoNotes)
+        if (hasNotes)
           Text(
             prompt.notes,
             style: textTheme.muted,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
+        Text(
+          _timeAgo(prompt.createdAt),
+          style: textTheme.muted,
+        ),
         const Divider(),
         Expanded(
           child: Builder(
@@ -142,6 +146,41 @@ class _PromptTileContent extends StatelessWidget {
       ],
     );
   }
+}
+
+String _timeAgo(DateTime datetime) {
+  final now = DateTime.now();
+  final difference = now.difference(datetime);
+
+  if (difference.isNegative) {
+    return 'In the future';
+  }
+
+  if (difference.inMinutes < 1) {
+    return 'Just now';
+  }
+
+  if (difference.inMinutes < 60) {
+    return '${difference.inMinutes}m ago';
+  }
+
+  if (difference.inHours < 24) {
+    return '${difference.inHours}h ago';
+  }
+
+  if (difference.inDays == 1) {
+    return 'Yesterday';
+  }
+
+  if (difference.inDays < 30) {
+    return '${difference.inDays}d ago';
+  }
+
+  final formatter = DateFormat('MMM d');
+  final yearFormatter = DateFormat('MMM d, y');
+  return datetime.year == now.year
+      ? formatter.format(datetime)
+      : yearFormatter.format(datetime);
 }
 
 class _PromptContextMenu extends StatelessWidget {
