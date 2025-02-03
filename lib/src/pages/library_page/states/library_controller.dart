@@ -1,8 +1,6 @@
 part of '../library_page.dart';
 
 const _kPageSize = 50;
-const _kSortByKey = 'library_sort_key';
-const _kSortByAscending = 'library_sort_by_ascending';
 
 final class _LibraryController implements InfinityController<Prompt> {
   _LibraryController({
@@ -45,6 +43,8 @@ final class _LibraryController implements InfinityController<Prompt> {
       final prompts = await db.queryPrompts(
         sortBy: sortByNotifier.value.$1,
         ascending: sortByNotifier.value.$2,
+        projectId:
+            sortByNotifier.value.$3 ? const Value.absent() : const Value(null),
         tags: filterTagNotifier.value?.let((it) => [it]) ?? const [],
         searchQuery: searchQueryNotifier.text,
         // ignore: avoid_redundant_argument_values

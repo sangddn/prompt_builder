@@ -80,11 +80,16 @@ class _LPProvidersState extends State<_LPProviders> {
 
 typedef _FilterTagNotifier = ValueNotifier<String?>;
 typedef _SearchQueryNotifier = TextEditingController;
-typedef _SortByNotifier = ValueNotifier<(PromptSortBy, bool)>;
+typedef _SortByNotifier
+    = ValueNotifier<(PromptSortBy, bool ascending, bool hasProject)>;
 
 // -----------------------------------------------------------------------------
 // Providers
 // -----------------------------------------------------------------------------
+
+const _kSortByKey = 'library_sort_key';
+const _kSortByAscending = 'library_sort_by_ascending';
+const _kHasProject = 'library_has_project';
 
 /// Creates a [ValueNotifier] that persists the sort by and ascending state to the
 /// database.
@@ -94,10 +99,12 @@ _SortByNotifier _createSortByNotifier(Database db) {
           ?.let((x) => PromptSortBy.values.firstWhere((v) => v.name == x)) ??
       PromptSortBy.createdAt;
   final ascending = db.boolRef.get(_kSortByAscending) ?? false;
-  final notifier = ValueNotifier((sortBy, ascending));
+  final hasProject = db.boolRef.get(_kHasProject) ?? false;
+  final notifier = ValueNotifier((sortBy, ascending, hasProject));
   notifier.addListener(() {
     db.stringRef.put(_kSortByKey, notifier.value.$1.name);
     db.boolRef.put(_kSortByAscending, notifier.value.$2);
+    db.boolRef.put(_kHasProject, notifier.value.$3);
   });
   return notifier;
 }
