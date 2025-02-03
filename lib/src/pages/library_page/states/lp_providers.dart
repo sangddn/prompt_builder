@@ -38,7 +38,7 @@ class _LPProvidersState extends State<_LPProviders> {
   Widget build(BuildContext context) => MultiProvider(
         providers: [
           Provider<Database>.value(value: widget.db),
-          ValueProvider<_FilterTagNotifier>(
+          ValueProvider<TagFilterNotifier>(
             create: (_) => ValueNotifier(null),
           ),
           ChangeNotifierProvider<_SearchQueryNotifier>(
@@ -78,7 +78,6 @@ class _LPProvidersState extends State<_LPProviders> {
 // Enums & Typedefs
 // -----------------------------------------------------------------------------
 
-typedef _FilterTagNotifier = ValueNotifier<String?>;
 typedef _SearchQueryNotifier = TextEditingController;
 typedef _SortByNotifier
     = ValueNotifier<(PromptSortBy, bool ascending, bool hasProject)>;

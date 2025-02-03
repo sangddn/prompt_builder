@@ -2,6 +2,17 @@ import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import '../database.dart';
 
+enum TagType {
+  prompt,
+  snippet,
+  ;
+
+  String get tableName => switch (this) {
+        prompt => 'prompts',
+        snippet => 'snippets',
+      };
+}
+
 /// Extension methods for tag-related database operations
 extension TagsExtension on Database {
   Selectable<TagCount> _createTagsQuery({
@@ -9,13 +20,14 @@ extension TagsExtension on Database {
     required int offset,
     required String searchQuery,
     required int minCount,
+    required TagType type,
   }) {
     return customSelect(
       '''
       WITH RECURSIVE
       split_tags(tag) AS (
         SELECT trim(value)
-        FROM prompts, json_each('["' || replace(tags, '|', '","') || '"]')
+        FROM ${type.tableName}, json_each('["' || replace(tags, '|', '","') || '"]')
         WHERE value != ''
       )
       SELECT 
@@ -36,7 +48,7 @@ extension TagsExtension on Database {
         Variable.withInt(limit),
         Variable.withInt(offset),
       ],
-      readsFrom: {prompts},
+      readsFrom: {if (type == TagType.prompt) prompts else snippets},
     ).map(
       (row) => TagCount(
         tag: row.read<String>('tag'),
@@ -59,12 +71,14 @@ extension TagsExtension on Database {
     int offset = 0,
     String searchQuery = '',
     int minCount = 1,
+    required TagType type,
   }) {
     return _createTagsQuery(
       limit: limit,
       offset: offset,
       searchQuery: searchQuery,
       minCount: minCount,
+      type: type,
     ).watch();
   }
 
@@ -76,13 +90,14 @@ extension TagsExtension on Database {
   Future<int> getTagsCount({
     String searchQuery = '',
     int minCount = 1,
+    required TagType type,
   }) async {
     final query = customSelect(
       '''
       WITH RECURSIVE
       split_tags(tag) AS (
         SELECT trim(value)
-        FROM prompts, json_each('["' || replace(tags, '|', '","') || '"]')
+        FROM ${type.tableName}, json_each('["' || replace(tags, '|', '","') || '"]')
         WHERE value != ''
       )
       SELECT COUNT(*) as total
@@ -100,7 +115,7 @@ extension TagsExtension on Database {
           Variable.withString('%${searchQuery.toLowerCase()}%'),
         Variable.withInt(minCount),
       ],
-      readsFrom: {prompts},
+      readsFrom: {if (type == TagType.prompt) prompts else snippets},
     );
 
     final row = await query.getSingle();
@@ -108,15 +123,23 @@ extension TagsExtension on Database {
   }
 
   /// Returns all prompts that have the specified tag.
-  Future<List<Prompt>> getPromptsByTag(
+  Future<List<dynamic>> getItemsByTag(
     String tag, {
     int limit = 50,
     int offset = 0,
+    required TagType type,
   }) async {
-    return (select(prompts)
-          ..where((p) => p.tags.like('%|$tag|%'))
-          ..limit(limit, offset: offset))
-        .get();
+    if (type == TagType.prompt) {
+      return (select(prompts)
+            ..where((p) => p.tags.like('%|$tag|%'))
+            ..limit(limit, offset: offset))
+          .get();
+    } else {
+      return (select(snippets)
+            ..where((s) => s.tags.like('%|$tag|%'))
+            ..limit(limit, offset: offset))
+          .get();
+    }
   }
 
   Future<List<TagCount>> getTagsByFrequency({
@@ -124,12 +147,14 @@ extension TagsExtension on Database {
     int offset = 0,
     String searchQuery = '',
     int minCount = 1,
+    required TagType type,
   }) {
     return _createTagsQuery(
       limit: limit,
       offset: offset,
       searchQuery: searchQuery,
       minCount: minCount,
+      type: type,
     ).get();
   }
 }

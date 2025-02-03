@@ -11,7 +11,7 @@ final class _LibraryController implements InfinityController<Prompt> {
   });
 
   final Database db;
-  final _FilterTagNotifier filterTagNotifier;
+  final TagFilterNotifier filterTagNotifier;
   final _SearchQueryNotifier searchQueryNotifier;
   final _SortByNotifier sortByNotifier;
 
