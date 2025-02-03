@@ -5,5 +5,6 @@ export 'file_tree/file_tree.dart';
 export 'layout_utils/layout_utils.dart';
 export 'llm_pickers/llm_pickers.dart';
 export 'markdown/markdown.dart';
+export 'project_components/project_components.dart';
 export 'prompt_components/prompt_components.dart';
 export 'snippet_components/snippet_components.dart';
