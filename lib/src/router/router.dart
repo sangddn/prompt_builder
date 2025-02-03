@@ -17,14 +17,16 @@ class AppRouter extends RootStackRouter {
               path: 'library',
               page: LibraryShellRoute.page,
               children: [
-                DefaultRoute(
-                  initial: true,
-                  page: LibraryRoute.page,
-                ),
-                DefaultRoute(
-                  path: 'prompt',
-                  page: PromptRoute.page,
-                ),
+                DefaultRoute(initial: true, page: LibraryRoute.page),
+                DefaultRoute(path: 'prompt', page: PromptRoute.page),
+              ],
+            ),
+            DefaultRoute(
+              path: 'projects',
+              page: ProjectsShellRoute.page,
+              children: [
+                DefaultRoute(initial: true, page: ProjectsRoute.page),
+                DefaultRoute(path: ':id', page: ProjectRoute.page),
               ],
             ),
             DefaultRoute(path: 'snippets', page: SnippetsRoute.page),
@@ -38,6 +40,11 @@ class AppRouter extends RootStackRouter {
 @RoutePage()
 class LibraryShellPage extends AutoRouter {
   const LibraryShellPage({super.key});
+}
+
+@RoutePage()
+class ProjectsShellPage extends AutoRouter {
+  const ProjectsShellPage({super.key});
 }
 
 class DefaultRoute extends CustomRoute<void> {

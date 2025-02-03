@@ -19,10 +19,11 @@ class ShellPage extends StatelessWidget {
     var lastIndex = 0;
     return AutoTabsRouter(
       homeIndex: 0,
-      routes: [
+      routes: const [
         LibraryRoute(),
+        ProjectsRoute(),
         SnippetsRoute(),
-        const SettingsRoute(),
+        SettingsRoute(),
         ResourcesRoute(),
       ],
       transitionBuilder: (context, child, animation) {
@@ -82,9 +83,10 @@ class _Sidebar extends StatelessWidget {
         children: [
           _NewPromptButton(),
           _NavButton(HugeIcons.strokeRoundedHome09, 'Library', 0),
-          _NavButton(HugeIcons.strokeRoundedQuoteDown, 'Snippets', 1),
-          _NavButton(HugeIcons.strokeRoundedSettings01, 'Settings', 2),
-          _NavButton(CupertinoIcons.question_circle, 'Resources', 3),
+          _NavButton(HugeIcons.strokeRoundedFolder01, 'Projects', 1),
+          _NavButton(HugeIcons.strokeRoundedQuoteDown, 'Snippets', 2),
+          _NavButton(HugeIcons.strokeRoundedSettings01, 'Settings', 3),
+          _NavButton(CupertinoIcons.question_circle, 'Resources', 4),
         ],
       ),
     );
