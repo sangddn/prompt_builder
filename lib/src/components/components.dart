@@ -8,3 +8,4 @@ export 'markdown/markdown.dart';
 export 'project_components/project_components.dart';
 export 'prompt_components/prompt_components.dart';
 export 'snippet_components/snippet_components.dart';
+export 'token_counter_components/token_counter_components.dart';
