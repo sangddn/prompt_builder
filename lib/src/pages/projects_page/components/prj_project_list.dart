@@ -5,10 +5,14 @@ class _PRJProjectList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = context.controller;
     return InfinityAndBeyond<Project>(
-      controller: context.controller,
+      controller: controller,
       itemPadding: k16H8VPadding,
-      itemBuilder: (context, index, project) => ProjectCard(project: project),
+      itemBuilder: (context, index, project) => ProjectCard(
+        key: ValueKey(Object.hash(project, controller.sortByNotifier.value)),
+        project: project,
+      ),
     );
   }
 }
