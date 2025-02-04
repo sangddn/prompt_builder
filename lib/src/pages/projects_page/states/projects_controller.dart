@@ -61,7 +61,7 @@ final class _ProjectsController implements InfinityController<Project> {
     context.read<_SortByNotifier>().value = (ProjectSortBy.createdAt, false);
   }
 
-  Future<void> onProjectDeleted(BuildContext context, int projectId) async {
+  void onProjectDeleted(int projectId) {
     final c = pagingController;
     c.itemList = List.of(c.itemList ?? [])
       ..removeWhere((p) => p.id == projectId);

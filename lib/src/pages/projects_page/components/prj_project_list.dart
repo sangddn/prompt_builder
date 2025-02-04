@@ -18,6 +18,9 @@ class _PRJProjectList extends StatelessWidget {
             await controller.reloadProject(context, project.id);
           });
         },
+        onDelete: () {
+          controller.onProjectDeleted(project.id);
+        },
         project: project,
       ),
     );
