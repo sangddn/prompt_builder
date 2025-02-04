@@ -177,10 +177,9 @@ class _ProjectResult extends StatelessWidget {
     final highlights = context.watch<List<String>>();
     final title = project.title;
 
-    return HoverTapBuilder(
+    return HoverBuilder(
       builder: (context, isHovered) {
         void select() => context.maybePop(project);
-
         final trailing = isHovered
             ? ShadBadge(onPressed: select, child: const Text('Move'))
             : ShadBadge.secondary(onPressed: select, child: const Text('Move'));

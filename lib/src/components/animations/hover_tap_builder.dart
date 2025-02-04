@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class HoverTapBuilder extends StatefulWidget {
@@ -137,6 +138,59 @@ class _DisambiguatedHoverTapBuilderState
         onTap: widget.onTap,
         child: widget.builder(context, _isHovering, _isPressing),
       ),
+    );
+  }
+}
+
+class HoverBuilder extends StatefulWidget {
+  const HoverBuilder({
+    this.hitTestBehavior,
+    this.opaque = true,
+    this.cursor = MouseCursor.defer,
+    this.onEnter,
+    this.onExit,
+    this.onHover,
+    required this.builder,
+    super.key,
+  });
+
+  final HitTestBehavior? hitTestBehavior;
+  final bool opaque;
+  final MouseCursor cursor;
+  final ValueChanged<PointerEnterEvent>? onEnter;
+  final ValueChanged<PointerExitEvent>? onExit;
+  final ValueChanged<PointerHoverEvent>? onHover;
+  final Widget Function(BuildContext context, bool isHovering) builder;
+
+  @override
+  State<HoverBuilder> createState() => _HoverBuilderState();
+}
+
+class _HoverBuilderState extends State<HoverBuilder> {
+  bool _isHovering = false;
+
+  void _onHover(bool isHovering) {
+    setState(() {
+      _isHovering = isHovering;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      hitTestBehavior: widget.hitTestBehavior,
+      opaque: widget.opaque,
+      cursor: widget.cursor,
+      onEnter: (event) {
+        _onHover(true);
+        widget.onEnter?.call(event);
+      },
+      onExit: (event) {
+        _onHover(false);
+        widget.onExit?.call(event);
+      },
+      onHover: widget.onHover,
+      child: widget.builder(context, _isHovering),
     );
   }
 }
