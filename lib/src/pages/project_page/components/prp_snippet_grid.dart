@@ -13,6 +13,7 @@ class _PRPSnippetGrid extends StatelessWidget {
     final controller = context.read<SnippetListController>();
     return SnippetList(
       controller: controller,
+      showProjectName: false,
       areSnippetsCollapsed: true,
     );
   }

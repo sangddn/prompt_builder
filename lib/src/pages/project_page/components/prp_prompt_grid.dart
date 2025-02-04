@@ -10,7 +10,10 @@ class _PRPPromptGrid extends StatelessWidget {
         child: CircularProgressIndicator.adaptive(),
       );
     }
-    return PromptGrid(controller: context.read<PromptGridController>());
+    return PromptGrid(
+      controller: context.read<PromptGridController>(),
+      showProjectName: false,
+    );
   }
 }
 

@@ -37,7 +37,7 @@ class ProjectCard extends MultiProviderWidget {
           children: [
             if (project.notes.isNotEmpty) Text(project.notes),
             Text(
-              '${project.updatedAt != null && project.updatedAt != project.createdAt ? 'Updated ${timeAgo(project.updatedAt!)} • ' : ''}Created ${timeAgo(project.createdAt)}',
+              '${project.updatedAt != null && project.updatedAt != project.createdAt ? 'Updated ${timeAgo(project.updatedAt!).toLowerCase()} • ' : ''}Created ${timeAgo(project.createdAt).toLowerCase()}',
             ),
           ],
         ),

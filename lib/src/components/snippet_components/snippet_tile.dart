@@ -11,6 +11,7 @@ import '../components.dart';
 
 class SnippetTile extends StatelessWidget {
   const SnippetTile({
+    this.showProjectName = true,
     this.isCollapsed = false,
     this.onDelete,
     this.onExpanded,
@@ -19,6 +20,7 @@ class SnippetTile extends StatelessWidget {
   });
 
   final bool isCollapsed;
+  final bool showProjectName;
   final VoidCallback? onDelete;
   final VoidCallback? onExpanded;
   final Snippet snippet;
@@ -31,6 +33,7 @@ class SnippetTile extends StatelessWidget {
         providers: [
           Provider<Snippet>.value(value: snippet),
           Provider<VoidCallback?>.value(value: onExpanded),
+          Provider<bool>.value(value: showProjectName),
           if (!isCollapsed) ...[
             ValueProvider<TextEditingController>(
               create: (_) => TextEditingController(text: snippet.content),
@@ -58,7 +61,7 @@ class SnippetTile extends StatelessWidget {
               child: const Text('Delete'),
             ),
           ],
-          child: !isCollapsed ? const _CollapsedContent() : const _Content(),
+          child: isCollapsed ? const _CollapsedContent() : const _Content(),
         ),
       ),
     );
@@ -88,11 +91,14 @@ class _CollapsedContent extends StatelessWidget {
           children: [
             if (snippet.notes?.isNotEmpty ?? false) Text(snippet.notes!),
             Text(
-              '${snippet.updatedAt != null && snippet.updatedAt != snippet.createdAt ? 'Updated ${timeAgo(snippet.updatedAt!)} • ' : ''}Created ${timeAgo(snippet.createdAt)}',
+              '${snippet.updatedAt != null && snippet.updatedAt != snippet.createdAt ? 'Updated ${timeAgo(snippet.updatedAt!).toLowerCase()} • ' : ''}Created ${timeAgo(snippet.createdAt).toLowerCase()}',
             ),
           ],
         ),
       ),
+      trailing: snippet.projectId != null && context.watch<bool>()
+          ? ProjectName(snippet.projectId!)
+          : null,
       isThreeLine: snippet.notes?.isNotEmpty ?? false,
       visualDensity: VisualDensity.comfortable,
       shape: Superellipse.border16,
@@ -114,21 +120,26 @@ class _Content extends StatelessWidget {
         shape: Superellipse.border12,
         color: PColors.lightGray.resolveFrom(context),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Expanded(child: _TitleField()),
               Gap(8.0),
               _ExpansionButton(),
             ],
           ),
-          Gap(6.0),
-          _ContentField(),
-          Gap(12.0),
-          _Variables(),
-          Gap(8.0),
+          if (context.watch<bool>())
+            Padding(
+              padding: const EdgeInsets.only(top: 2.0, bottom: 8.0),
+              child: ProjectName(context.snippet.projectId!),
+            ),
+          const Gap(6.0),
+          const _ContentField(),
+          const Gap(12.0),
+          const _Variables(),
+          const Gap(8.0),
         ],
       ),
     );

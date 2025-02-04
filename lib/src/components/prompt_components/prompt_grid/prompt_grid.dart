@@ -10,8 +10,13 @@ import '../../components.dart';
 part 'prompt_grid_controller.dart';
 
 class PromptGrid extends StatelessWidget {
-  const PromptGrid({required this.controller, super.key});
+  const PromptGrid({
+    this.showProjectName = true,
+    required this.controller,
+    super.key,
+  });
 
+  final bool showProjectName;
   final PromptGridController controller;
 
   @override
@@ -39,6 +44,7 @@ class PromptGrid extends StatelessWidget {
         },
         onDeleted: () => controller.onPromptDeleted(prompt),
         onDuplicated: controller.onPromptAdded,
+        showProjectName: showProjectName,
         prompt: prompt,
       ),
     );

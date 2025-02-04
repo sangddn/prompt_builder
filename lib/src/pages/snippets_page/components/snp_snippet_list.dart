@@ -6,6 +6,6 @@ class _SNPSnippetList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = context.read<SnippetListController>();
-    return SnippetList(controller: controller);
+    return SnippetList(controller: controller, areSnippetsCollapsed: true);
   }
 }

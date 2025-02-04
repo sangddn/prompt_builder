@@ -13,16 +13,19 @@ part 'snippet_list_controller.dart';
 class SnippetList extends StatelessWidget {
   const SnippetList({
     required this.controller,
+    this.showProjectName = true,
     this.areSnippetsCollapsed = false,
     super.key,
   }) : _useGrid = false;
 
   const SnippetList.grid({
+    this.showProjectName = true,
     required this.controller,
     super.key,
   })  : _useGrid = true,
         areSnippetsCollapsed = false;
 
+  final bool showProjectName;
   final bool areSnippetsCollapsed;
   final SnippetListController controller;
   final bool _useGrid;
@@ -39,6 +42,8 @@ class SnippetList extends StatelessWidget {
                   controller.projectIdNotifier?.value,
                 ),
               ),
+              isCollapsed: areSnippetsCollapsed,
+              showProjectName: showProjectName,
               snippet: snippet,
               onDelete: () => controller.onSnippetDeleted(snippet.id),
               onExpanded: () async {

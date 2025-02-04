@@ -16,6 +16,7 @@ class PromptTile extends StatelessWidget {
     this.onDeleted,
     this.onDuplicated,
     this.onRemovedFromProject,
+    this.showProjectName = true,
     required this.prompt,
     super.key,
   });
@@ -25,6 +26,7 @@ class PromptTile extends StatelessWidget {
   final void Function(int newPromptId)? onDuplicated;
   final void Function(int promptId)? onRemovedFromProject;
   final Decoration? decoration;
+  final bool showProjectName;
   final Prompt prompt;
 
   @override
@@ -68,7 +70,7 @@ class PromptTile extends StatelessWidget {
                 : focusedShadows(elevation: 0.5),
           ),
           padding: k16H12VPadding,
-          child: _PromptTileContent(prompt),
+          child: _PromptTileContent(prompt, showProjectName),
         ),
       ),
     );
@@ -76,9 +78,10 @@ class PromptTile extends StatelessWidget {
 }
 
 class _PromptTileContent extends StatelessWidget {
-  const _PromptTileContent(this.prompt);
+  const _PromptTileContent(this.prompt, this.showProjectName);
 
   final Prompt prompt;
+  final bool showProjectName;
 
   @override
   Widget build(BuildContext context) {
@@ -125,16 +128,18 @@ class _PromptTileContent extends StatelessWidget {
           timeAgo(prompt.createdAt),
           style: textTheme.muted,
         ),
+        if (prompt.projectId != null && showProjectName)
+          Padding(
+            padding: const EdgeInsets.only(top: 2.0),
+            child: ProjectName(prompt.projectId!),
+          ),
         const Divider(),
         Expanded(
           child: Builder(
             builder: (context) {
               final string = context.watch<String?>();
               if (string == null) {
-                return const ContainerShimmer(
-                  height: double.infinity,
-                  radius: 4.0,
-                );
+                return const SizedBox.shrink();
               }
               return Padding(
                 padding: k4APadding,
