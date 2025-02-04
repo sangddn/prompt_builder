@@ -37,7 +37,7 @@ class PromptGrid extends StatelessWidget {
         ),
         onTap: () async {
           await context.pushPromptRoute(id: prompt.id);
-          Future<void>.delayed(const Duration(milliseconds: 300)).then((_) {
+          Future<void>.delayed(const Duration(seconds: 1)).then((_) {
             if (!context.mounted) return;
             controller.reloadPrompt(context, prompt.id);
           });

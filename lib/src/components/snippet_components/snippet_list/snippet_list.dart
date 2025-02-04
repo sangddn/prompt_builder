@@ -48,7 +48,7 @@ class SnippetList extends StatelessWidget {
               onDelete: () => controller.onSnippetDeleted(snippet.id),
               onExpanded: () async {
                 await context.pushSnippetRoute(id: snippet.id);
-                Future.delayed(const Duration(milliseconds: 300), () async {
+                Future.delayed(const Duration(seconds: 1), () async {
                   if (!context.mounted) return;
                   await controller.reloadSnippet(context, snippet.id);
                 });
