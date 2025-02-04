@@ -14,7 +14,13 @@ class _PPAppBar extends StatelessWidget {
           MaybeBackButton(),
           Align(
             alignment: AlignmentDirectional.centerEnd,
-            child: _ExportButton(),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _ProjectButton(),
+                _ExportButton(),
+              ],
+            ),
           ),
         ],
       ),
@@ -81,7 +87,6 @@ class _ExportButton extends StatelessWidget {
         padding: k8APadding,
         child: CButton(
           tooltip: 'Export',
-          cornerRadius: 12.0,
           onTap: () async {
             final promptId = context.prompt?.id;
             if (promptId == null) return;
@@ -89,6 +94,52 @@ class _ExportButton extends StatelessWidget {
             await exportPrompt(context, db, promptId);
           },
           child: const Icon(LucideIcons.share, size: 16.0),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProjectButton extends StatelessWidget {
+  const _ProjectButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final projectId = context.selectPrompt((p) => p?.projectId);
+    return CButton(
+      tooltip: projectId == null ? 'Move to Project' : 'Change Project',
+      onTap: () async {
+        final db = context.db;
+        final promptId = context.prompt?.id;
+        if (promptId == null) return;
+        final project = await pickProject(context, currentProject: projectId);
+        if (project == null) return;
+        if (!project.present) {
+          await db.removePromptFromProject(promptId);
+        } else {
+          final projectId = project.value.id;
+          await db.addPromptToProject(projectId, promptId);
+        }
+      },
+      padding: k16H8VPadding,
+      child: AnimatedSize(
+        duration: const Duration(milliseconds: 200),
+        alignment: Alignment.centerRight,
+        curve: Curves.easeInOut,
+        child: Row(
+          children: [
+            ZoomSwitcher.zoomIn(
+              child: projectId == null
+                  ? const Icon(LucideIcons.folderInput, size: 16.0)
+                  : const Icon(LucideIcons.folderOpen, size: 16.0),
+            ),
+            const Gap(4.0),
+            TranslationSwitcher.top(
+              child: projectId == null
+                  ? Text('Project', style: context.textTheme.muted)
+                  : ProjectName(projectId, key: ValueKey(projectId)),
+            ),
+          ],
         ),
       ),
     );

@@ -197,7 +197,7 @@ const _zCurveOut = Curves.easeOut;
 class ZoomSwitcher extends AnimatedSwitcher {
   /// Switcher with zoom in transition
   ZoomSwitcher.zoomIn({
-    required super.duration,
+    super.duration = Effects.shortDuration,
     super.reverseDuration,
     Curve? switchInCurve,
     Curve? switchOutCurve,
@@ -216,7 +216,7 @@ class ZoomSwitcher extends AnimatedSwitcher {
 
   /// Switcher with zoom out transition
   ZoomSwitcher.zoomOut({
-    required super.duration,
+    super.duration = Effects.shortDuration,
     super.reverseDuration,
     Curve? switchInCurve,
     Curve? switchOutCurve,

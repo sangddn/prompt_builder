@@ -21,7 +21,6 @@ import '../../components/components.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';
 import '../../services/services.dart';
-import '../library_page/library_observer.dart';
 
 part 'components/pp_app_bar.dart';
 part 'components/pp_copy_section.dart';

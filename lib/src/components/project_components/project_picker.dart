@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -11,23 +12,37 @@ import '../../core/core.dart';
 import '../../database/database.dart';
 import '../components.dart';
 
-Future<Project?> pickProject(BuildContext context) => showPDialog<Project?>(
+/// Picks a project from the database.
+///
+/// If [currentProject] is provided, the picker will show the current project
+/// as selected.
+///
+/// Returns `Value.absent()` if the existing project is deleted, `Value(project)`
+/// if the user picks a new project, or `null` if the dialog is dismissed.
+Future<Value<Project>?> pickProject(
+  BuildContext context, {
+  int? currentProject,
+}) =>
+    showPDialog<Value<Project>?>(
       context: context,
       barrierColor: Colors.transparent,
       builder: (_) => Provider<Database>.value(
         value: context.db,
-        child: const ProjectPicker(),
+        child: ProjectPicker(currentProject: currentProject),
       ),
     );
 
 class ProjectPicker extends StatelessWidget {
-  const ProjectPicker({super.key});
+  const ProjectPicker({this.currentProject, super.key});
+
+  final int? currentProject;
 
   @override
   Widget build(BuildContext context) {
     return FocusScope(
       child: MultiProvider(
         providers: [
+          Provider<int?>.value(value: currentProject),
           ValueProvider<ValueNotifier<_ProjectSearchState>>(
             create: (_) => ValueNotifier(_ProjectSearchState.idle),
           ),
@@ -176,16 +191,21 @@ class _ProjectResult extends StatelessWidget {
   Widget build(BuildContext context) {
     final highlights = context.watch<List<String>>();
     final title = project.title;
+    final currentProject = context.watchCurrentProject();
+    final isCurrent = currentProject == project.id;
 
     return HoverBuilder(
       builder: (context, isHovered) {
-        void select() => context.maybePop(project);
+        void selectOrDeselect() => isCurrent
+            ? context.maybePop(const Value<Project>.absent())
+            : context.maybePop(Value(project));
+        final text = isCurrent ? const Text('Remove') : const Text('Move');
         final trailing = isHovered
-            ? ShadBadge(onPressed: select, child: const Text('Move'))
-            : ShadBadge.secondary(onPressed: select, child: const Text('Move'));
+            ? ShadBadge(onPressed: selectOrDeselect, child: text)
+            : ShadBadge.secondary(onPressed: selectOrDeselect, child: text);
         return CButton(
           tooltip: null,
-          onTap: select,
+          onTap: selectOrDeselect,
           padding: k16H12VPadding,
           child: Row(
             children: [
@@ -248,6 +268,8 @@ extension _ProjectSearchSectionExtension on BuildContext {
 
   _ResultsNotifier get resultsNotifier => read();
   T selectResults<T>(T Function(_ResultsNotifier notifier) fn) => select(fn);
+
+  int? watchCurrentProject() => watch();
 
   Future<void> _search() async {
     final toaster = this.toaster;

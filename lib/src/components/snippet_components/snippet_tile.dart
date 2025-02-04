@@ -70,7 +70,7 @@ class SnippetTile extends StatelessWidget {
                 ),
               ShadContextMenuItem(
                 onPressed: () async {
-                  await context.db.removeSnippetFromProject(projectId);
+                  await context.db.removeSnippetFromProject(snippet.id);
                   onProjectChanged?.call(null);
                 },
                 trailing: const ShadImage.square(
@@ -83,11 +83,19 @@ class SnippetTile extends StatelessWidget {
             ShadContextMenuItem(
               onPressed: () async {
                 final db = context.db;
-                final project = await pickProject(context);
+                final project = await pickProject(
+                  context,
+                  currentProject: snippet.projectId,
+                );
                 if (project == null) return;
-                final projectId = project.id;
-                await db.addSnippetToProject(projectId, snippet.id);
-                onProjectChanged?.call(project);
+                if (!project.present) {
+                  await db.removeSnippetFromProject(snippet.id);
+                  onProjectChanged?.call(null);
+                } else {
+                  final projectId = project.value.id;
+                  await db.addSnippetToProject(projectId, snippet.id);
+                  onProjectChanged?.call(project.value);
+                }
               },
               trailing: const ShadImage.square(
                 LucideIcons.folderInput,

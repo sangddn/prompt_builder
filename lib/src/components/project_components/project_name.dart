@@ -14,6 +14,7 @@ class ProjectName extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureProvider<Project?>(
+      key: ValueKey(projectId),
       initialData: null,
       create: (context) => context.db.getProject(projectId),
       catchError: (context, error) {

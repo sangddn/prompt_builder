@@ -302,11 +302,19 @@ class _PromptContextMenu extends StatelessWidget {
               try {
                 final prompt = context.prompt;
                 final db = context.db;
-                final project = await pickProject(context);
+                final project = await pickProject(
+                  context,
+                  currentProject: prompt.projectId,
+                );
                 if (project == null) return;
-                final projectId = project.id;
-                await db.addPromptToProject(projectId, prompt.id);
-                onAddedToProject?.call(projectId);
+                if (!project.present) {
+                  await db.removePromptFromProject(prompt.id);
+                  onRemovedFromProject?.call();
+                } else {
+                  final projectId = project.value.id;
+                  await db.addPromptToProject(projectId, prompt.id);
+                  onAddedToProject?.call(projectId);
+                }
               } catch (e, s) {
                 debugPrint(
                   'Error adding prompt to project: $e. Stack: $s',
