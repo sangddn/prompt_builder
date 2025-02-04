@@ -37,6 +37,7 @@ class SelectValueBuilder<T, R> extends StatefulWidget {
     required this.valueListenable,
     required this.selector,
     required this.builder,
+    this.child,
     super.key,
   });
 
@@ -51,7 +52,11 @@ class SelectValueBuilder<T, R> extends StatefulWidget {
   /// A function that builds the widget based on the value returned by
   /// [selector].
   ///
-  final Widget Function(BuildContext context, R value) builder;
+  final Widget Function(BuildContext context, R value, Widget? child) builder;
+
+  /// A widget to be used as a child of the widget returned by [builder].
+  ///
+  final Widget? child;
 
   @override
   State<SelectValueBuilder<T, R>> createState() => _SelectValueBuilderState();
@@ -77,6 +82,7 @@ class _SelectValueBuilderState<T, R> extends State<SelectValueBuilder<T, R>> {
 
   void _onValueChanged() {
     final newValue = widget.selector(widget.valueListenable.value);
+    debugPrint('newValue: $newValue. different: ${newValue != _value}');
     if (newValue != _value) {
       setState(() {
         _value = newValue;
@@ -92,7 +98,7 @@ class _SelectValueBuilderState<T, R> extends State<SelectValueBuilder<T, R>> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(context, _value);
+    return widget.builder(context, _value, widget.child);
   }
 }
 
@@ -552,13 +558,23 @@ class _SelectListenableBuilderState<T extends Listenable?, R>
 abstract class MultiProviderWidget extends StatelessWidget {
   const MultiProviderWidget({super.key});
 
-  List<SingleChildWidget> get providers;
+  List<SingleChildWidget> get providers => const [];
+  List<SingleChildWidget> getProviders(BuildContext context) => const [];
 
   Widget buildChild(BuildContext context);
 
   @override
   Widget build(BuildContext context) => MultiProvider(
-        providers: providers,
+        providers: providers.isEmpty
+            ? () {
+                final providers = getProviders(context);
+                assert(
+                  providers.isNotEmpty,
+                  'getProviders must return a non-empty list',
+                );
+                return providers;
+              }()
+            : providers,
         builder: (context, _) => buildChild(context),
       );
 }

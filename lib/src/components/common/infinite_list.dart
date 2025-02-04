@@ -10,6 +10,8 @@ enum _LayoutType {
   sliverGrid,
 }
 
+typedef InfinityItemBuilder<T> = Widget Function(BuildContext, int, T);
+
 /// A widget that displays a grid of items that can be scrolled infinitely.
 ///
 /// This widget is a wrapper around the [PagedListView], [PagedMasonryGridView],
@@ -67,7 +69,7 @@ class InfinityAndBeyond<T> extends StatefulWidget {
   final EdgeInsetsGeometry itemPadding, padding;
   final WidgetBuilder buildEmpty, buildError;
   final bool shrinkWrap;
-  final Widget Function(BuildContext, int, T) itemBuilder;
+  final InfinityItemBuilder<T> itemBuilder;
   final WidgetBuilder? progressBuilder;
   final IndexedWidgetBuilder? separatorBuilder;
   final InfinityController<T> controller;

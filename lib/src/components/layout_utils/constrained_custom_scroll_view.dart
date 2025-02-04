@@ -114,7 +114,6 @@ class ConstrainedSliver extends StatelessWidget {
     final maxWidth = context.watch<_Constraints>().maxWidth;
     final horizontalPadding =
         max((maxWidth - maxCrossAxisExtent) / 2, minCrossAxisPadding);
-    debugPrint('max width: $maxWidth, horizontal padding: $horizontalPadding');
     return SliverPadding(
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
       sliver: sliver,
