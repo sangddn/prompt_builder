@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/widgets.dart';
 
 import 'router.gr.dart';
 
@@ -11,52 +12,25 @@ class AppRouter extends RootStackRouter {
   List<AutoRoute> get routes => [
         DefaultRoute(
           initial: true,
-          page: ShellRoute.page,
+          page: AppShellRoute.page,
           children: [
             DefaultRoute(
-              path: 'library',
-              page: LibraryShellRoute.page,
+              initial: true,
+              page: MainTabsRoute.page,
               children: [
-                DefaultRoute(initial: true, page: LibraryRoute.page),
-                DefaultRoute(path: 'prompt', page: PromptRoute.page),
+                DefaultRoute(path: 'library', page: LibraryRoute.page),
+                DefaultRoute(path: 'projects', page: ProjectsRoute.page),
+                DefaultRoute(path: 'snippets', page: SnippetsRoute.page),
+                DefaultRoute(path: 'settings', page: SettingsRoute.page),
+                DefaultRoute(path: 'resources', page: ResourcesRoute.page),
               ],
             ),
-            DefaultRoute(
-              path: 'projects',
-              page: ProjectsShellRoute.page,
-              children: [
-                DefaultRoute(initial: true, page: ProjectsRoute.page),
-                DefaultRoute(path: ':id', page: ProjectRoute.page),
-              ],
-            ),
-            DefaultRoute(
-              path: 'snippets',
-              page: SnippetsShellRoute.page,
-              children: [
-                DefaultRoute(initial: true, page: SnippetsRoute.page),
-                DefaultRoute(path: ':id', page: SnippetRoute.page),
-              ],
-            ),
-            DefaultRoute(path: 'settings', page: SettingsRoute.page),
-            DefaultRoute(path: 'resources', page: ResourcesRoute.page),
+            DefaultRoute(path: 'prompt/:id', page: PromptRoute.page),
+            DefaultRoute(path: 'project/:id', page: ProjectRoute.page),
+            DefaultRoute(path: 'snippet/:id', page: SnippetRoute.page),
           ],
         ),
       ];
-}
-
-@RoutePage()
-class LibraryShellPage extends AutoRouter {
-  const LibraryShellPage({super.key});
-}
-
-@RoutePage()
-class ProjectsShellPage extends AutoRouter {
-  const ProjectsShellPage({super.key});
-}
-
-@RoutePage()
-class SnippetsShellPage extends AutoRouter {
-  const SnippetsShellPage({super.key});
 }
 
 class DefaultRoute extends CustomRoute<void> {
@@ -69,4 +43,39 @@ class DefaultRoute extends CustomRoute<void> {
           transitionsBuilder: TransitionsBuilders.fadeIn,
           durationInMilliseconds: 50,
         );
+}
+
+extension RoutingExtension on BuildContext {
+  void _ensureMainTabsRoute() {
+    if (router.topRoute.parent?.name != 'MainTabsRoute') {
+      router.popUntil(scoped: false, (route) {
+        return route.data?.name == 'MainTabsRoute';
+      });
+    }
+  }
+
+  void _ensureMainTabsOrProjectRoute() {
+    if (router.topRoute.parent?.name != 'MainTabsRoute' &&
+        router.topRoute.parent?.name != 'ProjectRoute') {
+      router.popUntil(scoped: false, (route) {
+        return route.data?.name == 'MainTabsRoute' ||
+            route.data?.name == 'ProjectRoute';
+      });
+    }
+  }
+
+  Future<void> pushPromptRoute({required int id}) {
+    _ensureMainTabsOrProjectRoute();
+    return pushRoute(PromptRoute(id: id));
+  }
+
+  Future<void> pushProjectRoute({required int id}) {
+    _ensureMainTabsRoute();
+    return pushRoute(ProjectRoute(id: id));
+  }
+
+  Future<void> pushSnippetRoute({required int id}) {
+    _ensureMainTabsOrProjectRoute();
+    return pushRoute(SnippetRoute(id: id));
+  }
 }

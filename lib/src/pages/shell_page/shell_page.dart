@@ -7,12 +7,47 @@ import 'package:provider/provider.dart';
 import '../../components/components.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';
+import '../../router/router.dart';
 import '../../router/router.gr.dart';
 import '../library_page/library_observer.dart';
 
 @RoutePage()
-class ShellPage extends StatelessWidget {
-  const ShellPage({super.key});
+class AppShellPage extends StatefulWidget {
+  const AppShellPage({super.key});
+
+  @override
+  State<AppShellPage> createState() => _AppShellPageState();
+}
+
+class _AppShellPageState extends State<AppShellPage> {
+  TabsRouter? _tabsRouter;
+  // ignore: avoid_setters_without_getters
+  set tabsRouter(TabsRouter value) {
+    _tabsRouter = value;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableProvider<TabsRouter?>.value(
+      value: _tabsRouter,
+      child: const Scaffold(
+        body: Row(
+          children: [
+            _Sidebar(),
+            Expanded(child: AutoRouter()),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+@RoutePage()
+class MainTabsPage extends StatelessWidget {
+  const MainTabsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,20 +87,21 @@ class ShellPage extends StatelessWidget {
           ),
         );
       },
-      builder: (context, child) => CallbackShortcuts(
-        bindings: {
-          const SingleActivator(meta: true, LogicalKeyboardKey.keyN): () =>
-              _openNewPrompt(context),
-        },
-        child: Scaffold(
-          body: Row(
-            children: [
-              const _Sidebar(),
-              Expanded(child: child),
-            ],
-          ),
-        ),
-      ),
+      builder: (context, child) {
+        final noTabsRouter =
+            context.select((TabsRouter? tabsRouter) => tabsRouter == null);
+        if (noTabsRouter) {
+          context.findAncestorStateOfType<_AppShellPageState>()!.tabsRouter =
+              AutoTabsRouter.of(context, watch: true);
+        }
+        return CallbackShortcuts(
+          bindings: {
+            const SingleActivator(meta: true, LogicalKeyboardKey.keyN): () =>
+                _openNewPrompt(context),
+          },
+          child: child,
+        );
+      },
     );
   }
 }
@@ -102,8 +138,8 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tabsRouter = AutoTabsRouter.of(context, watch: true);
-    final isActive = tabsRouter.activeIndex == index;
+    final tabsRouter = context.watch<TabsRouter?>();
+    final isActive = tabsRouter?.activeIndex == index;
     return CButton(
       tooltip: tooltip,
       padding: k24H12VPadding,
@@ -119,7 +155,13 @@ class _NavButton extends StatelessWidget {
         ),
       ),
       onTap: () {
-        tabsRouter.setActiveIndex(index);
+        tabsRouter?.setActiveIndex(index);
+        final active = tabsRouter?.current;
+        if (context.router.topRoute.name != active?.name) {
+          context.router.popUntil(scoped: false, (route) {
+            return route.data?.name == 'MainTabsRoute';
+          });
+        }
       },
     );
   }
@@ -151,5 +193,5 @@ Future<void> _openNewPrompt(BuildContext context) async {
   final id = await context.read<Database>().createPrompt();
   if (!context.mounted) return;
   NewPromptAddedNotification(id: id).dispatch(context);
-  context.router.popAndPush(PromptRoute(id: id));
+  context.pushPromptRoute(id: id);
 }
