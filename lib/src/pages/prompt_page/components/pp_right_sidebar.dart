@@ -43,7 +43,6 @@ class _PromptNotes extends StatelessWidget {
     void updatePromptNotes(String newNotes) {
       if (id != null && newNotes != notes) {
         db.updatePrompt(id, notes: newNotes);
-        PromptTitleOrNotesChangedNotification(id: id).dispatch(context);
       }
     }
 

@@ -66,4 +66,15 @@ final class _ProjectsController implements InfinityController<Project> {
     c.itemList = List.of(c.itemList ?? [])
       ..removeWhere((p) => p.id == projectId);
   }
+
+  Future<void> reloadProject(BuildContext context, int projectId) async {
+    final c = pagingController;
+    final newProject = await context.db.getProject(projectId);
+    if (!context.mounted) return;
+    final index = c.itemList?.indexWhere((p) => p.id == projectId);
+    if (index == null || index == -1) return;
+    c.itemList = List.of(c.itemList ?? [])
+      ..removeAt(index)
+      ..insert(index, newProject);
+  }
 }

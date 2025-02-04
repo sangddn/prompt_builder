@@ -11,7 +11,7 @@ class _PRJAddProjectButton extends StatelessWidget {
         final id = await context.db.createProject();
         if (!context.mounted) return;
         context.controller.onProjectAdded(context, id);
-        context.pushRoute(ProjectRoute(id: id));
+        context.pushProjectRoute(id: id);
       },
     );
   }
