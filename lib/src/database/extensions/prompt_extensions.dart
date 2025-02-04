@@ -33,6 +33,7 @@ extension PromptsExtension on Database {
     String? folderPath,
     String? ignorePatterns,
     List<String>? tags,
+    String? chatUrl,
   }) async {
     final now = DateTime.now();
     final id = await into(prompts).insert(
@@ -43,6 +44,7 @@ extension PromptsExtension on Database {
         folderPath: Value(folderPath),
         ignorePatterns: Value(ignorePatterns ?? ''),
         tags: Value(PromptTagsExtension.tagsToString(tags ?? [])),
+        chatUrl: chatUrl != null ? Value(chatUrl) : const Value.absent(),
         createdAt: Value(now),
       ),
     );
@@ -83,6 +85,7 @@ extension PromptsExtension on Database {
   /// - Prompt titles
   /// - Notes
   /// - Tags
+  /// - Chat URL
   ///
   /// Returns a list of prompts matching the query parameters.
   Future<List<Prompt>> queryPrompts({
@@ -110,7 +113,8 @@ extension PromptsExtension on Database {
         final titleMatch = t.title.lower().like(searchTerm);
         final notesMatch = t.notes.lower().like(searchTerm);
         final tagsMatch = t.tags.lower().like(searchTerm);
-        return titleMatch | notesMatch | tagsMatch;
+        final chatUrlMatch = t.chatUrl.lower().like(searchTerm);
+        return titleMatch | notesMatch | tagsMatch | chatUrlMatch;
       });
     }
 
@@ -166,6 +170,7 @@ extension PromptsExtension on Database {
     String? ignorePatterns,
     List<String>? tags,
     DateTime? lastOpenedAt,
+    String? chatUrl,
   }) async {
     final now = DateTime.now();
     await (update(prompts)..where((tbl) => tbl.id.equals(promptId))).write(
@@ -183,6 +188,7 @@ extension PromptsExtension on Database {
         updatedAt: Value(now),
         lastOpenedAt:
             lastOpenedAt != null ? Value(lastOpenedAt) : const Value.absent(),
+        chatUrl: chatUrl != null ? Value(chatUrl) : const Value.absent(),
       ),
     );
   }
@@ -222,6 +228,7 @@ extension PromptsExtension on Database {
       notes: originalPrompt.notes,
       folderPath: originalPrompt.folderPath,
       ignorePatterns: originalPrompt.ignorePatterns,
+      chatUrl: originalPrompt.chatUrl,
     );
     final originalBlocks = await getBlocksByPrompt(originalPromptId);
     for (final originalBlock in originalBlocks) {

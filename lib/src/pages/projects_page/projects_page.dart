@@ -11,7 +11,6 @@ import '../../components/components.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';
 import '../../router/router.dart';
-import '../../router/router.gr.dart';
 
 part 'states/prj_providers.dart';
 part 'states/projects_controller.dart';

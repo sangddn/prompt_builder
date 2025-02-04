@@ -421,6 +421,12 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant(''));
+  static const VerificationMeta _chatUrlMeta =
+      const VerificationMeta('chatUrl');
+  @override
+  late final GeneratedColumn<String> chatUrl = GeneratedColumn<String>(
+      'chat_url', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _tagsMeta = const VerificationMeta('tags');
   @override
   late final GeneratedColumn<String> tags = GeneratedColumn<String>(
@@ -468,6 +474,7 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
         projectId,
         title,
         notes,
+        chatUrl,
         tags,
         folderPath,
         ignorePatterns,
@@ -499,6 +506,10 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
     if (data.containsKey('notes')) {
       context.handle(
           _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+    }
+    if (data.containsKey('chat_url')) {
+      context.handle(_chatUrlMeta,
+          chatUrl.isAcceptableOrUnknown(data['chat_url']!, _chatUrlMeta));
     }
     if (data.containsKey('tags')) {
       context.handle(
@@ -547,6 +558,8 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
           .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
       notes: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}notes'])!,
+      chatUrl: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}chat_url']),
       tags: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}tags'])!,
       folderPath: attachedDatabase.typeMapping
@@ -587,6 +600,9 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   /// Defaults to an empty string if not specified.
   final String notes;
 
+  /// The URL to the chat associated with the prompt, if any.
+  final String? chatUrl;
+
   /// "|"-separated list of tags for categorizing the prompt.
   ///
   /// Defaults to an empty string if not specified.
@@ -623,6 +639,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
       this.projectId,
       required this.title,
       required this.notes,
+      this.chatUrl,
       required this.tags,
       this.folderPath,
       required this.ignorePatterns,
@@ -638,6 +655,9 @@ class Prompt extends DataClass implements Insertable<Prompt> {
     }
     map['title'] = Variable<String>(title);
     map['notes'] = Variable<String>(notes);
+    if (!nullToAbsent || chatUrl != null) {
+      map['chat_url'] = Variable<String>(chatUrl);
+    }
     map['tags'] = Variable<String>(tags);
     if (!nullToAbsent || folderPath != null) {
       map['folder_path'] = Variable<String>(folderPath);
@@ -661,6 +681,9 @@ class Prompt extends DataClass implements Insertable<Prompt> {
           : Value(projectId),
       title: Value(title),
       notes: Value(notes),
+      chatUrl: chatUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(chatUrl),
       tags: Value(tags),
       folderPath: folderPath == null && nullToAbsent
           ? const Value.absent()
@@ -684,6 +707,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
       projectId: serializer.fromJson<int?>(json['projectId']),
       title: serializer.fromJson<String>(json['title']),
       notes: serializer.fromJson<String>(json['notes']),
+      chatUrl: serializer.fromJson<String?>(json['chatUrl']),
       tags: serializer.fromJson<String>(json['tags']),
       folderPath: serializer.fromJson<String?>(json['folderPath']),
       ignorePatterns: serializer.fromJson<String>(json['ignorePatterns']),
@@ -700,6 +724,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
       'projectId': serializer.toJson<int?>(projectId),
       'title': serializer.toJson<String>(title),
       'notes': serializer.toJson<String>(notes),
+      'chatUrl': serializer.toJson<String?>(chatUrl),
       'tags': serializer.toJson<String>(tags),
       'folderPath': serializer.toJson<String?>(folderPath),
       'ignorePatterns': serializer.toJson<String>(ignorePatterns),
@@ -714,6 +739,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
           Value<int?> projectId = const Value.absent(),
           String? title,
           String? notes,
+          Value<String?> chatUrl = const Value.absent(),
           String? tags,
           Value<String?> folderPath = const Value.absent(),
           String? ignorePatterns,
@@ -725,6 +751,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
         projectId: projectId.present ? projectId.value : this.projectId,
         title: title ?? this.title,
         notes: notes ?? this.notes,
+        chatUrl: chatUrl.present ? chatUrl.value : this.chatUrl,
         tags: tags ?? this.tags,
         folderPath: folderPath.present ? folderPath.value : this.folderPath,
         ignorePatterns: ignorePatterns ?? this.ignorePatterns,
@@ -739,6 +766,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
       projectId: data.projectId.present ? data.projectId.value : this.projectId,
       title: data.title.present ? data.title.value : this.title,
       notes: data.notes.present ? data.notes.value : this.notes,
+      chatUrl: data.chatUrl.present ? data.chatUrl.value : this.chatUrl,
       tags: data.tags.present ? data.tags.value : this.tags,
       folderPath:
           data.folderPath.present ? data.folderPath.value : this.folderPath,
@@ -760,6 +788,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
           ..write('projectId: $projectId, ')
           ..write('title: $title, ')
           ..write('notes: $notes, ')
+          ..write('chatUrl: $chatUrl, ')
           ..write('tags: $tags, ')
           ..write('folderPath: $folderPath, ')
           ..write('ignorePatterns: $ignorePatterns, ')
@@ -771,8 +800,8 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   }
 
   @override
-  int get hashCode => Object.hash(id, projectId, title, notes, tags, folderPath,
-      ignorePatterns, createdAt, updatedAt, lastOpenedAt);
+  int get hashCode => Object.hash(id, projectId, title, notes, chatUrl, tags,
+      folderPath, ignorePatterns, createdAt, updatedAt, lastOpenedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -781,6 +810,7 @@ class Prompt extends DataClass implements Insertable<Prompt> {
           other.projectId == this.projectId &&
           other.title == this.title &&
           other.notes == this.notes &&
+          other.chatUrl == this.chatUrl &&
           other.tags == this.tags &&
           other.folderPath == this.folderPath &&
           other.ignorePatterns == this.ignorePatterns &&
@@ -794,6 +824,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
   final Value<int?> projectId;
   final Value<String> title;
   final Value<String> notes;
+  final Value<String?> chatUrl;
   final Value<String> tags;
   final Value<String?> folderPath;
   final Value<String> ignorePatterns;
@@ -805,6 +836,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     this.projectId = const Value.absent(),
     this.title = const Value.absent(),
     this.notes = const Value.absent(),
+    this.chatUrl = const Value.absent(),
     this.tags = const Value.absent(),
     this.folderPath = const Value.absent(),
     this.ignorePatterns = const Value.absent(),
@@ -817,6 +849,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     this.projectId = const Value.absent(),
     this.title = const Value.absent(),
     this.notes = const Value.absent(),
+    this.chatUrl = const Value.absent(),
     this.tags = const Value.absent(),
     this.folderPath = const Value.absent(),
     this.ignorePatterns = const Value.absent(),
@@ -829,6 +862,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     Expression<int>? projectId,
     Expression<String>? title,
     Expression<String>? notes,
+    Expression<String>? chatUrl,
     Expression<String>? tags,
     Expression<String>? folderPath,
     Expression<String>? ignorePatterns,
@@ -841,6 +875,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
       if (projectId != null) 'project_id': projectId,
       if (title != null) 'title': title,
       if (notes != null) 'notes': notes,
+      if (chatUrl != null) 'chat_url': chatUrl,
       if (tags != null) 'tags': tags,
       if (folderPath != null) 'folder_path': folderPath,
       if (ignorePatterns != null) 'ignore_patterns': ignorePatterns,
@@ -855,6 +890,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
       Value<int?>? projectId,
       Value<String>? title,
       Value<String>? notes,
+      Value<String?>? chatUrl,
       Value<String>? tags,
       Value<String?>? folderPath,
       Value<String>? ignorePatterns,
@@ -866,6 +902,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
       projectId: projectId ?? this.projectId,
       title: title ?? this.title,
       notes: notes ?? this.notes,
+      chatUrl: chatUrl ?? this.chatUrl,
       tags: tags ?? this.tags,
       folderPath: folderPath ?? this.folderPath,
       ignorePatterns: ignorePatterns ?? this.ignorePatterns,
@@ -889,6 +926,9 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
+    }
+    if (chatUrl.present) {
+      map['chat_url'] = Variable<String>(chatUrl.value);
     }
     if (tags.present) {
       map['tags'] = Variable<String>(tags.value);
@@ -918,6 +958,7 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
           ..write('projectId: $projectId, ')
           ..write('title: $title, ')
           ..write('notes: $notes, ')
+          ..write('chatUrl: $chatUrl, ')
           ..write('tags: $tags, ')
           ..write('folderPath: $folderPath, ')
           ..write('ignorePatterns: $ignorePatterns, ')
@@ -2829,6 +2870,7 @@ typedef $$PromptsTableCreateCompanionBuilder = PromptsCompanion Function({
   Value<int?> projectId,
   Value<String> title,
   Value<String> notes,
+  Value<String?> chatUrl,
   Value<String> tags,
   Value<String?> folderPath,
   Value<String> ignorePatterns,
@@ -2841,6 +2883,7 @@ typedef $$PromptsTableUpdateCompanionBuilder = PromptsCompanion Function({
   Value<int?> projectId,
   Value<String> title,
   Value<String> notes,
+  Value<String?> chatUrl,
   Value<String> tags,
   Value<String?> folderPath,
   Value<String> ignorePatterns,
@@ -2898,6 +2941,9 @@ class $$PromptsTableFilterComposer extends Composer<_$Database, $PromptsTable> {
 
   ColumnFilters<String> get notes => $composableBuilder(
       column: $table.notes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get chatUrl => $composableBuilder(
+      column: $table.chatUrl, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get tags => $composableBuilder(
       column: $table.tags, builder: (column) => ColumnFilters(column));
@@ -2978,6 +3024,9 @@ class $$PromptsTableOrderingComposer
   ColumnOrderings<String> get notes => $composableBuilder(
       column: $table.notes, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get chatUrl => $composableBuilder(
+      column: $table.chatUrl, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get tags => $composableBuilder(
       column: $table.tags, builder: (column) => ColumnOrderings(column));
 
@@ -3036,6 +3085,9 @@ class $$PromptsTableAnnotationComposer
 
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get chatUrl =>
+      $composableBuilder(column: $table.chatUrl, builder: (column) => column);
 
   GeneratedColumn<String> get tags =>
       $composableBuilder(column: $table.tags, builder: (column) => column);
@@ -3124,6 +3176,7 @@ class $$PromptsTableTableManager extends RootTableManager<
             Value<int?> projectId = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> notes = const Value.absent(),
+            Value<String?> chatUrl = const Value.absent(),
             Value<String> tags = const Value.absent(),
             Value<String?> folderPath = const Value.absent(),
             Value<String> ignorePatterns = const Value.absent(),
@@ -3136,6 +3189,7 @@ class $$PromptsTableTableManager extends RootTableManager<
             projectId: projectId,
             title: title,
             notes: notes,
+            chatUrl: chatUrl,
             tags: tags,
             folderPath: folderPath,
             ignorePatterns: ignorePatterns,
@@ -3148,6 +3202,7 @@ class $$PromptsTableTableManager extends RootTableManager<
             Value<int?> projectId = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> notes = const Value.absent(),
+            Value<String?> chatUrl = const Value.absent(),
             Value<String> tags = const Value.absent(),
             Value<String?> folderPath = const Value.absent(),
             Value<String> ignorePatterns = const Value.absent(),
@@ -3160,6 +3215,7 @@ class $$PromptsTableTableManager extends RootTableManager<
             projectId: projectId,
             title: title,
             notes: notes,
+            chatUrl: chatUrl,
             tags: tags,
             folderPath: folderPath,
             ignorePatterns: ignorePatterns,

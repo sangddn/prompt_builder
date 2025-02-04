@@ -26,6 +26,9 @@ class Prompts extends Table {
   /// Defaults to an empty string if not specified.
   TextColumn get notes => text().withDefault(const Constant(''))();
 
+  /// The URL to the chat associated with the prompt, if any.
+  TextColumn get chatUrl => text().nullable()();
+
   /// "|"-separated list of tags for categorizing the prompt.
   ///
   /// Defaults to an empty string if not specified.
