@@ -7,7 +7,7 @@ class _PRJSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: ShadInput(
-        controller: context.read<_SearchQueryNotifier>(),
+        controller: context.read<ProjectQueryNotifier>(),
         placeholder: const Text('Search projects...'),
         prefix: const Padding(
           padding: k4APadding,

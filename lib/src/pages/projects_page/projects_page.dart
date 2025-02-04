@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -33,7 +32,7 @@ class ProjectsPage extends StatelessWidget {
           Builder(
             builder: (context) {
               return ShadContextMenuItem(
-                onPressed: () => context.controller._refresh(),
+                onPressed: () => context.controller.refresh(),
                 trailing: const ShadImage.square(
                   LucideIcons.refreshCcw,
                   size: 16.0,

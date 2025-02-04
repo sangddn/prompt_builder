@@ -14,14 +14,15 @@ class _PRJProviders extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<Database>.value(value: db),
-        ChangeNotifierProvider<_SearchQueryNotifier>(
-          create: (_) => TextEditingController(),
+        ChangeNotifierProvider<ProjectQueryNotifier>(
+          create: (_) => ProjectQueryNotifier(),
         ),
-        ChangeNotifierProvider<_SortByNotifier>(
-          create: (_) => ValueNotifier((ProjectSortBy.updatedAt, false)),
+        ChangeNotifierProvider<ProjectSortByNotifier>(
+          create: (_) =>
+              ValueNotifier((ProjectSortBy.updatedAt, false, null, true)),
         ),
-        Provider<_ProjectsController>(
-          create: (context) => _ProjectsController(
+        Provider<ProjectListController>(
+          create: (context) => ProjectListController(
             db: context.db,
             sortByNotifier: context.read(),
             searchQueryNotifier: context.read(),
@@ -33,9 +34,6 @@ class _PRJProviders extends StatelessWidget {
   }
 }
 
-typedef _SearchQueryNotifier = TextEditingController;
-typedef _SortByNotifier = ValueNotifier<(ProjectSortBy, bool)>;
-
 extension _ProjectsPageContext on BuildContext {
-  _ProjectsController get controller => read<_ProjectsController>();
+  ProjectListController get controller => read<ProjectListController>();
 }

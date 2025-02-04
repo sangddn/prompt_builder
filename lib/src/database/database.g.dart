@@ -41,6 +41,16 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   late final GeneratedColumn<int> color = GeneratedColumn<int>(
       'color', aliasedName, true,
       type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _isStarredMeta =
+      const VerificationMeta('isStarred');
+  @override
+  late final GeneratedColumn<bool> isStarred = GeneratedColumn<bool>(
+      'is_starred', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_starred" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -57,7 +67,7 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, title, notes, emoji, color, createdAt, updatedAt];
+      [id, title, notes, emoji, color, isStarred, createdAt, updatedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -87,6 +97,10 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
       context.handle(
           _colorMeta, color.isAcceptableOrUnknown(data['color']!, _colorMeta));
     }
+    if (data.containsKey('is_starred')) {
+      context.handle(_isStarredMeta,
+          isStarred.isAcceptableOrUnknown(data['is_starred']!, _isStarredMeta));
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -114,6 +128,8 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
           .read(DriftSqlType.string, data['${effectivePrefix}emoji']),
       color: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}color']),
+      isStarred: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_starred'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -143,6 +159,9 @@ class Project extends DataClass implements Insertable<Project> {
   /// Color for the project (stored as integer ARGB)
   final int? color;
 
+  /// Whether the project is starred
+  final bool isStarred;
+
   /// When the project was created
   final DateTime createdAt;
 
@@ -154,6 +173,7 @@ class Project extends DataClass implements Insertable<Project> {
       required this.notes,
       this.emoji,
       this.color,
+      required this.isStarred,
       required this.createdAt,
       this.updatedAt});
   @override
@@ -168,6 +188,7 @@ class Project extends DataClass implements Insertable<Project> {
     if (!nullToAbsent || color != null) {
       map['color'] = Variable<int>(color);
     }
+    map['is_starred'] = Variable<bool>(isStarred);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -184,6 +205,7 @@ class Project extends DataClass implements Insertable<Project> {
           emoji == null && nullToAbsent ? const Value.absent() : Value(emoji),
       color:
           color == null && nullToAbsent ? const Value.absent() : Value(color),
+      isStarred: Value(isStarred),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -200,6 +222,7 @@ class Project extends DataClass implements Insertable<Project> {
       notes: serializer.fromJson<String>(json['notes']),
       emoji: serializer.fromJson<String?>(json['emoji']),
       color: serializer.fromJson<int?>(json['color']),
+      isStarred: serializer.fromJson<bool>(json['isStarred']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -213,6 +236,7 @@ class Project extends DataClass implements Insertable<Project> {
       'notes': serializer.toJson<String>(notes),
       'emoji': serializer.toJson<String?>(emoji),
       'color': serializer.toJson<int?>(color),
+      'isStarred': serializer.toJson<bool>(isStarred),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -224,6 +248,7 @@ class Project extends DataClass implements Insertable<Project> {
           String? notes,
           Value<String?> emoji = const Value.absent(),
           Value<int?> color = const Value.absent(),
+          bool? isStarred,
           DateTime? createdAt,
           Value<DateTime?> updatedAt = const Value.absent()}) =>
       Project(
@@ -232,6 +257,7 @@ class Project extends DataClass implements Insertable<Project> {
         notes: notes ?? this.notes,
         emoji: emoji.present ? emoji.value : this.emoji,
         color: color.present ? color.value : this.color,
+        isStarred: isStarred ?? this.isStarred,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
       );
@@ -242,6 +268,7 @@ class Project extends DataClass implements Insertable<Project> {
       notes: data.notes.present ? data.notes.value : this.notes,
       emoji: data.emoji.present ? data.emoji.value : this.emoji,
       color: data.color.present ? data.color.value : this.color,
+      isStarred: data.isStarred.present ? data.isStarred.value : this.isStarred,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -255,6 +282,7 @@ class Project extends DataClass implements Insertable<Project> {
           ..write('notes: $notes, ')
           ..write('emoji: $emoji, ')
           ..write('color: $color, ')
+          ..write('isStarred: $isStarred, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -262,8 +290,8 @@ class Project extends DataClass implements Insertable<Project> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, title, notes, emoji, color, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+      id, title, notes, emoji, color, isStarred, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -273,6 +301,7 @@ class Project extends DataClass implements Insertable<Project> {
           other.notes == this.notes &&
           other.emoji == this.emoji &&
           other.color == this.color &&
+          other.isStarred == this.isStarred &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -283,6 +312,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   final Value<String> notes;
   final Value<String?> emoji;
   final Value<int?> color;
+  final Value<bool> isStarred;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   const ProjectsCompanion({
@@ -291,6 +321,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     this.notes = const Value.absent(),
     this.emoji = const Value.absent(),
     this.color = const Value.absent(),
+    this.isStarred = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
@@ -300,6 +331,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     this.notes = const Value.absent(),
     this.emoji = const Value.absent(),
     this.color = const Value.absent(),
+    this.isStarred = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
@@ -309,6 +341,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     Expression<String>? notes,
     Expression<String>? emoji,
     Expression<int>? color,
+    Expression<bool>? isStarred,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
   }) {
@@ -318,6 +351,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       if (notes != null) 'notes': notes,
       if (emoji != null) 'emoji': emoji,
       if (color != null) 'color': color,
+      if (isStarred != null) 'is_starred': isStarred,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
@@ -329,6 +363,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       Value<String>? notes,
       Value<String?>? emoji,
       Value<int?>? color,
+      Value<bool>? isStarred,
       Value<DateTime>? createdAt,
       Value<DateTime?>? updatedAt}) {
     return ProjectsCompanion(
@@ -337,6 +372,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       notes: notes ?? this.notes,
       emoji: emoji ?? this.emoji,
       color: color ?? this.color,
+      isStarred: isStarred ?? this.isStarred,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -360,6 +396,9 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     if (color.present) {
       map['color'] = Variable<int>(color.value);
     }
+    if (isStarred.present) {
+      map['is_starred'] = Variable<bool>(isStarred.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -377,6 +416,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
           ..write('notes: $notes, ')
           ..write('emoji: $emoji, ')
           ..write('color: $color, ')
+          ..write('isStarred: $isStarred, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -2525,6 +2565,7 @@ typedef $$ProjectsTableCreateCompanionBuilder = ProjectsCompanion Function({
   Value<String> notes,
   Value<String?> emoji,
   Value<int?> color,
+  Value<bool> isStarred,
   Value<DateTime> createdAt,
   Value<DateTime?> updatedAt,
 });
@@ -2534,6 +2575,7 @@ typedef $$ProjectsTableUpdateCompanionBuilder = ProjectsCompanion Function({
   Value<String> notes,
   Value<String?> emoji,
   Value<int?> color,
+  Value<bool> isStarred,
   Value<DateTime> createdAt,
   Value<DateTime?> updatedAt,
 });
@@ -2596,6 +2638,9 @@ class $$ProjectsTableFilterComposer
 
   ColumnFilters<int> get color => $composableBuilder(
       column: $table.color, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isStarred => $composableBuilder(
+      column: $table.isStarred, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -2670,6 +2715,9 @@ class $$ProjectsTableOrderingComposer
   ColumnOrderings<int> get color => $composableBuilder(
       column: $table.color, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<bool> get isStarred => $composableBuilder(
+      column: $table.isStarred, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 
@@ -2700,6 +2748,9 @@ class $$ProjectsTableAnnotationComposer
 
   GeneratedColumn<int> get color =>
       $composableBuilder(column: $table.color, builder: (column) => column);
+
+  GeneratedColumn<bool> get isStarred =>
+      $composableBuilder(column: $table.isStarred, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -2778,6 +2829,7 @@ class $$ProjectsTableTableManager extends RootTableManager<
             Value<String> notes = const Value.absent(),
             Value<String?> emoji = const Value.absent(),
             Value<int?> color = const Value.absent(),
+            Value<bool> isStarred = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime?> updatedAt = const Value.absent(),
           }) =>
@@ -2787,6 +2839,7 @@ class $$ProjectsTableTableManager extends RootTableManager<
             notes: notes,
             emoji: emoji,
             color: color,
+            isStarred: isStarred,
             createdAt: createdAt,
             updatedAt: updatedAt,
           ),
@@ -2796,6 +2849,7 @@ class $$ProjectsTableTableManager extends RootTableManager<
             Value<String> notes = const Value.absent(),
             Value<String?> emoji = const Value.absent(),
             Value<int?> color = const Value.absent(),
+            Value<bool> isStarred = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime?> updatedAt = const Value.absent(),
           }) =>
@@ -2805,6 +2859,7 @@ class $$ProjectsTableTableManager extends RootTableManager<
             notes: notes,
             emoji: emoji,
             color: color,
+            isStarred: isStarred,
             createdAt: createdAt,
             updatedAt: updatedAt,
           ),

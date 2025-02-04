@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -11,11 +12,13 @@ class ProjectCard extends MultiProviderWidget {
   const ProjectCard({
     required this.onTap,
     this.onDelete,
+    this.onStarred,
     required this.project,
     super.key,
   });
 
   final VoidCallback? onTap, onDelete;
+  final ValueChanged<bool>? onStarred;
   final Project project;
 
   @override
@@ -30,6 +33,7 @@ class ProjectCard extends MultiProviderWidget {
     return _ContextMenu(
       project: project,
       onDelete: onDelete,
+      onStarred: onStarred,
       child: ListTile(
         leading: const ProjectIcon(),
         title: Text(
@@ -51,7 +55,18 @@ class ProjectCard extends MultiProviderWidget {
             ],
           ),
         ),
-        isThreeLine: project.notes.isNotEmpty,
+        trailing: ShadButton.ghost(
+          icon: Icon(
+            project.isStarred ? CupertinoIcons.star_fill : CupertinoIcons.star,
+            size: 16,
+            color: project.isStarred
+                ? CupertinoColors.systemYellow.resolveFrom(context)
+                : null,
+          ),
+          applyIconColorFilter: false,
+          onPressed: () => context.changeStarred(project, onStarred),
+        ),
+        // isThreeLine: project.notes.isNotEmpty,
         visualDensity: VisualDensity.comfortable,
         shape: Superellipse.border16,
         tileColor: PColors.lightGray.resolveFrom(context),
@@ -96,11 +111,13 @@ class _ContextMenu extends StatelessWidget {
   const _ContextMenu({
     required this.project,
     required this.onDelete,
+    required this.onStarred,
     required this.child,
   });
 
   final Project project;
   final VoidCallback? onDelete;
+  final ValueChanged<bool>? onStarred;
   final Widget child;
 
   @override
@@ -108,6 +125,15 @@ class _ContextMenu extends StatelessWidget {
     return ShadContextMenuRegion(
       constraints: const BoxConstraints(minWidth: 200.0, maxWidth: 300.0),
       items: [
+        ShadContextMenuItem(
+          onPressed: () => context.changeStarred(project, onStarred),
+          trailing: ShadImage.square(
+            project.isStarred ? LucideIcons.starOff : LucideIcons.star,
+            size: 16,
+          ),
+          child: project.isStarred ? const Text('Unstar') : const Text('Star'),
+        ),
+        const Divider(height: 8.0),
         ShadContextMenuItem(
           onPressed: () async {
             await context.db.deleteProject(project.id);
@@ -119,5 +145,15 @@ class _ContextMenu extends StatelessWidget {
       ],
       child: child,
     );
+  }
+}
+
+extension _ProjectCardContext on BuildContext {
+  Future<void> changeStarred(
+    Project project,
+    ValueChanged<bool>? onStarred,
+  ) async {
+    await db.updateProject(project.id, isStarred: !project.isStarred);
+    onStarred?.call(!project.isStarred);
   }
 }

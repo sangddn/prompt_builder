@@ -21,7 +21,7 @@ final class Database extends _$Database {
   static final instance = Database.custom('prompt_builder');
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -41,6 +41,9 @@ final class Database extends _$Database {
           }
           if (from < 5) {
             await m.addColumn(prompts, prompts.chatUrl as GeneratedColumn);
+          }
+          if (from < 6) {
+            await m.addColumn(projects, projects.isStarred as GeneratedColumn);
           }
         },
       );

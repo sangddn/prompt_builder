@@ -13,6 +13,7 @@ extension ProjectsExtension on Database {
     String? notes,
     String? emoji,
     int? color,
+    bool isStarred = false,
   }) async {
     final now = DateTime.now();
 
@@ -22,6 +23,7 @@ extension ProjectsExtension on Database {
         notes: Value(notes ?? ''),
         emoji: emoji != null ? Value(emoji) : const Value.absent(),
         color: color != null ? Value(color) : const Value.absent(),
+        isStarred: Value(isStarred),
         createdAt: Value(now),
         updatedAt: Value(now),
       ),
@@ -38,9 +40,12 @@ extension ProjectsExtension on Database {
     int limit = 50,
     int offset = 0,
     String searchQuery = '',
+    bool? isStarred,
+    bool prioritizeStarred = true,
   }) async {
     final q = select(projects)..limit(limit, offset: offset);
 
+    // Apply search filter if provided
     if (searchQuery.isNotEmpty) {
       final searchTerm = '%${searchQuery.toLowerCase()}%';
       q.where((p) {
@@ -50,26 +55,42 @@ extension ProjectsExtension on Database {
       });
     }
 
+    // Apply starred filter if provided
+    if (isStarred != null) {
+      q.where((p) => p.isStarred.equals(isStarred));
+    }
+
+    // Build ordering terms
+    final orderTerms = <OrderingTerm Function(Projects)>[];
+
+    // Add starred ordering if prioritizeStarred is true
+    if (prioritizeStarred) {
+      orderTerms.add((p) => OrderingTerm.desc(p.isStarred));
+    }
+
+    // Add main sort criteria
     switch (sortBy) {
       case ProjectSortBy.title:
-        q.orderBy([
+        orderTerms.add(
           (p) => ascending
               ? OrderingTerm.asc(p.title)
               : OrderingTerm.desc(p.title),
-        ]);
+        );
       case ProjectSortBy.createdAt:
-        q.orderBy([
+        orderTerms.add(
           (p) => ascending
               ? OrderingTerm.asc(p.createdAt)
               : OrderingTerm.desc(p.createdAt),
-        ]);
+        );
       case ProjectSortBy.updatedAt:
-        q.orderBy([
+        orderTerms.add(
           (p) => ascending
               ? OrderingTerm.asc(p.updatedAt)
               : OrderingTerm.desc(p.updatedAt),
-        ]);
+        );
     }
+
+    q.orderBy(orderTerms);
 
     return q.get();
   }
@@ -80,6 +101,7 @@ extension ProjectsExtension on Database {
     String? notes,
     String? emoji,
     int? color,
+    bool? isStarred,
   }) async {
     final now = DateTime.now();
     await (update(projects)..where((p) => p.id.equals(id))).write(
@@ -88,6 +110,7 @@ extension ProjectsExtension on Database {
         notes: notes != null ? Value(notes) : const Value.absent(),
         emoji: emoji != null ? Value(emoji) : const Value.absent(),
         color: color != null ? Value(color) : const Value.absent(),
+        isStarred: isStarred != null ? Value(isStarred) : const Value.absent(),
         updatedAt: Value(now),
       ),
     );

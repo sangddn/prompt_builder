@@ -17,8 +17,9 @@ class _SortButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sortByNotifier = context.watch<_SortByNotifier>();
-    final (sortBy, ascending) = sortByNotifier.value;
+    final sortByNotifier = context.watch<ProjectSortByNotifier>();
+    final (sortBy, ascending, starredOnly, prioritizeStarred) =
+        sortByNotifier.value;
 
     return ContextMenuButton(
       items: [
@@ -29,7 +30,8 @@ class _SortButton extends StatelessWidget {
             trailing: sortBy == e
                 ? const Icon(CupertinoIcons.checkmark, size: 16.0)
                 : const Icon(null, size: 16.0),
-            onPressed: () => sortByNotifier.value = (e, ascending),
+            onPressed: () => sortByNotifier.value =
+                (e, ascending, starredOnly, prioritizeStarred),
           ),
         ),
         Divider(
@@ -41,7 +43,8 @@ class _SortButton extends StatelessWidget {
           padding: k12H4VPadding,
           child: ShadSwitch(
             value: ascending,
-            onChanged: (v) => sortByNotifier.value = (sortBy, v),
+            onChanged: (v) => sortByNotifier.value =
+                (sortBy, v, starredOnly, prioritizeStarred),
             label: const Text('Ascending'),
           ),
         ),

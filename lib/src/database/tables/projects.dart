@@ -17,6 +17,9 @@ class Projects extends Table {
   /// Color for the project (stored as integer ARGB)
   IntColumn get color => integer().nullable()();
 
+  /// Whether the project is starred
+  BoolColumn get isStarred => boolean().withDefault(const Constant(false))();
+
   /// When the project was created
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
