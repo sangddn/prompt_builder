@@ -1,16 +1,15 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../core/core.dart';
 import '../../database/database.dart';
-import '../../router/router.gr.dart';
 import '../components.dart';
 
 class ProjectCard extends MultiProviderWidget {
-  const ProjectCard({required this.project, super.key});
+  const ProjectCard({required this.onTap, required this.project, super.key});
 
+  final VoidCallback? onTap;
   final Project project;
 
   @override
@@ -23,7 +22,7 @@ class ProjectCard extends MultiProviderWidget {
     final theme = context.theme;
     final textTheme = theme.textTheme;
     return ListTile(
-      leading: const _Leading(),
+      leading: const ProjectIcon(),
       title: Text(
         project.title.isEmpty ? 'Untitled' : project.title,
         style: textTheme.p,
@@ -48,15 +47,20 @@ class ProjectCard extends MultiProviderWidget {
       shape: Superellipse.border16,
       tileColor: PColors.lightGray.resolveFrom(context),
       splashColor: Colors.transparent,
-      onTap: () {
-        context.pushRoute(ProjectRoute(id: project.id));
-      },
+      onTap: onTap,
     );
   }
 }
 
-class _Leading extends StatelessWidget {
-  const _Leading();
+class ProjectIcon extends StatelessWidget {
+  const ProjectIcon({
+    this.size = 18.0,
+    this.padding = k8APadding,
+    super.key,
+  });
+
+  final double size;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
@@ -65,14 +69,14 @@ class _Leading extends StatelessWidget {
     final color = project.color?.let((it) => Color(it)) ??
         theme.primaryButtonTheme.backgroundColor!;
     final child = project.emoji != null
-        ? Text(project.emoji!, style: const TextStyle(fontSize: 20.0))
-        : ShadImage.square(LucideIcons.folder, size: 18.0, color: color);
+        ? Text(project.emoji!, style: TextStyle(fontSize: size))
+        : ShadImage.square(LucideIcons.folder, size: size, color: color);
     return Container(
       decoration: BoxDecoration(
         color: color.replaceOpacity(0.1),
         shape: BoxShape.circle,
       ),
-      padding: k8APadding,
+      padding: padding,
       child: child,
     );
   }

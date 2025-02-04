@@ -1,4 +1,3 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +6,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../app.dart';
 import '../../../core/core.dart';
 import '../../../database/database.dart';
-import '../../../router/router.gr.dart';
+import '../../../router/router.dart';
 import '../../components.dart';
 
 class PromptTile extends StatelessWidget {
@@ -246,7 +245,7 @@ class _PromptContextMenu extends StatelessWidget {
           const Divider(height: 8.0),
           ShadContextMenuItem(
             onPressed: () async {
-              context.pushRoute(ProjectRoute(id: context.prompt.projectId!));
+              context.pushProjectRoute(id: context.prompt.projectId!);
             },
             trailing: const ShadImage.square(
               LucideIcons.folderSearch,

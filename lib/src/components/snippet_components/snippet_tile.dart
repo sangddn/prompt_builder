@@ -11,12 +11,14 @@ import '../components.dart';
 
 class SnippetTile extends StatelessWidget {
   const SnippetTile({
+    this.isCollapsed = false,
     this.onDelete,
     this.onExpanded,
     required this.snippet,
     super.key,
   });
 
+  final bool isCollapsed;
   final VoidCallback? onDelete;
   final VoidCallback? onExpanded;
   final Snippet snippet;
@@ -29,19 +31,21 @@ class SnippetTile extends StatelessWidget {
         providers: [
           Provider<Snippet>.value(value: snippet),
           Provider<VoidCallback?>.value(value: onExpanded),
-          ValueProvider<TextEditingController>(
-            create: (_) => TextEditingController(text: snippet.content),
-            onNotified: (context, controller) {
-              context.db.updateSnippet(
-                context.snippet.id,
-                content: controller?.text ?? '',
-              );
-              context.variablesNotifier.value = IMap(
-                SnippetExtension.parseVariables(controller?.text ?? ''),
-              );
-            },
-          ),
-          ListenableProvider(create: (_) => FocusNode()),
+          if (!isCollapsed) ...[
+            ValueProvider<TextEditingController>(
+              create: (_) => TextEditingController(text: snippet.content),
+              onNotified: (context, controller) {
+                context.db.updateSnippet(
+                  context.snippet.id,
+                  content: controller?.text ?? '',
+                );
+                context.variablesNotifier.value = IMap(
+                  SnippetExtension.parseVariables(controller?.text ?? ''),
+                );
+              },
+            ),
+            ListenableProvider(create: (_) => FocusNode()),
+          ],
         ],
         child: ShadContextMenuRegion(
           items: [
@@ -54,9 +58,47 @@ class SnippetTile extends StatelessWidget {
               child: const Text('Delete'),
             ),
           ],
-          child: const _Content(),
+          child: !isCollapsed ? const _CollapsedContent() : const _Content(),
         ),
       ),
+    );
+  }
+}
+
+class _CollapsedContent extends StatelessWidget {
+  const _CollapsedContent();
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = context.textTheme;
+    final snippet = context.snippet;
+    return ListTile(
+      leading: const ShadImage.square(LucideIcons.quote, size: 16.0),
+      title: Text(
+        snippet.title.isEmpty ? 'Untitled' : snippet.title,
+        style: textTheme.p,
+      ),
+      subtitle: DefaultTextStyle(
+        style: textTheme.muted,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (snippet.notes?.isNotEmpty ?? false) Text(snippet.notes!),
+            Text(
+              '${snippet.updatedAt != null && snippet.updatedAt != snippet.createdAt ? 'Updated ${timeAgo(snippet.updatedAt!)} • ' : ''}Created ${timeAgo(snippet.createdAt)}',
+            ),
+          ],
+        ),
+      ),
+      isThreeLine: snippet.notes?.isNotEmpty ?? false,
+      visualDensity: VisualDensity.comfortable,
+      shape: Superellipse.border16,
+      tileColor: PColors.lightGray.resolveFrom(context),
+      splashColor: Colors.transparent,
+      onTap: context.watch<VoidCallback?>(),
     );
   }
 }
