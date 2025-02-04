@@ -33,6 +33,7 @@ class _SNPPContent extends StatelessWidget {
             child: TextField(
               controller: context.read<_ContentController?>(),
               maxLines: null,
+              style: style,
               decoration: InputDecoration.collapsed(
                 hintText: 'Aa',
                 hintStyle: style.copyWith(
