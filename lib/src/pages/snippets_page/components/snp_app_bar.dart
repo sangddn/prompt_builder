@@ -17,8 +17,10 @@ class _SortButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sortByNotifier = context.watch<_SortByNotifier>();
+    final sortByNotifier = context.watch<SnippetSortByNotifier>();
     final (sortBy, ascending) = sortByNotifier.value;
+    final projectIdNotifier = context.watch<ProjectIdNotifier>();
+    final hasProject = !projectIdNotifier.value.present;
 
     return ContextMenuButton(
       items: [
@@ -43,6 +45,15 @@ class _SortButton extends StatelessWidget {
             value: ascending,
             onChanged: (v) => sortByNotifier.value = (sortBy, v),
             label: const Text('Ascending'),
+          ),
+        ),
+        Padding(
+          padding: k12H4VPadding,
+          child: ShadSwitch(
+            value: !hasProject,
+            onChanged: (v) => projectIdNotifier.value =
+                v ? const Value(null) : const Value.absent(),
+            label: const Text('No Project Only'),
           ),
         ),
         const Gap(8.0),

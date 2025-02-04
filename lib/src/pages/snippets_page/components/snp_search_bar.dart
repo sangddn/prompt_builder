@@ -5,9 +5,9 @@ class _SNPSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.read<_SearchQueryNotifier>();
+    final controller = context.read<SnippetSearchQueryNotifier>();
     final hasText =
-        context.select((_SearchQueryNotifier n) => n.text.isNotEmpty);
+        context.select((SnippetSearchQueryNotifier n) => n.text.isNotEmpty);
     return SliverToBoxAdapter(
       child: SizedBox(
         height: 54.0,

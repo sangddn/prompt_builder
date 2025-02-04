@@ -4,6 +4,7 @@ class _SNPFilterBar extends StatelessWidget {
   const _SNPFilterBar();
 
   @override
-  Widget build(BuildContext context) =>
-      TagFilterBar(type: TagType.snippet, notifier: context.read());
+  Widget build(BuildContext context) => SliverToBoxAdapter(
+        child: TagFilterBar(type: TagType.snippet, notifier: context.read()),
+      );
 }

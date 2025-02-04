@@ -11,9 +11,9 @@ class _SPAddSnippetButton extends StatelessWidget {
         final id = await db.createSnippet();
         final snippet = await db.getSnippet(id);
         if (!context.mounted) return;
-        final c = context.read<_SnippetsController>().pagingController;
+        final c = context.read<SnippetListController>().pagingController;
         c.itemList = List.of(c.itemList ?? [])..insert(0, snippet);
-        context.read<_SortByNotifier>().value =
+        context.read<SnippetSortByNotifier>().value =
             (SnippetSortBy.createdAt, false);
       },
       size: ShadButtonSize.sm,

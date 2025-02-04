@@ -1,8 +1,8 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -10,10 +10,8 @@ import '../../app.dart';
 import '../../components/components.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';
-import '../../router/router.gr.dart';
 
 part 'states/snp_providers.dart';
-part 'states/snippets_controller.dart';
 
 part 'components/snp_app_bar.dart';
 part 'components/snp_filter_bar.dart';
@@ -33,7 +31,8 @@ class SnippetsPage extends StatelessWidget {
           Builder(
             builder: (context) {
               return ShadContextMenuItem(
-                onPressed: () => context.read<_SnippetsController>()._refresh(),
+                onPressed: () =>
+                    context.read<SnippetListController>().refresh(),
                 trailing: const ShadImage.square(
                   LucideIcons.refreshCcw,
                   size: 16.0,
