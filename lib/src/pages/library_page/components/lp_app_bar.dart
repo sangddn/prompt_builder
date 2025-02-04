@@ -17,8 +17,10 @@ class _SortButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sortByNotifier = context.watch<_SortByNotifier>();
-    final (sortBy, ascending, hasProject) = sortByNotifier.value;
+    final sortByNotifier = context.watch<PromptSortByNotifier>();
+    final (sortBy, ascending) = sortByNotifier.value;
+    final projectIdNotifier = context.watch<ProjectIdNotifier>();
+    final hasProject = !projectIdNotifier.value.present;
 
     return ContextMenuButton(
       items: [
@@ -29,7 +31,7 @@ class _SortButton extends StatelessWidget {
             trailing: sortBy == e
                 ? const Icon(CupertinoIcons.checkmark, size: 16.0)
                 : const Icon(null, size: 16.0),
-            onPressed: () => sortByNotifier.value = (e, ascending, hasProject),
+            onPressed: () => sortByNotifier.value = (e, ascending),
           ),
         ),
         Divider(
@@ -41,7 +43,7 @@ class _SortButton extends StatelessWidget {
           padding: k12H4VPadding,
           child: ShadSwitch(
             value: ascending,
-            onChanged: (v) => sortByNotifier.value = (sortBy, v, hasProject),
+            onChanged: (v) => sortByNotifier.value = (sortBy, v),
             label: const Text('Ascending'),
           ),
         ),
@@ -49,8 +51,9 @@ class _SortButton extends StatelessWidget {
           padding: k12H4VPadding,
           child: ShadSwitch(
             value: !hasProject,
-            onChanged: (v) => sortByNotifier.value = (sortBy, ascending, !v),
-            label: const Text('No Project'),
+            onChanged: (v) => projectIdNotifier.value =
+                v ? const Value(null) : const Value.absent(),
+            label: const Text('No Project Only'),
           ),
         ),
         const Gap(8.0),

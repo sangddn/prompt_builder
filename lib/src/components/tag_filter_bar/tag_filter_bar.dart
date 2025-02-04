@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -16,37 +17,38 @@ class TagFilterBar extends MultiProviderWidget {
   const TagFilterBar({
     required this.notifier,
     required this.type,
+    this.projectId = const Value(null),
     super.key,
   });
 
   final TagFilterNotifier notifier;
   final TagType type;
+  final Value<int?> projectId;
 
   @override
   List<SingleChildWidget> get providers => [
         ChangeNotifierProvider<TagFilterNotifier>.value(value: notifier),
         Provider<TagType>.value(value: type),
+        Provider<Value<int?>>.value(value: projectId),
       ];
 
   @override
   Widget buildChild(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Row(
-          children: [
-            const ShadImage.square(LucideIcons.filter, size: 16.0),
-            const Gap(8.0),
-            const _PopularTagsList(),
-            const Gap(8.0),
-            ShadButton.ghost(
-              onPressed: () => _showAllTags(context),
-              size: ShadButtonSize.sm,
-              child: const Text('More'),
-            ),
-          ],
-        ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Row(
+        children: [
+          const ShadImage.square(LucideIcons.filter, size: 16.0),
+          const Gap(8.0),
+          const _PopularTagsList(),
+          const Gap(8.0),
+          ShadButton.ghost(
+            onPressed: () => _showAllTags(context),
+            size: ShadButtonSize.sm,
+            child: const Text('More'),
+          ),
+        ],
       ),
     );
   }
@@ -58,7 +60,10 @@ class TagFilterBar extends MultiProviderWidget {
       context: context,
       builder: (_) => Provider<Database>.value(
         value: context.read<Database>(),
-        child: _AllTagsSheet(type),
+        child: Provider<Value<int?>>.value(
+          value: projectId,
+          child: _AllTagsSheet(type),
+        ),
       ),
     );
 
@@ -81,6 +86,7 @@ class _PopularTagsList extends StatelessWidget {
           .streamTagsByFrequency(
             limit: 5,
             type: context.type,
+            projectId: context.projectId,
           )
           .map((tags) => IList(tags)),
       builder: (context, snapshot) {
@@ -135,7 +141,11 @@ class _AllTagsSheet extends StatefulWidget {
 }
 
 class _AllTagsSheetState extends State<_AllTagsSheet> {
-  late final _controller = _TagsController(context.db, widget.type);
+  late final _controller = _TagsController(
+    context.db,
+    widget.type,
+    context.projectId,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -176,10 +186,12 @@ class _AllTagsSheetState extends State<_AllTagsSheet> {
 }
 
 class _TagsController implements InfinityController<TagCount> {
-  _TagsController(this.db, this.type);
+  _TagsController(this.db, this.type, this.projectId);
 
   final Database db;
   final TagType type;
+  final Value<int?> projectId;
+
   @override
   final pagingController = PagingController<int, TagCount>(firstPageKey: 0);
 
@@ -198,6 +210,7 @@ class _TagsController implements InfinityController<TagCount> {
       final tags = await db.getTagsByFrequency(
         offset: pageKey * 50,
         type: type,
+        projectId: projectId,
       );
       final isLastPage = tags.length < 50;
       if (isLastPage) {
@@ -215,4 +228,5 @@ class _TagsController implements InfinityController<TagCount> {
 extension _TagFilterBarExtension on BuildContext {
   TagType get type => read<TagType>();
   TagFilterNotifier get notifier => read<TagFilterNotifier>();
+  Value<int?> get projectId => read<Value<int?>>();
 }

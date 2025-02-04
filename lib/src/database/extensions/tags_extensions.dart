@@ -21,7 +21,14 @@ extension TagsExtension on Database {
     required String searchQuery,
     required int minCount,
     required TagType type,
+    Value<int?> projectId = const Value.absent(),
   }) {
+    var projectFilter = '';
+    if (projectId case Value(:final value)) {
+      projectFilter =
+          value == null ? 'AND project_id IS NULL' : 'AND project_id = ?';
+    }
+
     return customSelect(
       '''
       WITH RECURSIVE
@@ -29,6 +36,7 @@ extension TagsExtension on Database {
         SELECT trim(value)
         FROM ${type.tableName}, json_each('["' || replace(tags, '|', '","') || '"]')
         WHERE value != ''
+        $projectFilter
       )
       SELECT 
         tag,
@@ -42,6 +50,8 @@ extension TagsExtension on Database {
       LIMIT ? OFFSET ?
       ''',
       variables: [
+        if (projectId case Value(:final value))
+          if (value != null) Variable.withInt(value),
         if (searchQuery.isNotEmpty)
           Variable.withString('%${searchQuery.toLowerCase()}%'),
         Variable.withInt(minCount),
@@ -72,6 +82,7 @@ extension TagsExtension on Database {
     String searchQuery = '',
     int minCount = 1,
     required TagType type,
+    Value<int?> projectId = const Value.absent(),
   }) {
     return _createTagsQuery(
       limit: limit,
@@ -79,6 +90,7 @@ extension TagsExtension on Database {
       searchQuery: searchQuery,
       minCount: minCount,
       type: type,
+      projectId: projectId,
     ).watch();
   }
 
@@ -91,7 +103,14 @@ extension TagsExtension on Database {
     String searchQuery = '',
     int minCount = 1,
     required TagType type,
+    Value<int?> projectId = const Value.absent(),
   }) async {
+    var projectFilter = '';
+    if (projectId case Value(:final value)) {
+      projectFilter =
+          value == null ? 'AND project_id IS NULL' : 'AND project_id = ?';
+    }
+
     final query = customSelect(
       '''
       WITH RECURSIVE
@@ -99,6 +118,7 @@ extension TagsExtension on Database {
         SELECT trim(value)
         FROM ${type.tableName}, json_each('["' || replace(tags, '|', '","') || '"]')
         WHERE value != ''
+        $projectFilter
       )
       SELECT COUNT(*) as total
       FROM (
@@ -111,6 +131,8 @@ extension TagsExtension on Database {
       )
       ''',
       variables: [
+        if (projectId case Value(:final value))
+          if (value != null) Variable.withInt(value),
         if (searchQuery.isNotEmpty)
           Variable.withString('%${searchQuery.toLowerCase()}%'),
         Variable.withInt(minCount),
@@ -128,17 +150,32 @@ extension TagsExtension on Database {
     int limit = 50,
     int offset = 0,
     required TagType type,
+    Value<int?> projectId = const Value.absent(),
   }) async {
     if (type == TagType.prompt) {
-      return (select(prompts)
-            ..where((p) => p.tags.like('%|$tag|%'))
-            ..limit(limit, offset: offset))
-          .get();
+      final query = select(prompts)..where((p) => p.tags.like('%|$tag|%'));
+
+      if (projectId case Value(:final value)) {
+        query.where(
+          (p) =>
+              value == null ? p.projectId.isNull() : p.projectId.equals(value),
+        );
+      }
+
+      query.limit(limit, offset: offset);
+      return query.get();
     } else {
-      return (select(snippets)
-            ..where((s) => s.tags.like('%|$tag|%'))
-            ..limit(limit, offset: offset))
-          .get();
+      final query = select(snippets)..where((s) => s.tags.like('%|$tag|%'));
+
+      if (projectId case Value(:final value)) {
+        query.where(
+          (s) =>
+              value == null ? s.projectId.isNull() : s.projectId.equals(value),
+        );
+      }
+
+      query.limit(limit, offset: offset);
+      return query.get();
     }
   }
 
@@ -148,6 +185,7 @@ extension TagsExtension on Database {
     String searchQuery = '',
     int minCount = 1,
     required TagType type,
+    Value<int?> projectId = const Value.absent(),
   }) {
     return _createTagsQuery(
       limit: limit,
@@ -155,6 +193,7 @@ extension TagsExtension on Database {
       searchQuery: searchQuery,
       minCount: minCount,
       type: type,
+      projectId: projectId,
     ).get();
   }
 }

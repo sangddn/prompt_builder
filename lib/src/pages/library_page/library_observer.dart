@@ -44,7 +44,6 @@ class LibraryObserver extends StatefulWidget {
 /// The state for [LibraryObserver] that manages prompt listeners and notifications.
 class LibraryObserverState extends State<LibraryObserver> {
   final List<ValueChanged<int>> _newPromptListeners = [];
-  final List<ValueChanged<int>> _promptTitleOrNotesChangedListeners = [];
 
   /// Registers a listener to be notified when new prompts are added.
   ///
@@ -62,22 +61,6 @@ class LibraryObserverState extends State<LibraryObserver> {
     for (final listener in _newPromptListeners) {
       listener(id);
     }
-  }
-
-  void _notifyPromptTitleOrNotesChangedListeners(int id) {
-    for (final listener in _promptTitleOrNotesChangedListeners) {
-      listener(id);
-    }
-  }
-
-  void addPromptTitleOrNotesChangedListener(ValueChanged<int> listener) {
-    _promptTitleOrNotesChangedListeners.add(listener);
-  }
-
-  void removePromptTitleOrNotesChangedListener(
-    ValueChanged<int> listener,
-  ) {
-    _promptTitleOrNotesChangedListeners.remove(listener);
   }
 
   Future<void> _import(List<String> files) async {
@@ -129,7 +112,6 @@ class LibraryObserverState extends State<LibraryObserver> {
   @override
   void dispose() {
     _newPromptListeners.clear();
-    _promptTitleOrNotesChangedListeners.clear();
     super.dispose();
   }
 
@@ -140,9 +122,6 @@ class LibraryObserverState extends State<LibraryObserver> {
           switch (notification) {
             case NewPromptAddedNotification():
               _notifyNewPromptListeners(notification.id);
-              return true;
-            case PromptTitleOrNotesChangedNotification():
-              _notifyPromptTitleOrNotesChangedListeners(notification.id);
               return true;
           }
         },
@@ -162,9 +141,4 @@ sealed class LibraryNotification extends Notification {
 /// A notification that is dispatched when a new prompt is added to the library.
 final class NewPromptAddedNotification extends LibraryNotification {
   const NewPromptAddedNotification({required super.id});
-}
-
-/// A notification that is dispatched when the title or description of a prompt is changed.
-final class PromptTitleOrNotesChangedNotification extends LibraryNotification {
-  const PromptTitleOrNotesChangedNotification({required super.id});
 }
