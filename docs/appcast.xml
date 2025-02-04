@@ -185,5 +185,20 @@
         length="46549349"
         type="application/octet-stream" />
     </item>
+    <item>
+      <title>Version 0.0.10</title>
+      <sparkle:version>14</sparkle:version>
+      <sparkle:shortVersionString>0.0.10</sparkle:shortVersionString>
+      <sparkle:releaseNotesLink>
+        https://github.com/sangddn/prompt_builder/releases/tag/v0.0.10
+      </sparkle:releaseNotesLink>
+
+      <enclosure
+        url="https://github.com/sangddn/prompt_builder/releases/download/v0.0.10/prompt-builder-macos-universal-v0.0.10.zip"
+        sparkle:edSignature="UUfGTj4C3nq6C+gsxNL3aI+YUiTiMpkYN10RQ373mrBUeyA8eg1D71IC21Z74zRzseD9cT8B23PM78kRbzvxCw=="
+        sparkle:os="macos"
+        length="46556963"
+        type="application/octet-stream" />
+    </item>
   </channel>
 </rss>
