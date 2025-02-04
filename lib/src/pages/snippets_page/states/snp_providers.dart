@@ -32,7 +32,3 @@ class _SNPProviders extends StatelessWidget {
 
 typedef _SearchQueryNotifier = TextEditingController;
 typedef _SortByNotifier = ValueNotifier<(SnippetSortBy, bool)>;
-
-extension _SNPExtension on BuildContext {
-  Database get db => read();
-}

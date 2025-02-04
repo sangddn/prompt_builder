@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
-import 'package:provider/single_child_widget.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../app.dart';
 import '../../../core/core.dart';
 import '../../../database/database.dart';
 import '../../../pages/block_content_viewer/block_content_viewer.dart';

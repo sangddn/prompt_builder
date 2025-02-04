@@ -215,9 +215,9 @@ extension PromptsExtension on Database {
   /// Duplicates a prompt.
   Future<int> duplicatePrompt(int originalPromptId) async {
     final originalPrompt = await getPrompt(originalPromptId);
-    final id = await createPrompt(title: '${originalPrompt.title} (Copy)');
-    await updatePrompt(
-      id,
+    final id = await createPrompt(
+      title: '${originalPrompt.title} (Copy)',
+      projectId: originalPrompt.projectId,
       tags: originalPrompt.tagsList,
       notes: originalPrompt.notes,
       folderPath: originalPrompt.folderPath,

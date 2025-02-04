@@ -6,10 +6,10 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../app.dart';
 import '../../components/components.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';
-import '../../database/extensions/project_extensions.dart';
 import '../../router/router.gr.dart';
 
 part 'states/prj_providers.dart';

@@ -4,9 +4,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:provider/single_child_widget.dart';
 
 import '../core.dart';
+
+export 'package:provider/single_child_widget.dart' show SingleChildWidget;
 
 extension SafeSetState on State {
   void maybeSetState([VoidCallback? fn]) {

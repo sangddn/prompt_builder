@@ -71,16 +71,24 @@ abstract final class ModelPreferences {
           );
 
   static void setSummarizationProviderAndModel(
-          LLMProvider provider, String model,) =>
+    LLMProvider provider,
+    String model,
+  ) =>
       _setProvider(provider, model, summarizationProviderKey);
   static void setImageCaptionProviderAndModel(
-          LLMProvider provider, String model,) =>
+    LLMProvider provider,
+    String model,
+  ) =>
       _setProvider(provider, model, imageCaptionProviderKey);
   static void setPromptGenerationProviderAndModel(
-          LLMProvider provider, String model,) =>
+    LLMProvider provider,
+    String model,
+  ) =>
       _setProvider(provider, model, promptGenerationProviderKey);
   static void setAudioTranscriptionProviderAndModel(
-          LLMProvider provider, String model,) =>
+    LLMProvider provider,
+    String model,
+  ) =>
       _setProvider(provider, model, audioTranscriptionProviderKey);
 
   static String getSummarizationPrompt() =>

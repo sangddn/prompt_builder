@@ -53,3 +53,7 @@ class _AppState extends State<App> {
     );
   }
 }
+
+extension AppContext on BuildContext {
+  Database get db => read<Database>();
+}

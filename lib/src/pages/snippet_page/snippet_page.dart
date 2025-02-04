@@ -3,9 +3,9 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
-import 'package:provider/single_child_widget.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../app.dart';
 import '../../components/components.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';

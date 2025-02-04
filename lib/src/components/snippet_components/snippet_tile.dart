@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../app.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';
 import '../components.dart';
@@ -178,7 +179,6 @@ class _Variables extends AnimatedStatelessWidget {
 }
 
 extension _TileStateExtension on BuildContext {
-  Database get db => read();
   Snippet get snippet => read();
   ValueNotifier<IMap<String, String>> get variablesNotifier => read();
   bool isFocused() => watch<FocusNode>().hasFocus;

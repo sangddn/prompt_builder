@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
+import '../../app.dart';
 import '../../components/components.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';

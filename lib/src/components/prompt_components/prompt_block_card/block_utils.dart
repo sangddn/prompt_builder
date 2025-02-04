@@ -12,7 +12,6 @@ enum _BlockHoverState {
 
 extension _BaseBlockExtension on BuildContext {
   PromptBlock get block => read();
-  Database get db => read();
   T selectBlock<T>(T Function(PromptBlock block) fn) => select(fn);
 
   bool isLocalFile() => selectBlock((b) => b.filePath != null);

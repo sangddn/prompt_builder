@@ -54,8 +54,6 @@ _OrganizedResources _organize(SnippetResources r) {
 }
 
 extension _SnippetResourcesExtension on BuildContext {
-  Database get db => read();
-
   T selectResources<T>(T Function(_OrganizedResources?) fn) => select(fn);
   bool isLoading() => selectResources((r) => r == null);
 

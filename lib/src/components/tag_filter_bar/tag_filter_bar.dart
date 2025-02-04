@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
-import 'package:provider/single_child_widget.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../app.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';
 import '../components.dart';
@@ -213,7 +213,6 @@ class _TagsController implements InfinityController<TagCount> {
 }
 
 extension _TagFilterBarExtension on BuildContext {
-  Database get db => read<Database>();
   TagType get type => read<TagType>();
   TagFilterNotifier get notifier => read<TagFilterNotifier>();
 }

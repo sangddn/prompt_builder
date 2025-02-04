@@ -1,10 +1,13 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../app.dart';
 import '../../../core/core.dart';
 import '../../../database/database.dart';
+import '../../../router/router.gr.dart';
 import '../../components.dart';
 
 class PromptTile extends StatelessWidget {
@@ -13,7 +16,7 @@ class PromptTile extends StatelessWidget {
     this.onTap,
     this.onDeleted,
     this.onDuplicated,
-    required this.db,
+    this.onRemovedFromProject,
     required this.prompt,
     super.key,
   });
@@ -21,7 +24,7 @@ class PromptTile extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onDeleted;
   final void Function(int newPromptId)? onDuplicated;
-  final Database db;
+  final void Function(int promptId)? onRemovedFromProject;
   final Decoration? decoration;
   final Prompt prompt;
 
@@ -29,11 +32,11 @@ class PromptTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<Database>.value(value: db),
         Provider<Prompt>.value(value: prompt),
         FutureProvider<String?>(
           initialData: null,
-          create: (_) => prompt.getContent(db, characterLimit: 1000),
+          create: (context) =>
+              prompt.getContent(context.db, characterLimit: 1000),
         ),
         ChangeNotifierProvider<ShadContextMenuController>(
           create: (_) => ShadContextMenuController(),
@@ -43,6 +46,8 @@ class PromptTile extends StatelessWidget {
         controller: context.read(),
         onDeleted: onDeleted,
         onDuplicated: onDuplicated,
+        onRemovedFromProject:
+            prompt.projectId != null ? onRemovedFromProject : null,
         child: child!,
       ),
       child: HoverTapBuilder(
@@ -153,12 +158,14 @@ class _PromptContextMenu extends StatelessWidget {
     required this.controller,
     required this.onDeleted,
     required this.onDuplicated,
+    required this.onRemovedFromProject,
     required this.child,
   });
 
   final ShadContextMenuController controller;
   final VoidCallback? onDeleted;
   final void Function(int newPromptId)? onDuplicated;
+  final void Function(int promptId)? onRemovedFromProject;
   final Widget child;
 
   @override
@@ -171,9 +178,7 @@ class _PromptContextMenu extends StatelessWidget {
           onPressed: () async {
             final toaster = context.toaster;
             try {
-              final content = await context
-                  .read<Prompt>()
-                  .getContent(context.read<Database>());
+              final content = await context.prompt.getContent(context.db);
               await Clipboard.setData(ClipboardData(text: content));
               toaster.show(
                 const ShadToast(
@@ -202,8 +207,8 @@ class _PromptContextMenu extends StatelessWidget {
           onPressed: () async {
             await exportPrompt(
               context,
-              context.read(),
-              context.read<Prompt>().id,
+              context.db,
+              context.prompt.id,
             );
           },
           trailing: const ShadImage.square(
@@ -217,9 +222,9 @@ class _PromptContextMenu extends StatelessWidget {
             onPressed: () async {
               final toaster = context.toaster;
               try {
-                final newPromptId = await context
-                    .read<Database>()
-                    .duplicatePrompt(context.read<Prompt>().id);
+                final newPromptId = await context.db.duplicatePrompt(
+                  context.prompt.id,
+                );
                 onDuplicated?.call(newPromptId);
               } catch (e, s) {
                 debugPrint('Error duplicating prompt: $e. Stack: $s');
@@ -237,11 +242,51 @@ class _PromptContextMenu extends StatelessWidget {
             ),
             child: const Text('Duplicate'),
           ),
+        if (context.watch<Prompt>().projectId != null) ...[
+          const Divider(height: 8.0),
+          ShadContextMenuItem(
+            onPressed: () async {
+              context.pushRoute(ProjectRoute(id: context.prompt.projectId!));
+            },
+            trailing: const ShadImage.square(
+              LucideIcons.folderSearch,
+              size: 16.0,
+            ),
+            child: const Text('Go to Project'),
+          ),
+          if (onRemovedFromProject != null)
+            ShadContextMenuItem(
+              onPressed: () async {
+                final toaster = context.toaster;
+                try {
+                  final prompt = context.prompt;
+                  if (prompt.projectId == null) return;
+                  await context.db.removePromptFromProject(prompt.id);
+                  onRemovedFromProject?.call(prompt.id);
+                } catch (e, s) {
+                  debugPrint(
+                    'Error removing prompt from project: $e. Stack: $s',
+                  );
+                  toaster.show(
+                    ShadToast.destructive(
+                      title: const Text('Error Removing Prompt from Project'),
+                      description: Text('$e'),
+                    ),
+                  );
+                }
+              },
+              trailing: const ShadImage.square(
+                LucideIcons.folderMinus,
+                size: 16.0,
+              ),
+              child: const Text('Remove from Project'),
+            ),
+        ],
         if (onDeleted != null) ...[
           const Divider(height: 8.0),
           ShadContextMenuItem(
             onPressed: () {
-              context.read<Database>().deletePrompt(context.read<Prompt>().id);
+              context.db.deletePrompt(context.prompt.id);
               onDeleted?.call();
             },
             trailing: const ShadImage.square(
@@ -255,4 +300,8 @@ class _PromptContextMenu extends StatelessWidget {
       child: child,
     );
   }
+}
+
+extension _PromptTileExtension on BuildContext {
+  Prompt get prompt => read<Prompt>();
 }

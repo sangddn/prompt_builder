@@ -94,7 +94,6 @@ class _NotesController extends TextEditingController {
 typedef _TagsNotifier = ValueNotifier<IList<String>>;
 
 extension _SnippetPageExtension on BuildContext {
-  Database get db => read();
   Snippet? get snippet => read();
   Snippet? watchSnippet() => watch();
 

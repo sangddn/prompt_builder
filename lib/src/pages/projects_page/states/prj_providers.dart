@@ -37,6 +37,5 @@ typedef _SearchQueryNotifier = TextEditingController;
 typedef _SortByNotifier = ValueNotifier<(ProjectSortBy, bool)>;
 
 extension _ProjectsPageContext on BuildContext {
-  Database get db => read<Database>();
   _ProjectsController get controller => read<_ProjectsController>();
 }
