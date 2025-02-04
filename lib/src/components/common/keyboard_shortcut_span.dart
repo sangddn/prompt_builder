@@ -13,9 +13,8 @@ TextSpan keyboardShortcutSpan(
       children: [
         if (command)
           WidgetSpan(
-            alignment: PlaceholderAlignment.middle,
             child: Padding(
-              padding: const EdgeInsets.only(right: 2.0),
+              padding: const EdgeInsets.only(right: 2.0, bottom: 1.5),
               child: Icon(
                 HugeIcons.strokeRoundedCommand,
                 color: color ?? context.textTheme.muted.color,
@@ -25,9 +24,8 @@ TextSpan keyboardShortcutSpan(
           ),
         if (shift)
           WidgetSpan(
-            alignment: PlaceholderAlignment.middle,
             child: Padding(
-              padding: const EdgeInsets.only(right: 2.0),
+              padding: const EdgeInsets.only(right: 2.0, bottom: 1.5),
               child: Icon(
                 CupertinoIcons.shift,
                 color: color ?? context.textTheme.muted.color,
