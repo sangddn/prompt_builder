@@ -1,12 +1,12 @@
 # Prompt Builder
 
-![Release](https://img.shields.io/badge/release-prompt_builder%20v0.0.7-green)
+![Release](https://img.shields.io/badge/release-prompt_builder%20v0.0.8-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Stars](https://img.shields.io/github/stars/sangddn/prompt_builder?style=social)
 ![Open Issues](https://img.shields.io/github/issues/sangddn/prompt_builder)
 [![Follow @sangddn](https://img.shields.io/twitter/follow/sangddn?style=social)](https://twitter.com/sangddn)
 
-[Website](https://promptbuilder.site). [Download for macOS](https://github.com/sangddn/prompt_builder/releases/download/v0.0.7/prompt-builder-macos-universal-v0.0.7.zip).
+[Website](https://promptbuilder.site). [Download for macOS](https://github.com/sangddn/prompt_builder/releases/download/v0.0.8/prompt-builder-macos-universal-v0.0.8.zip).
 
 ![Screenshot](docs/images/screenshot-2.png)
 
