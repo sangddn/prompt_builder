@@ -188,7 +188,7 @@ class _SnippetSearchResult extends StatelessWidget {
       builder: (context, isHovered) {
         void select() {
           context.read<ValueChanged<Snippet>>()(snippet);
-          context.read<Database>().recordLastUsed(snippet.id);
+          context.read<Database>().recordSnippetUsage(snippet.id);
         }
 
         final trailing = isHovered

@@ -149,8 +149,8 @@ extension SnippetsExtension on Database {
   }
 
   /// Record the last time the snippet was used.
-  Future<void> recordLastUsed(int id) async {
-    await (update(snippets)..where((t) => t.id.equals(id))).write(
+  Future<void> recordSnippetUsage(int snippetId) async {
+    await (update(snippets)..where((t) => t.id.equals(snippetId))).write(
       SnippetsCompanion(lastUsedAt: Value(DateTime.now())),
     );
   }

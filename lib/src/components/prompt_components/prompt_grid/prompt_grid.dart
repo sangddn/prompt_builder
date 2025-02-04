@@ -44,6 +44,27 @@ class PromptGrid extends StatelessWidget {
         },
         onDeleted: () => controller.onPromptDeleted(prompt),
         onDuplicated: controller.onPromptAdded,
+        onRemovedFromProject: () async {
+          final listProject =
+              controller.projectIdNotifier?.value ?? const Value.absent();
+          if (!listProject.present) {
+            await controller.reloadPrompt(context, prompt.id);
+            return;
+          }
+          if (listProject.value == prompt.projectId) {
+            controller.onPromptDeleted(prompt);
+          }
+        },
+        onAddedToProject: (projectId) async {
+          final listProject =
+              controller.projectIdNotifier?.value ?? const Value.absent();
+          if ((!listProject.present) || (listProject.value == projectId)) {
+            await controller.reloadPrompt(context, prompt.id);
+            return;
+          }
+          controller.onPromptDeleted(prompt);
+          return;
+        },
         showProjectName: showProjectName,
         prompt: prompt,
       ),

@@ -7,6 +7,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../app.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';
+import '../../router/router.dart';
 import '../components.dart';
 
 class SnippetTile extends StatelessWidget {
@@ -14,6 +15,7 @@ class SnippetTile extends StatelessWidget {
     this.showProjectName = true,
     this.isCollapsed = false,
     this.onDelete,
+    this.onProjectChanged,
     this.onExpanded,
     required this.snippet,
     super.key,
@@ -23,6 +25,7 @@ class SnippetTile extends StatelessWidget {
   final bool showProjectName;
   final VoidCallback? onDelete;
   final VoidCallback? onExpanded;
+  final ValueChanged<Project?>? onProjectChanged;
   final Snippet snippet;
 
   @override
@@ -51,7 +54,48 @@ class SnippetTile extends StatelessWidget {
           ],
         ],
         child: ShadContextMenuRegion(
+          constraints: const BoxConstraints(minWidth: 200.0, maxWidth: 300.0),
           items: [
+            if (snippet.projectId case final projectId?) ...[
+              if (showProjectName)
+                ShadContextMenuItem(
+                  onPressed: () async {
+                    context.pushProjectRoute(id: projectId);
+                  },
+                  trailing: const ShadImage.square(
+                    LucideIcons.folderSearch,
+                    size: 16.0,
+                  ),
+                  child: const Text('Go to Project'),
+                ),
+              ShadContextMenuItem(
+                onPressed: () async {
+                  await context.db.removeSnippetFromProject(projectId);
+                  onProjectChanged?.call(null);
+                },
+                trailing: const ShadImage.square(
+                  LucideIcons.folderMinus,
+                  size: 16,
+                ),
+                child: const Text('Remove from Project'),
+              ),
+            ],
+            ShadContextMenuItem(
+              onPressed: () async {
+                final db = context.db;
+                final project = await pickProject(context);
+                if (project == null) return;
+                final projectId = project.id;
+                await db.addSnippetToProject(projectId, snippet.id);
+                onProjectChanged?.call(project);
+              },
+              trailing: const ShadImage.square(
+                LucideIcons.folderInput,
+                size: 16.0,
+              ),
+              child: const Text('Move to Project…'),
+            ),
+            const Divider(height: 8.0),
             ShadContextMenuItem(
               onPressed: () async {
                 await context.db.deleteSnippet(snippet.id);

@@ -13,9 +13,13 @@ class ProjectName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureProvider(
+    return FutureProvider<Project?>(
       initialData: null,
       create: (context) => context.db.getProject(projectId),
+      catchError: (context, error) {
+        debugPrint(error.toString());
+        return null;
+      },
       builder: (context, _) {
         final project = context.watch<Project?>();
         if (project == null) return const SizedBox.shrink();

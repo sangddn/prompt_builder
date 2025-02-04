@@ -15,6 +15,7 @@ class PromptTile extends StatelessWidget {
     this.onTap,
     this.onDeleted,
     this.onDuplicated,
+    this.onAddedToProject,
     this.onRemovedFromProject,
     this.showProjectName = true,
     required this.prompt,
@@ -24,7 +25,8 @@ class PromptTile extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onDeleted;
   final void Function(int newPromptId)? onDuplicated;
-  final void Function(int promptId)? onRemovedFromProject;
+  final void Function()? onRemovedFromProject;
+  final void Function(int projectId)? onAddedToProject;
   final Decoration? decoration;
   final bool showProjectName;
   final Prompt prompt;
@@ -44,11 +46,13 @@ class PromptTile extends StatelessWidget {
         ),
       ],
       builder: (context, child) => _PromptContextMenu(
+        showProjectName: showProjectName,
         controller: context.read(),
         onDeleted: onDeleted,
         onDuplicated: onDuplicated,
         onRemovedFromProject:
             prompt.projectId != null ? onRemovedFromProject : null,
+        onAddedToProject: onAddedToProject,
         child: child!,
       ),
       child: HoverTapBuilder(
@@ -159,17 +163,21 @@ class _PromptTileContent extends StatelessWidget {
 
 class _PromptContextMenu extends StatelessWidget {
   const _PromptContextMenu({
+    required this.showProjectName,
     required this.controller,
     required this.onDeleted,
     required this.onDuplicated,
     required this.onRemovedFromProject,
+    required this.onAddedToProject,
     required this.child,
   });
 
+  final bool showProjectName;
   final ShadContextMenuController controller;
   final VoidCallback? onDeleted;
   final void Function(int newPromptId)? onDuplicated;
-  final void Function(int promptId)? onRemovedFromProject;
+  final void Function()? onRemovedFromProject;
+  final void Function(int projectId)? onAddedToProject;
   final Widget child;
 
   @override
@@ -246,18 +254,19 @@ class _PromptContextMenu extends StatelessWidget {
             ),
             child: const Text('Duplicate'),
           ),
+        const Divider(height: 8.0),
         if (context.watch<Prompt>().projectId != null) ...[
-          const Divider(height: 8.0),
-          ShadContextMenuItem(
-            onPressed: () async {
-              context.pushProjectRoute(id: context.prompt.projectId!);
-            },
-            trailing: const ShadImage.square(
-              LucideIcons.folderSearch,
-              size: 16.0,
+          if (showProjectName)
+            ShadContextMenuItem(
+              onPressed: () async {
+                context.pushProjectRoute(id: context.prompt.projectId!);
+              },
+              trailing: const ShadImage.square(
+                LucideIcons.folderSearch,
+                size: 16.0,
+              ),
+              child: const Text('Go to Project'),
             ),
-            child: const Text('Go to Project'),
-          ),
           if (onRemovedFromProject != null)
             ShadContextMenuItem(
               onPressed: () async {
@@ -266,7 +275,7 @@ class _PromptContextMenu extends StatelessWidget {
                   final prompt = context.prompt;
                   if (prompt.projectId == null) return;
                   await context.db.removePromptFromProject(prompt.id);
-                  onRemovedFromProject?.call(prompt.id);
+                  onRemovedFromProject?.call();
                 } catch (e, s) {
                   debugPrint(
                     'Error removing prompt from project: $e. Stack: $s',
@@ -286,6 +295,36 @@ class _PromptContextMenu extends StatelessWidget {
               child: const Text('Remove from Project'),
             ),
         ],
+        if (onAddedToProject != null)
+          ShadContextMenuItem(
+            onPressed: () async {
+              final toaster = context.toaster;
+              try {
+                final prompt = context.prompt;
+                final db = context.db;
+                final project = await pickProject(context);
+                if (project == null) return;
+                final projectId = project.id;
+                await db.addPromptToProject(projectId, prompt.id);
+                onAddedToProject?.call(projectId);
+              } catch (e, s) {
+                debugPrint(
+                  'Error adding prompt to project: $e. Stack: $s',
+                );
+                toaster.show(
+                  ShadToast.destructive(
+                    title: const Text('Error Adding Prompt to Project'),
+                    description: Text('$e'),
+                  ),
+                );
+              }
+            },
+            trailing: const ShadImage.square(
+              LucideIcons.folderInput,
+              size: 16.0,
+            ),
+            child: const Text('Move to Project…'),
+          ),
         if (onDeleted != null) ...[
           const Divider(height: 8.0),
           ShadContextMenuItem(

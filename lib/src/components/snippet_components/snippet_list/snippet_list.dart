@@ -33,27 +33,47 @@ class SnippetList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // ignore: prefer_function_declarations_over_variables
-    final InfinityItemBuilder<Snippet> builder =
-        (context, index, snippet) => SnippetTile(
-              key: ValueKey(
-                Object.hash(
-                  snippet,
-                  controller.sortByNotifier?.value,
-                  controller.projectIdNotifier?.value,
-                ),
-              ),
-              isCollapsed: areSnippetsCollapsed,
-              showProjectName: showProjectName,
-              snippet: snippet,
-              onDelete: () => controller.onSnippetDeleted(snippet.id),
-              onExpanded: () async {
-                await context.pushSnippetRoute(id: snippet.id);
-                Future.delayed(const Duration(seconds: 1), () async {
-                  if (!context.mounted) return;
-                  await controller.reloadSnippet(context, snippet.id);
-                });
-              },
-            );
+    final InfinityItemBuilder<Snippet> builder = (context, index, snippet) =>
+        SnippetTile(
+          key: ValueKey(
+            Object.hash(
+              snippet,
+              controller.sortByNotifier?.value,
+              controller.projectIdNotifier?.value,
+            ),
+          ),
+          isCollapsed: areSnippetsCollapsed,
+          showProjectName: showProjectName,
+          snippet: snippet,
+          onDelete: () => controller.onSnippetDeleted(snippet.id),
+          onExpanded: () async {
+            await context.pushSnippetRoute(id: snippet.id);
+            Future.delayed(const Duration(seconds: 1), () async {
+              if (!context.mounted) return;
+              await controller.reloadSnippet(context, snippet.id);
+            });
+          },
+          onProjectChanged: (project) async {
+            final listProject =
+                controller.projectIdNotifier?.value ?? const Value.absent();
+            // Remove case
+            if (project == null) {
+              if (!listProject.present) {
+                await controller.reloadSnippet(context, snippet.id);
+              } else if (listProject.value == snippet.projectId) {
+                controller.onSnippetDeleted(snippet.id);
+              }
+              return;
+            }
+            // Add case
+            if ((!listProject.present) || (listProject.value == project.id)) {
+              await controller.reloadSnippet(context, snippet.id);
+              return;
+            }
+            controller.onSnippetDeleted(snippet.id);
+            return;
+          },
+        );
     if (_useGrid) {
       return InfinityAndBeyond.grid(
         controller: controller,
