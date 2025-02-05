@@ -18,3 +18,4 @@ part 'decorations.dart';
 part 'effects.dart';
 part 'huge_icons.dart';
 part 'theme.dart';
+part 'smooth_gradient.dart';
