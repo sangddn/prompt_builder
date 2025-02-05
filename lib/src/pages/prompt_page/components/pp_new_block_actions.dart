@@ -119,6 +119,7 @@ class _SnippetButton extends StatelessWidget {
       controller: controller,
       popover: (context) => SnippetPicker(
         database: context.db,
+        projectId: context.prompt?.projectId,
         onSelected: (snippet) async {
           controller.hide();
           final toaster = context.toaster;

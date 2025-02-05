@@ -1,4 +1,6 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -20,8 +22,17 @@ enum _SnippetSearchState {
   searching,
 }
 
+final class _SnippetSearchScopeNotifier extends ValueNotifier<(bool, bool)> {
+  _SnippetSearchScopeNotifier(int? projectId)
+      : super((projectId != null, projectId != null));
+
+  bool get hasProject => value.$1;
+  bool get searchProjectOnly => value.$2;
+}
+
 class SnippetPicker extends StatelessWidget {
   const SnippetPicker({
+    this.projectId,
     required this.database,
     required this.onSelected,
     super.key,
@@ -29,6 +40,7 @@ class SnippetPicker extends StatelessWidget {
 
   final Database database;
   final ValueChanged<Snippet> onSelected;
+  final int? projectId;
 
   Future<void> _onTextChanged(
     BuildContext context,
@@ -36,11 +48,15 @@ class SnippetPicker extends StatelessWidget {
   ) async {
     if (controller?.text case final text?) {
       final stateNotifier = context.read<ValueNotifier<_SnippetSearchState>>();
+      final scopeNotifier = context.read<_SnippetSearchScopeNotifier>();
       final notifier = context.read<_SnippetSearchNotifier>();
       stateNotifier.value = _SnippetSearchState.searching;
       final results = (await database.querySnippets(
         searchQuery: text,
         limit: 20,
+        projectId: scopeNotifier.searchProjectOnly
+            ? Value(projectId)
+            : const Value.absent(),
       ))
           .toIList();
       if (!context.mounted) return;
@@ -60,11 +76,17 @@ class SnippetPicker extends StatelessWidget {
         child: MultiProvider(
           providers: [
             Provider<ValueChanged<Snippet>>.value(value: onSelected),
+            ValueProvider<_SnippetSearchScopeNotifier>(
+              create: (_) => _SnippetSearchScopeNotifier(projectId),
+            ),
             ValueProvider<TextEditingController>(
               create: (context) {
                 final controller = TextEditingController();
                 // Triggers searching immediately
                 WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _onTextChanged(context, controller);
+                });
+                context.read<_SnippetSearchScopeNotifier>().addListener(() {
                   _onTextChanged(context, controller);
                 });
                 return controller;
@@ -82,7 +104,7 @@ class SnippetPicker extends StatelessWidget {
             child: child,
           ),
           child: SizedBox(
-            width: 300.0,
+            width: 400.0,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 500.0),
               child: const CustomScrollView(
@@ -143,6 +165,10 @@ class _SearchField extends StatelessWidget {
               },
             ),
           ),
+          suffixIcon: const Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: _ScopeToggler(),
+          ),
           hintText: 'Search snippets…',
           filled: true,
           fillColor: context.colorScheme.popover,
@@ -151,6 +177,28 @@ class _SearchField extends StatelessWidget {
         ),
         style: context.textTheme.list,
       ),
+    );
+  }
+}
+
+class _ScopeToggler extends StatelessWidget {
+  const _ScopeToggler();
+
+  @override
+  Widget build(BuildContext context) {
+    final notifier = context.watch<_SnippetSearchScopeNotifier>();
+    if (!notifier.hasProject) return const SizedBox();
+    return CupertinoSlidingSegmentedControl<bool>(
+      groupValue: notifier.searchProjectOnly,
+      onValueChanged: (value) {
+        if (value == null) return;
+        notifier.value = (notifier.hasProject, value);
+      },
+      proportionalWidth: true,
+      children: const {
+        true: Text('Project'),
+        false: Text('All'),
+      },
     );
   }
 }
@@ -183,6 +231,8 @@ class _SnippetSearchResult extends StatelessWidget {
   Widget build(BuildContext context) {
     final highlights = context.watch<List<String>>();
     final title = snippet.title;
+    final showProjectName = snippet.projectId != null &&
+        !context.watch<_SnippetSearchScopeNotifier>().searchProjectOnly;
 
     return HoverTapBuilder(
       builder: (context, isHovered) {
@@ -209,6 +259,10 @@ class _SnippetSearchResult extends StatelessWidget {
                       highlights: highlights,
                       caseSensitive: false,
                     ),
+                    if (showProjectName) ...[
+                      const Gap(4.0),
+                      ProjectName(snippet.projectId!),
+                    ],
                     if (snippet.content.isNotEmpty) ...[
                       const Gap(4.0),
                       HighlightedText(
