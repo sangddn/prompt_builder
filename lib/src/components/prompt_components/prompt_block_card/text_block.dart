@@ -110,10 +110,10 @@ class _VariableTextField extends StatelessWidget {
     return ValueProvider<TextEditingController>(
       create: (context) => TextEditingController(text: value),
       onNotified: (context, controller) {
+        final text = controller?.text ?? '';
         // Notify the main text field
         final notifier = context.read<_VariableNotifier>();
-        final variables =
-            notifier.value.update(variableName, (_) => controller?.text ?? '');
+        final variables = notifier.value.update(variableName, (_) => text);
         notifier.value = variables;
 
         // Update backend
@@ -122,7 +122,7 @@ class _VariableTextField extends StatelessWidget {
           textContent: SnippetExtension.replaceVariableValue(
             context.block.textContent ?? '',
             variableName,
-            controller?.text ?? '',
+            text,
           ),
         );
       },
@@ -136,6 +136,7 @@ class _VariableTextField extends StatelessWidget {
         return TextField(
           controller: controller,
           style: style,
+          inputFormatters: const [_NoTemplateFormatter()],
           decoration: InputDecoration(
             hintText: 'Value',
             hintStyle: style.copyWith(
@@ -157,6 +158,21 @@ class _VariableTextField extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class _NoTemplateFormatter extends TextInputFormatter {
+  const _NoTemplateFormatter();
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.contains('{{') || newValue.text.contains('}')) {
+      return oldValue;
+    }
+    return newValue;
   }
 }
 
