@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -7,6 +9,7 @@ import '../../../app.dart';
 import '../../../core/core.dart';
 import '../../../database/database.dart';
 import '../../../router/router.dart';
+import '../../../services/services.dart';
 import '../../components.dart';
 
 class PromptTile extends StatelessWidget {
@@ -36,6 +39,7 @@ class PromptTile extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<Prompt>.value(value: prompt),
+        Provider<bool>.value(value: showProjectName),
         FutureProvider<String?>(
           initialData: null,
           create: (context) =>
@@ -73,54 +77,80 @@ class PromptTile extends StatelessWidget {
                   ]
                 : focusedShadows(elevation: 0.5),
           ),
-          padding: k16H12VPadding,
-          child: _PromptTileContent(prompt, showProjectName),
+          padding: k12APadding,
+          child: const Column(
+            children: [
+              _PromptTileTitle(),
+              Expanded(
+                child: Stack(
+                  alignment: Alignment.bottomLeft,
+                  children: [
+                    Padding(
+                      padding: k4HPadding,
+                      child: _PromptTileContent(),
+                    ),
+                    _PromptUrl(),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _PromptTileContent extends StatelessWidget {
-  const _PromptTileContent(this.prompt, this.showProjectName);
+class _PromptTileTitle extends StatelessWidget {
+  const _PromptTileTitle();
 
-  final Prompt prompt;
-  final bool showProjectName;
+  @override
+  Widget build(BuildContext context) {
+    final prompt = context.watch<Prompt>();
+    final textTheme = context.textTheme;
+    final textGray = PColors.textGray.resolveFrom(context);
+    final isTitled = prompt.title.let((t) => t.isNotEmpty);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Gap(4.0),
+        Expanded(
+          child: Text(
+            isTitled ? prompt.title : 'Untitled',
+            style: textTheme.large.copyWith(color: isTitled ? null : textGray),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        const Gap(4.0),
+        CButton(
+          tooltip: 'More',
+          onTap: () {
+            context.read<ShadContextMenuController>().toggle();
+          },
+          padding: k4APadding,
+          child: const ShadImage.square(
+            LucideIcons.ellipsis,
+            size: 16.0,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PromptTileContent extends StatelessWidget {
+  const _PromptTileContent();
 
   @override
   Widget build(BuildContext context) {
     final textTheme = context.textTheme;
-    final isTitled = prompt.title.let((t) => t.isNotEmpty);
+    final showProjectName = context.watch<bool>();
+    final prompt = context.watch<Prompt>();
     final hasNotes = prompt.notes.let((d) => d.isNotEmpty);
-    final textGray = PColors.textGray.resolveFrom(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                isTitled ? prompt.title : 'Untitled',
-                style:
-                    textTheme.large.copyWith(color: isTitled ? null : textGray),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            CButton(
-              tooltip: 'More',
-              onTap: () {
-                context.read<ShadContextMenuController>().toggle();
-              },
-              padding: k4APadding,
-              child: const ShadImage.square(
-                LucideIcons.ellipsis,
-                size: 16.0,
-              ),
-            ),
-          ],
-        ),
         if (hasNotes)
           Text(
             prompt.notes,
@@ -143,20 +173,53 @@ class _PromptTileContent extends StatelessWidget {
             builder: (context) {
               final string = context.watch<String?>();
               if (string == null) {
-                return const SizedBox.shrink();
+                return const SizedBox();
               }
               return Padding(
                 padding: k4APadding,
-                child: Text(
-                  string,
-                  style: textTheme.p.apply(fontSizeFactor: .5),
-                  overflow: TextOverflow.fade,
+                child: ShaderMask(
+                  shaderCallback: (bounds) => SmoothGradient(
+                    from: Colors.transparent,
+                    to: Colors.white,
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ).createShader(bounds),
+                  blendMode: BlendMode.srcATop,
+                  child: Text(
+                    string,
+                    style: textTheme.p.apply(fontSizeFactor: .5),
+                    overflow: TextOverflow.fade,
+                  ),
                 ),
               );
             },
           ),
         ),
       ],
+    );
+  }
+}
+
+class _PromptUrl extends StatelessWidget {
+  const _PromptUrl();
+
+  @override
+  Widget build(BuildContext context) {
+    final prompt = context.watch<Prompt>();
+    if (prompt.chatUrl?.isEmpty ?? true) return const SizedBox();
+    final linkColor = CupertinoColors.link.resolveFrom(context);
+    return ShadButton.secondary(
+      shadows: focusedShadows(elevation: 0.1),
+      onPressed: () => launchUrlString(prompt.chatUrl!),
+      icon: const ShadImage.square(
+        LucideIcons.arrowUpRight,
+        size: 16.0,
+      ),
+      hoverBackgroundColor: context.theme.resolveColor(
+        linkColor.tint(.95),
+        linkColor.shade(.8),
+      ),
+      child: const Text('Chat'),
     );
   }
 }
