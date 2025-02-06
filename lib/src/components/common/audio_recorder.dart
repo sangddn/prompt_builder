@@ -87,7 +87,12 @@ class _AudioRecordState extends State<_AudioRecord> {
     if (!(_isAvailable ?? false)) return;
     if (mounted) setState(() {});
     await _controller.start(
-      const RecordConfig(encoder: AudioEncoder.wav),
+      const RecordConfig(
+        encoder: AudioEncoder.wav,
+        bitRate: 32000,
+        sampleRate: 16000,
+        numChannels: 1,
+      ),
       path: '/tmp/${_startTime.millisecondsSinceEpoch}.wav',
     );
     _amplitudeStream = _controller
