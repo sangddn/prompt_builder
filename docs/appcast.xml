@@ -225,9 +225,9 @@
 
       <enclosure
         url="https://github.com/sangddn/prompt_builder/releases/download/v0.0.12/prompt-builder-macos-universal-v0.0.12.zip"
-        sparkle:edSignature="5rgHYrRtwFgMtieQL9XJ/3kDpTkREYg+leTamD2mdYL40LTZHsFUuADnuP9mhtw3y2X8OKdrNskv7QoUte/EAg=="
+        sparkle:edSignature="SGYXnsGtlJ9TfR9RQmoTFhtIVakQrgwX7hjO1mUXUfGLySPUcG0STAqCkB8A6iE5TPh0LDlDoncdsRMdR6HyBw=="
         sparkle:os="macos"
-        length="46573849"
+        length="46573902"
         type="application/octet-stream" />
     </item>
   </channel>
