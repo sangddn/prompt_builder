@@ -6,7 +6,7 @@ publish_to: 'none'
 # number: 16
 
 environment:
-  sdk: ^3.5.4
+  sdk: ^3.7.0-323.2.beta
 
 dependencies:
   flutter:
