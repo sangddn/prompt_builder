@@ -136,7 +136,7 @@ class _GoToChat extends AnimatedStatelessWidget {
         ColoredBox(
           color: lightGray,
           child: CButton(
-            tooltip: keyboardShortcutSpan(context, true, false, 'P'),
+            tooltip: null,
             onTap: () => launchUrlString(uri.toString()),
             cornerRadius: 12.0,
             padding: k12HPadding,
