@@ -49,9 +49,15 @@ class _TextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.controller;
     final style = context.textTheme.p;
     final isExpanded = context.isExpanded();
+    if (!isExpanded) {
+      return GestureDetector(
+        onTap: () => context.toggleExpansion(),
+        child: Text(context.block.textContent ?? '', style: style, maxLines: 3),
+      );
+    }
+    final controller = context.controller;
     return TextField(
       controller: controller,
       decoration: InputDecoration(
@@ -71,6 +77,7 @@ class _Variables extends AnimatedStatelessWidget {
 
   @override
   Widget buildChild(BuildContext context) {
+    if (!context.isExpanded()) return const SizedBox.shrink();
     final notifier = context.watch<_VariableNotifier>();
     final variables = notifier.value;
     if (variables.isEmpty) return const SizedBox.shrink();
@@ -180,7 +187,9 @@ class _NoTemplateFormatter extends TextInputFormatter {
 // Typedefs & Extensions
 // -----------------------------------------------------------------------------
 
-typedef _VariableNotifier = ValueNotifier<IMap<String, String>>;
+class _VariableNotifier extends ValueNotifier<IMap<String, String>> {
+  _VariableNotifier(super.value);
+}
 
 extension _TextBlockExtension on BuildContext {
   TextEditingController get controller => read();
