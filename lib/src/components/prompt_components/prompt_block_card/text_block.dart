@@ -36,7 +36,10 @@ class _TextBlock extends StatelessWidget {
             controller.text = newText;
           }
         },
-        child: const Column(children: [_TextField(), _Variables()]),
+        child: const Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [_TextField(), _Variables()],
+        ),
       ),
     );
   }
@@ -47,7 +50,15 @@ class _TextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = context.textTheme.p;
+    final isCode = context.selectBlock((b) {
+      final text = b.textContent ?? '';
+      final trimmed = text.trim();
+      return trimmed.length >= 6 &&
+          trimmed.startsWith('```') &&
+          trimmed.endsWith('```');
+    });
+    var style = context.textTheme.p;
+    if (isCode) style = style.copyWith(fontFamily: 'GeistMono');
     final isExpanded = context.isExpanded();
     if (!isExpanded) {
       return GestureDetector(
