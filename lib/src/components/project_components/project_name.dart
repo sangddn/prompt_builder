@@ -18,7 +18,7 @@ class ProjectName extends StatelessWidget {
       initialData: null,
       create: (context) => context.db.getProject(projectId),
       catchError: (context, error) {
-        debugPrint(error.toString());
+        debugPrint('Error getting project: $error');
         return null;
       },
       builder: (context, _) {

@@ -73,7 +73,7 @@ final class ProjectListController implements InfinityController<Project> {
 
   Future<void> onProjectAdded(BuildContext context, int projectId) async {
     final project = await db.getProject(projectId);
-    if (!context.mounted) return;
+    if (!context.mounted || project == null) return;
     final c = pagingController;
     c.itemList = List.of(c.itemList ?? [])..insert(0, project);
     final notifier = context.read<ProjectSortByNotifier>();
@@ -90,7 +90,7 @@ final class ProjectListController implements InfinityController<Project> {
   Future<void> reloadProject(BuildContext context, int projectId) async {
     final c = pagingController;
     final newProject = await context.db.getProject(projectId);
-    if (!context.mounted) return;
+    if (!context.mounted || newProject == null) return;
     final index = c.itemList?.indexWhere((p) => p.id == projectId);
     if (index == null || index == -1) return;
     c.itemList = List.of(c.itemList ?? [])

@@ -1,11 +1,7 @@
 import 'package:drift/drift.dart';
 import '../database.dart';
 
-enum ProjectSortBy {
-  title,
-  createdAt,
-  updatedAt,
-}
+enum ProjectSortBy { title, createdAt, updatedAt }
 
 extension ProjectsExtension on Database {
   Future<int> createProject({
@@ -30,8 +26,8 @@ extension ProjectsExtension on Database {
     );
   }
 
-  Future<Project> getProject(int id) {
-    return (select(projects)..where((p) => p.id.equals(id))).getSingle();
+  Future<Project?> getProject(int id) {
+    return (select(projects)..where((p) => p.id.equals(id))).getSingleOrNull();
   }
 
   Future<List<Project>> queryProjects({
@@ -72,21 +68,24 @@ extension ProjectsExtension on Database {
     switch (sortBy) {
       case ProjectSortBy.title:
         orderTerms.add(
-          (p) => ascending
-              ? OrderingTerm.asc(p.title)
-              : OrderingTerm.desc(p.title),
+          (p) =>
+              ascending
+                  ? OrderingTerm.asc(p.title)
+                  : OrderingTerm.desc(p.title),
         );
       case ProjectSortBy.createdAt:
         orderTerms.add(
-          (p) => ascending
-              ? OrderingTerm.asc(p.createdAt)
-              : OrderingTerm.desc(p.createdAt),
+          (p) =>
+              ascending
+                  ? OrderingTerm.asc(p.createdAt)
+                  : OrderingTerm.desc(p.createdAt),
         );
       case ProjectSortBy.updatedAt:
         orderTerms.add(
-          (p) => ascending
-              ? OrderingTerm.asc(p.updatedAt)
-              : OrderingTerm.desc(p.updatedAt),
+          (p) =>
+              ascending
+                  ? OrderingTerm.asc(p.updatedAt)
+                  : OrderingTerm.desc(p.updatedAt),
         );
     }
 
@@ -118,36 +117,42 @@ extension ProjectsExtension on Database {
 
   Future<void> deleteProject(int id) async {
     // Update prompts and snippets to remove project reference
-    await (update(prompts)..where((p) => p.projectId.equals(id)))
-        .write(const PromptsCompanion(projectId: Value(null)));
-    await (update(snippets)..where((s) => s.projectId.equals(id)))
-        .write(const SnippetsCompanion(projectId: Value(null)));
+    await (update(prompts)..where(
+      (p) => p.projectId.equals(id),
+    )).write(const PromptsCompanion(projectId: Value(null)));
+    await (update(snippets)..where(
+      (s) => s.projectId.equals(id),
+    )).write(const SnippetsCompanion(projectId: Value(null)));
 
     // Delete the project
     await (delete(projects)..where((p) => p.id.equals(id))).go();
   }
 
   Future<void> addPromptToProject(int projectId, int promptId) async {
-    await (update(prompts)..where((p) => p.id.equals(promptId)))
-        .write(PromptsCompanion(projectId: Value(projectId)));
+    await (update(prompts)..where(
+      (p) => p.id.equals(promptId),
+    )).write(PromptsCompanion(projectId: Value(projectId)));
     return;
   }
 
   Future<void> removePromptFromProject(int promptId) async {
-    await (update(prompts)..where((p) => p.id.equals(promptId)))
-        .write(const PromptsCompanion(projectId: Value(null)));
+    await (update(prompts)..where(
+      (p) => p.id.equals(promptId),
+    )).write(const PromptsCompanion(projectId: Value(null)));
     return;
   }
 
   Future<void> addSnippetToProject(int projectId, int snippetId) async {
-    await (update(snippets)..where((s) => s.id.equals(snippetId)))
-        .write(SnippetsCompanion(projectId: Value(projectId)));
+    await (update(snippets)..where(
+      (s) => s.id.equals(snippetId),
+    )).write(SnippetsCompanion(projectId: Value(projectId)));
     return;
   }
 
   Future<void> removeSnippetFromProject(int snippetId) async {
-    await (update(snippets)..where((s) => s.id.equals(snippetId)))
-        .write(const SnippetsCompanion(projectId: Value(null)));
+    await (update(snippets)..where(
+      (s) => s.id.equals(snippetId),
+    )).write(const SnippetsCompanion(projectId: Value(null)));
     return;
   }
 }
