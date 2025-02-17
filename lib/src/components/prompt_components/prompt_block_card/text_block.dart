@@ -6,10 +6,13 @@ class _TextBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueProvider<TextEditingController>(
-      create: (context) =>
-          TextEditingController(text: context.block.textContent),
-      onNotified: (context, controller) async => context.db
-          .updateBlock(context.block.id, textContent: controller?.text),
+      create:
+          (context) => TextEditingController(text: context.block.textContent),
+      onNotified:
+          (context, controller) async => context.db.updateBlock(
+            context.block.id,
+            textContent: controller?.text,
+          ),
       child: ValueProvider<_VariableNotifier>(
         create: (context) {
           final controller = context.controller;
@@ -33,12 +36,7 @@ class _TextBlock extends StatelessWidget {
             controller.text = newText;
           }
         },
-        child: const Column(
-          children: [
-            _TextField(),
-            _Variables(),
-          ],
-        ),
+        child: const Column(children: [_TextField(), _Variables()]),
       ),
     );
   }
@@ -67,6 +65,7 @@ class _TextField extends StatelessWidget {
       ),
       minLines: 2,
       maxLines: isExpanded ? null : 3,
+      scrollPhysics: const NeverScrollableScrollPhysics(),
       style: style,
     );
   }
@@ -92,10 +91,7 @@ class _Variables extends AnimatedStatelessWidget {
             Row(
               children: [
                 Expanded(child: Text(e.key)),
-                Expanded(
-                  flex: 2,
-                  child: _VariableTextField(e.key, e.value),
-                ),
+                Expanded(flex: 2, child: _VariableTextField(e.key, e.value)),
               ],
             ),
             if (i < variables.length - 1) const Gap(4.0),
