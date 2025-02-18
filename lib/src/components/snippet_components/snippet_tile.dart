@@ -113,7 +113,10 @@ class SnippetTile extends StatelessWidget {
               child: const Text('Delete'),
             ),
           ],
-          child: isCollapsed ? const _CollapsedContent() : const _Content(),
+          child: Material(
+            color: Colors.transparent,
+            child: isCollapsed ? const _CollapsedContent() : const _Content(),
+          ),
         ),
       ),
     );
@@ -148,9 +151,10 @@ class _CollapsedContent extends StatelessWidget {
           ],
         ),
       ),
-      trailing: snippet.projectId != null && context.watch<bool>()
-          ? ProjectName(snippet.projectId!)
-          : null,
+      trailing:
+          snippet.projectId != null && context.watch<bool>()
+              ? ProjectName(snippet.projectId!)
+              : null,
       isThreeLine: snippet.notes?.isNotEmpty ?? false,
       visualDensity: VisualDensity.comfortable,
       shape: Superellipse.border16,
