@@ -8,13 +8,15 @@ const _kPageSize = 50;
 /// - [ascending] Whether the sort is ascending.
 /// - [isStarred] Whether the sort is starred only, unstarred only, or all (null).
 /// - [prioritizeStarred] Whether to prioritize starred projects.
-typedef ProjectSortByNotifier = ValueNotifier<
-    (
-      ProjectSortBy sortBy,
-      bool ascending,
-      bool? isStarred,
-      bool prioritizeStarred,
-    )>;
+typedef ProjectSortByNotifier =
+    ValueNotifier<
+      (
+        ProjectSortBy sortBy,
+        bool ascending,
+        bool? isStarred,
+        bool prioritizeStarred,
+      )
+    >;
 
 final class ProjectQueryNotifier extends TextEditingController {}
 
@@ -74,8 +76,16 @@ final class ProjectListController implements InfinityController<Project> {
   Future<void> onProjectAdded(BuildContext context, int projectId) async {
     final project = await db.getProject(projectId);
     if (!context.mounted || project == null) return;
+
     final c = pagingController;
-    c.itemList = List.of(c.itemList ?? [])..insert(0, project);
+    final currentList = c.itemList ?? [];
+
+    // Find the index after the last starred project
+    final insertIndex = currentList.lastIndexWhere((p) => p.isStarred);
+    final targetIndex = insertIndex == -1 ? 0 : insertIndex + 1;
+
+    c.itemList = List.of(currentList)..insert(targetIndex, project);
+
     final notifier = context.read<ProjectSortByNotifier>();
     final v = notifier.value;
     notifier.value = (ProjectSortBy.createdAt, false, v.$3, v.$4);
@@ -93,9 +103,10 @@ final class ProjectListController implements InfinityController<Project> {
     if (!context.mounted || newProject == null) return;
     final index = c.itemList?.indexWhere((p) => p.id == projectId);
     if (index == null || index == -1) return;
-    c.itemList = List.of(c.itemList ?? [])
-      ..removeAt(index)
-      ..insert(index, newProject);
+    c.itemList =
+        List.of(c.itemList ?? [])
+          ..removeAt(index)
+          ..insert(index, newProject);
   }
 
   Future<void> moveToTop(int projectId) async {
@@ -104,9 +115,10 @@ final class ProjectListController implements InfinityController<Project> {
     if (index == null || index == -1) return;
     final project = c.itemList?[index];
     if (project == null) return;
-    c.itemList = List.of(c.itemList ?? [])
-      ..removeWhere((p) => p.id == projectId)
-      ..insert(0, project);
+    c.itemList =
+        List.of(c.itemList ?? [])
+          ..removeWhere((p) => p.id == projectId)
+          ..insert(0, project);
   }
 
   Future<void> moveToAfterLastStarredProject(int projectId) async {
