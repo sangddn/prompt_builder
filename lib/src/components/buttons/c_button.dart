@@ -85,23 +85,23 @@ class CButton extends StatelessWidget {
               child: CupertinoButton(
                 color: color,
                 padding: padding,
-                minSize: 0.0,
                 pressedOpacity: pressedOpacity,
                 borderRadius: BorderRadius.circular(cornerRadius),
                 focusNode: context.read(),
                 focusColor: context.colorScheme.selection,
-                onPressed:
-                    onTap == null
-                        ? null
-                        : addFeedback
-                        ? () {
-                          Feedback.wrapForTap(_callback, context)?.call();
-                        }
-                        : _callback,
+                minimumSize: Size.zero,
+                onPressed: onTap == null
+                    ? null
+                    : addFeedback
+                    ? () {
+                        Feedback.wrapForTap(_callback, context)?.call();
+                      }
+                    : _callback,
                 child: PTooltip(
                   message: tooltip is String? ? tooltip as String? : null,
-                  richMessage:
-                      tooltip is InlineSpan? ? tooltip as InlineSpan? : null,
+                  richMessage: tooltip is InlineSpan?
+                      ? tooltip as InlineSpan?
+                      : null,
                   triggerMode: tooltipTriggerMode,
                   preferBelow: tooltipPreferBelow,
                   child: child!,

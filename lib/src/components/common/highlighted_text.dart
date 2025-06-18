@@ -86,7 +86,7 @@ class HighlightedText extends StatelessWidget {
     } else if (highlights.isEmpty) {
       spans.add(_normalSpan(text, style));
     } else {
-      int start = 0;
+      var start = 0;
 
       //For "No Case Sensitive" option
       final String lowerCaseText = text.toLowerCase();
@@ -99,7 +99,7 @@ class HighlightedText extends StatelessWidget {
       while (true) {
         final highlightsMap = <int, String>{};
         if (caseSensitive) {
-          for (int i = 0; i < highlights.length; i++) {
+          for (var i = 0; i < highlights.length; i++) {
             assert(highlights[i].isNotEmpty);
             final int index = text.indexOf(highlights[i], start);
             if (index >= 0) {
@@ -107,7 +107,7 @@ class HighlightedText extends StatelessWidget {
             }
           }
         } else {
-          for (int i = 0; i < highlights.length; i++) {
+          for (var i = 0; i < highlights.length; i++) {
             final int index = lowerCaseText.indexOf(
               lowerCaseHighlights[i],
               start,

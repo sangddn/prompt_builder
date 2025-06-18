@@ -261,8 +261,8 @@ class _BuildFileTreeParams {
       ),
     );
 
-    int totalFiles = 0;
-    int directFiles = 0;
+    var totalFiles = 0;
+    var directFiles = 0;
 
     if (isDirectory) {
       try {

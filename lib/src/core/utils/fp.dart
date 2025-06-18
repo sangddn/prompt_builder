@@ -565,7 +565,7 @@ class CombineAnyLatestStream<T, R> extends StreamView<R> {
     Iterable<Stream<T>> streams,
     R Function(List<T?> values) combiner,
   ) {
-    int completed = 0;
+    var completed = 0;
 
     late List<StreamSubscription<T>> subscriptions;
     List<T?>? values;

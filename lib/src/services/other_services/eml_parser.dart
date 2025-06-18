@@ -251,7 +251,7 @@ Map<String, List<String>> _parseHeaders(List<String> lines) {
   final headerRegex = RegExp(r'^([\w-]+):\s*(.*)$', caseSensitive: false);
 
   var lastHeaderName = '';
-  for (int i = 0; i < lines.length; i++) {
+  for (var i = 0; i < lines.length; i++) {
     final line = lines[i];
 
     if (line.isEmpty) {
@@ -290,7 +290,7 @@ String? _getHeaderFirst(Map<String, List<String>> headers, String name) {
 }
 
 int _findBodyStart(List<String> lines) {
-  for (int i = 0; i < lines.length; i++) {
+  for (var i = 0; i < lines.length; i++) {
     if (lines[i].isEmpty) {
       return i + 1;
     }

@@ -63,7 +63,7 @@ class _SortButton extends StatelessWidget {
         ),
         const Gap(8.0),
       ],
-      overlayPosition: (_, __) => FeedbackOverlayPosition.start,
+      overlayPosition: (_, _) => FeedbackOverlayPosition.start,
       builder:
           (context, open) => ShadButton.ghost(
             onPressed: open,
