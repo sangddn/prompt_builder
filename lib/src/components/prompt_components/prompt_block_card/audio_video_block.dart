@@ -5,8 +5,9 @@ class _AudioVideoBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final transcript =
-        context.selectBlock((b) => b.preferSummary ? b.summary : b.transcript);
+    final transcript = context.selectBlock(
+      (b) => b.preferSummary ? b.summary : b.transcript,
+    );
     final style = context.textTheme.p;
     final isExpanded = context.isExpanded();
     return Container(

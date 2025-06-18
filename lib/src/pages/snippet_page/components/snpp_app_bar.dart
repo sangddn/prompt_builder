@@ -7,10 +7,7 @@ class _SNPPAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SizedBox(
       height: 56.0,
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: MaybeBackButton(),
-      ),
+      child: Align(alignment: Alignment.centerLeft, child: MaybeBackButton()),
     );
   }
 }

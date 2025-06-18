@@ -13,30 +13,32 @@ class SearchProviderSettings extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Gap(32.0),
-          Padding(
-            padding: k4HPadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Search Providers', style: context.textTheme.h4),
-                const Gap(4.0),
-                Text(
-                  'Configure search providers to search the web and add content to your prompts. '
-                  'For example, you can search for Tailwind CSS documentation to add to your coding prompt.',
-                  style: context.textTheme.muted,
+        children:
+            [
+              const Gap(32.0),
+              Padding(
+                padding: k4HPadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Search Providers', style: context.textTheme.h4),
+                    const Gap(4.0),
+                    Text(
+                      'Configure search providers to search the web and add content to your prompts. '
+                      'For example, you can search for Tailwind CSS documentation to add to your coding prompt.',
+                      style: context.textTheme.muted,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          const Gap(16.0),
-          const _SearchProviderPreference(),
-          const Gap(16.0),
-          ...kAllSearchProviders
-              .map((provider) => ProviderInfo(provider: provider)),
-          const Gap(8.0),
-        ].toList(),
+              ),
+              const Gap(16.0),
+              const _SearchProviderPreference(),
+              const Gap(16.0),
+              ...kAllSearchProviders.map(
+                (provider) => ProviderInfo(provider: provider),
+              ),
+              const Gap(8.0),
+            ].toList(),
       ),
     );
   }
@@ -53,19 +55,17 @@ class _SearchProviderPreference extends StatelessWidget {
         const Gap(4.0),
         Padding(
           padding: k4HPadding,
-          child: Text(
-            'Default Search Provider',
-            style: context.textTheme.p,
-          ),
+          child: Text('Default Search Provider', style: context.textTheme.p),
         ),
         const Gap(4.0),
         Provider<SearchProvider?>(
-          create: (_) =>
-              SearchProviderPreference.getValidProviderWithFallback(),
-          builder: (context, _) =>
-              ProviderPicker<SearchProvider>.searchWithDefaultUpdate(
-            initialProvider: context.read(),
-          ),
+          create:
+              (_) => SearchProviderPreference.getValidProviderWithFallback(),
+          builder:
+              (context, _) =>
+                  ProviderPicker<SearchProvider>.searchWithDefaultUpdate(
+                    initialProvider: context.read(),
+                  ),
         ),
       ],
     );

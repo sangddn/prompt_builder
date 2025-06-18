@@ -7,11 +7,13 @@ class _PPPromptContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final isEditing =
         context.watch<ValueNotifier<_PromptContentViewState>>().value ==
-            _PromptContentViewState.edit;
+        _PromptContentViewState.edit;
     final theme = context.theme;
     final color = theme.colorScheme.background;
-    final resolvedColor =
-        theme.resolveColor(color.shade(.01), color.tint(.035));
+    final resolvedColor = theme.resolveColor(
+      color.shade(.01),
+      color.tint(.035),
+    );
     return Container(
       decoration: BoxDecoration(
         color: resolvedColor,
@@ -19,8 +21,10 @@ class _PPPromptContent extends StatelessWidget {
           topLeft: Radius.circular(16.0),
           topRight: Radius.circular(16.0),
         ),
-        boxShadow:
-            mediumShadows(elevation: .75, offsetDelta: const Offset(0.0, -.25)),
+        boxShadow: mediumShadows(
+          elevation: .75,
+          offsetDelta: const Offset(0.0, -.25),
+        ),
       ),
       margin: k8HPadding + const EdgeInsets.only(top: 4.0),
       height: double.infinity,
@@ -48,39 +52,42 @@ class _PromptContentEditMode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final count = context.selectBlocks((bs) => bs.length);
-    final widgets = List.generate(
-      growable: false,
-      count,
-      (i) => [
-        if (i == 0) const _NewBlockActions.first(),
-        Builder(
-          builder: (context) {
-            final block = context.watchBlock(i)!;
-            return PromptBlockCard(
-              key: context.read<Map<String, GlobalKey>>().putIfAbsent(
+    final widgets =
+        List.generate(
+          growable: false,
+          count,
+          (i) => [
+            if (i == 0) const _NewBlockActions.first(),
+            Builder(
+              builder: (context) {
+                final block = context.watchBlock(i)!;
+                return PromptBlockCard(
+                  key: context.read<Map<String, GlobalKey>>().putIfAbsent(
                     'PromptBlock-${block.id}',
                     () => GlobalKey(debugLabel: 'PromptBlock-${block.id}'),
                   ),
-              padding: k32HPadding + const EdgeInsets.only(top: 4.0),
-              database: context.db,
-              prompt: context.watch<Prompt?>(),
-              block: block,
-              onMovedUp: i == 0
-                  ? null
-                  : () {
-                      context.read<_BlockReorderCallback>()(i, i - 1);
-                    },
-              onMovedDown: i == count - 1
-                  ? null
-                  : () {
-                      context.read<_BlockReorderCallback>()(i, i + 1);
-                    },
-            );
-          },
-        ),
-        if (i != count - 1) _NewBlockActions(i),
-      ],
-    ).expand((e) => e).toList();
+                  padding: k32HPadding + const EdgeInsets.only(top: 4.0),
+                  database: context.db,
+                  prompt: context.watch<Prompt?>(),
+                  block: block,
+                  onMovedUp:
+                      i == 0
+                          ? null
+                          : () {
+                            context.read<_BlockReorderCallback>()(i, i - 1);
+                          },
+                  onMovedDown:
+                      i == count - 1
+                          ? null
+                          : () {
+                            context.read<_BlockReorderCallback>()(i, i + 1);
+                          },
+                );
+              },
+            ),
+            if (i != count - 1) _NewBlockActions(i),
+          ],
+        ).expand((e) => e).toList();
 
     return CustomScrollView(
       slivers: [
@@ -101,7 +108,7 @@ class _PromptContentPreviewMode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListView(
-        padding: const EdgeInsets.all(64.0),
-        children: [SelectableText(context.getContent(listen: true))],
-      );
+    padding: const EdgeInsets.all(64.0),
+    children: [SelectableText(context.getContent(listen: true))],
+  );
 }

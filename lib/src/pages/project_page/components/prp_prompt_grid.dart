@@ -41,7 +41,7 @@ class _PRPPromptGridTitle extends StatelessWidget {
                     return ShadButton.ghost(
                       onPressed: context.togglePromptGrid,
                       size: ShadButtonSize.sm,
-                      icon: Transform.rotate(
+                      child: Transform.rotate(
                         angle: isExpanded ? math.pi : 0.0,
                         child: const Icon(LucideIcons.chevronDown, size: 16.0),
                       ),
@@ -62,7 +62,7 @@ class _PRPPromptGridTitle extends StatelessWidget {
               await c.onPromptAdded(id);
             },
             size: ShadButtonSize.sm,
-            icon: const Icon(LucideIcons.plus, size: 16.0),
+            child: const Icon(LucideIcons.plus, size: 16.0),
           ),
         ],
       ),

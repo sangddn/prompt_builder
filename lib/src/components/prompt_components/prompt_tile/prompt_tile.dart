@@ -42,60 +42,63 @@ class PromptTile extends StatelessWidget {
         Provider<bool>.value(value: showProjectName),
         FutureProvider<String?>(
           initialData: null,
-          create: (context) =>
-              prompt.getContent(context.db, characterLimit: 1000),
+          create:
+              (context) => prompt.getContent(context.db, characterLimit: 1000),
         ),
         ChangeNotifierProvider<ShadContextMenuController>(
           create: (_) => ShadContextMenuController(),
         ),
       ],
-      builder: (context, child) => _PromptContextMenu(
-        showProjectName: showProjectName,
-        controller: context.read(),
-        onDeleted: onDeleted,
-        onDuplicated: onDuplicated,
-        onRemovedFromProject:
-            prompt.projectId != null ? onRemovedFromProject : null,
-        onAddedToProject: onAddedToProject,
-        child: child!,
-      ),
+      builder:
+          (context, child) => _PromptContextMenu(
+            showProjectName: showProjectName,
+            controller: context.read(),
+            onDeleted: onDeleted,
+            onDuplicated: onDuplicated,
+            onRemovedFromProject:
+                prompt.projectId != null ? onRemovedFromProject : null,
+            onAddedToProject: onAddedToProject,
+            child: child!,
+          ),
       child: HoverTapBuilder(
         highlightColor: Colors.transparent,
         hoverColor: Colors.transparent,
         focusColor: Colors.transparent,
         onClicked: onTap,
-        builder: (_, isHovering) => AnimatedContainer(
-          duration: Effects.shortDuration,
-          curve: Effects.snappyOutCurve,
-          decoration: ShapeDecoration(
-            shape: Superellipse.border12,
-            color: context.brightSurface,
-            shadows: isHovering
-                ? [
-                    ...mediumShadows(),
-                    ...broadShadows(context, elevation: 5.0),
-                  ]
-                : focusedShadows(elevation: 0.5),
-          ),
-          padding: k12APadding,
-          child: const Column(
-            children: [
-              _PromptTileTitle(),
-              Expanded(
-                child: Stack(
-                  alignment: Alignment.bottomLeft,
-                  children: [
-                    Padding(
-                      padding: k4HPadding,
-                      child: _PromptTileContent(),
-                    ),
-                    _PromptUrl(),
-                  ],
-                ),
+        builder:
+            (_, isHovering) => AnimatedContainer(
+              duration: Effects.shortDuration,
+              curve: Effects.snappyOutCurve,
+              decoration: ShapeDecoration(
+                shape: Superellipse.border12,
+                color: context.brightSurface,
+                shadows:
+                    isHovering
+                        ? [
+                          ...mediumShadows(),
+                          ...broadShadows(context, elevation: 5.0),
+                        ]
+                        : focusedShadows(elevation: 0.5),
               ),
-            ],
-          ),
-        ),
+              padding: k12APadding,
+              child: const Column(
+                children: [
+                  _PromptTileTitle(),
+                  Expanded(
+                    child: Stack(
+                      alignment: Alignment.bottomLeft,
+                      children: [
+                        Padding(
+                          padding: k4HPadding,
+                          child: _PromptTileContent(),
+                        ),
+                        _PromptUrl(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
       ),
     );
   }
@@ -129,10 +132,7 @@ class _PromptTileTitle extends StatelessWidget {
             context.read<ShadContextMenuController>().toggle();
           },
           padding: k4APadding,
-          child: const ShadImage.square(
-            LucideIcons.ellipsis,
-            size: 16.0,
-          ),
+          child: const Icon(LucideIcons.ellipsis, size: 16.0),
         ),
       ],
     );
@@ -158,10 +158,7 @@ class _PromptTileContent extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-        Text(
-          timeAgo(prompt.createdAt),
-          style: textTheme.muted,
-        ),
+        Text(timeAgo(prompt.createdAt), style: textTheme.muted),
         if (prompt.projectId != null && showProjectName)
           Padding(
             padding: const EdgeInsets.only(top: 2.0),
@@ -178,12 +175,13 @@ class _PromptTileContent extends StatelessWidget {
               return Padding(
                 padding: k4APadding,
                 child: ShaderMask(
-                  shaderCallback: (bounds) => SmoothGradient(
-                    from: Colors.transparent,
-                    to: Colors.white,
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ).createShader(bounds),
+                  shaderCallback:
+                      (bounds) => SmoothGradient(
+                        from: Colors.transparent,
+                        to: Colors.white,
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ).createShader(bounds),
                   blendMode: BlendMode.srcATop,
                   child: Text(
                     string,
@@ -211,10 +209,7 @@ class _PromptUrl extends StatelessWidget {
     return ShadButton.secondary(
       shadows: focusedShadows(elevation: 0.1),
       onPressed: () => launchUrlString(prompt.chatUrl!),
-      icon: const ShadImage.square(
-        LucideIcons.arrowUpRight,
-        size: 16.0,
-      ),
+      trailing: const Icon(LucideIcons.arrowUpRight, size: 16.0),
       hoverBackgroundColor: context.theme.resolveColor(
         linkColor.tint(.95),
         linkColor.shade(.8),
@@ -266,30 +261,21 @@ class _PromptContextMenu extends StatelessWidget {
               toaster.show(
                 ShadToast.destructive(
                   title: const Text('Error Copying Prompt'),
-                  description:
-                      Text('Failed to copy prompt content to clipboard. $e'),
+                  description: Text(
+                    'Failed to copy prompt content to clipboard. $e',
+                  ),
                 ),
               );
             }
           },
-          trailing: const ShadImage.square(
-            LucideIcons.copy,
-            size: 16.0,
-          ),
+          trailing: const Icon(LucideIcons.copy, size: 16.0),
           child: const Text('Copy Prompt'),
         ),
         ShadContextMenuItem(
           onPressed: () async {
-            await exportPrompt(
-              context,
-              context.db,
-              context.prompt.id,
-            );
+            await exportPrompt(context, context.db, context.prompt.id);
           },
-          trailing: const ShadImage.square(
-            LucideIcons.share,
-            size: 16.0,
-          ),
+          trailing: const Icon(LucideIcons.share, size: 16.0),
           child: const Text('Export…'),
         ),
         if (onDuplicated != null)
@@ -311,10 +297,7 @@ class _PromptContextMenu extends StatelessWidget {
                 );
               }
             },
-            trailing: const ShadImage.square(
-              LucideIcons.copyPlus,
-              size: 16.0,
-            ),
+            trailing: const Icon(LucideIcons.copyPlus, size: 16.0),
             child: const Text('Duplicate'),
           ),
         const Divider(height: 8.0),
@@ -324,10 +307,7 @@ class _PromptContextMenu extends StatelessWidget {
               onPressed: () async {
                 context.pushProjectRoute(id: context.prompt.projectId!);
               },
-              trailing: const ShadImage.square(
-                LucideIcons.folderSearch,
-                size: 16.0,
-              ),
+              trailing: const Icon(LucideIcons.folderSearch, size: 16.0),
               child: const Text('Go to Project'),
             ),
           if (onRemovedFromProject != null)
@@ -351,10 +331,7 @@ class _PromptContextMenu extends StatelessWidget {
                   );
                 }
               },
-              trailing: const ShadImage.square(
-                LucideIcons.folderMinus,
-                size: 16.0,
-              ),
+              trailing: const Icon(LucideIcons.folderMinus, size: 16.0),
               child: const Text('Remove from Project'),
             ),
         ],
@@ -379,9 +356,7 @@ class _PromptContextMenu extends StatelessWidget {
                   onAddedToProject?.call(projectId);
                 }
               } catch (e, s) {
-                debugPrint(
-                  'Error adding prompt to project: $e. Stack: $s',
-                );
+                debugPrint('Error adding prompt to project: $e. Stack: $s');
                 toaster.show(
                   ShadToast.destructive(
                     title: const Text('Error Adding Prompt to Project'),
@@ -390,10 +365,7 @@ class _PromptContextMenu extends StatelessWidget {
                 );
               }
             },
-            trailing: const ShadImage.square(
-              LucideIcons.folderInput,
-              size: 16.0,
-            ),
+            trailing: const Icon(LucideIcons.folderInput, size: 16.0),
             child: const Text('Move to Project…'),
           ),
         if (onDeleted != null) ...[
@@ -403,10 +375,7 @@ class _PromptContextMenu extends StatelessWidget {
               context.db.deletePrompt(context.prompt.id);
               onDeleted?.call();
             },
-            trailing: const ShadImage.square(
-              LucideIcons.trash,
-              size: 16.0,
-            ),
+            trailing: const Icon(LucideIcons.trash, size: 16.0),
             child: const Text('Delete Prompt'),
           ),
         ],

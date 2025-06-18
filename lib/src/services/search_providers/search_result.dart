@@ -33,8 +33,9 @@ final class SearchResult {
     return SearchResult(
       title: json['title'] as String,
       url: json['url'] as String,
-      faviconUrl: (json['thumbnail']?['original'] ?? json['thumbnail']?['src'])
-          as String?,
+      faviconUrl:
+          (json['thumbnail']?['original'] ?? json['thumbnail']?['src'])
+              as String?,
       text:
           null, // This is a marker to indicate that the text is not immediately available at this time.
       highlights: (json['extra_snippets'] as List?)?.cast<String>() ?? const [],
@@ -88,15 +89,15 @@ final class SearchResult {
 
   @override
   int get hashCode => Object.hash(
-        title,
-        url,
-        faviconUrl,
-        publishedDate,
-        author,
-        text,
-        highlights,
-        summary,
-      );
+    title,
+    url,
+    faviconUrl,
+    publishedDate,
+    author,
+    text,
+    highlights,
+    summary,
+  );
 
   SearchResult copyWith({
     String? title,

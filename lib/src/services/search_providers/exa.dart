@@ -19,10 +19,7 @@ final class Exa extends SearchProvider {
     final apiKey = getApiKey();
     final response = await http.post(
       Uri.parse('https://api.exa.ai/search'),
-      headers: {
-        'x-api-key': apiKey,
-        'Content-Type': 'application/json',
-      },
+      headers: {'x-api-key': apiKey, 'Content-Type': 'application/json'},
       body: jsonEncode({
         'query': query,
         'useAutoprompt': true,
@@ -55,10 +52,7 @@ final class Exa extends SearchProvider {
     final apiKey = getApiKey();
     final response = await http.post(
       Uri.parse('https://api.exa.ai/contents'),
-      headers: {
-        'x-api-key': apiKey,
-        'Content-Type': 'application/json',
-      },
+      headers: {'x-api-key': apiKey, 'Content-Type': 'application/json'},
       body: jsonEncode({
         'ids': [url],
       }),
@@ -73,9 +67,9 @@ final class Exa extends SearchProvider {
     }
 
     final data = jsonDecode(response.body);
-    final result =
-        ((data['results'] as List).firstOrNull as Map<String, dynamic>?)
-            ?.let(SearchResult.fromExa);
+    final result = ((data['results'] as List).firstOrNull
+            as Map<String, dynamic>?)
+        ?.let(SearchResult.fromExa);
     final text = result?.let(
       (result) =>
           '${result.text}\n\nHighlights:\n${result.highlights.join('\n')}',

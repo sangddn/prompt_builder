@@ -22,8 +22,8 @@ class SnippetList extends StatelessWidget {
     this.showProjectName = true,
     required this.controller,
     super.key,
-  })  : _useGrid = true,
-        areSnippetsCollapsed = false;
+  }) : _useGrid = true,
+       areSnippetsCollapsed = false;
 
   final bool showProjectName;
   final bool areSnippetsCollapsed;
@@ -33,8 +33,8 @@ class SnippetList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // ignore: prefer_function_declarations_over_variables
-    final InfinityItemBuilder<Snippet> builder = (context, index, snippet) =>
-        SnippetTile(
+    final InfinityItemBuilder<Snippet> builder =
+        (context, index, snippet) => SnippetTile(
           key: ValueKey(
             Object.hash(
               snippet,

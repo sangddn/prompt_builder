@@ -25,28 +25,28 @@ final class Database extends _$Database {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) => m.createAll(),
-        onUpgrade: (m, from, to) async {
-          if (from < 2) {
-            await m.addColumn(snippets, snippets.summary as GeneratedColumn);
-          }
-          if (from < 3) {
-            await m.createTable(projects);
-            await m.addColumn(prompts, prompts.projectId as GeneratedColumn);
-            await m.addColumn(snippets, snippets.projectId as GeneratedColumn);
-          }
-          if (from < 4) {
-            await m.addColumn(snippets, snippets.tags as GeneratedColumn);
-            await m.addColumn(snippets, snippets.notes as GeneratedColumn);
-          }
-          if (from < 5) {
-            await m.addColumn(prompts, prompts.chatUrl as GeneratedColumn);
-          }
-          if (from < 6) {
-            await m.addColumn(projects, projects.isStarred as GeneratedColumn);
-          }
-        },
-      );
+    onCreate: (m) => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.addColumn(snippets, snippets.summary as GeneratedColumn);
+      }
+      if (from < 3) {
+        await m.createTable(projects);
+        await m.addColumn(prompts, prompts.projectId as GeneratedColumn);
+        await m.addColumn(snippets, snippets.projectId as GeneratedColumn);
+      }
+      if (from < 4) {
+        await m.addColumn(snippets, snippets.tags as GeneratedColumn);
+        await m.addColumn(snippets, snippets.notes as GeneratedColumn);
+      }
+      if (from < 5) {
+        await m.addColumn(prompts, prompts.chatUrl as GeneratedColumn);
+      }
+      if (from < 6) {
+        await m.addColumn(projects, projects.isStarred as GeneratedColumn);
+      }
+    },
+  );
 
   static QueryExecutor _openConnection(String name) {
     // `driftDatabase` from `package:drift_flutter` stores the database in

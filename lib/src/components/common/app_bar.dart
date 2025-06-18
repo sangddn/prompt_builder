@@ -12,9 +12,7 @@ import '../components.dart';
 enum _AppBarSize { small, medium, large }
 
 class AppBarDefaults {
-  const AppBarDefaults({
-    this.shouldShow = true,
-  });
+  const AppBarDefaults({this.shouldShow = true});
 
   final bool shouldShow;
 }
@@ -112,7 +110,7 @@ class _PAppBarState extends State<PAppBar> {
   void _handleScrollNotification(ScrollNotification notification) {
     final bool isRelevantNotification =
         notification is ScrollUpdateNotification ||
-            notification is OverscrollNotification;
+        notification is OverscrollNotification;
     if (isRelevantNotification && notification.depth == 0) {
       final bool oldScrolledUnder = _scrolledUnder;
       final double oldExtentBefore = _extentBefore;
@@ -139,36 +137,38 @@ class _PAppBarState extends State<PAppBar> {
     // A value of 0.0 means the app bar is fully expanded, and a value of 1.0
     // means the app bar is fully collapsed.
     final collapseValue = (_extentBefore / _altTitleThreshold).clamp(0.0, 1.0);
-    final pageTitleAndActions = title == null && widget.actions.isEmpty
-        ? null
-        : Row(
-            children: [
-              if (title != null)
-                Expanded(
-                  child: Opacity(
-                    opacity: ((0.8 - collapseValue) / 0.8).clamp(0.0, 1.0),
-                    child: DefaultTextStyle(
-                      style: theme.textTheme.h3,
-                      child: title,
+    final pageTitleAndActions =
+        title == null && widget.actions.isEmpty
+            ? null
+            : Row(
+              children: [
+                if (title != null)
+                  Expanded(
+                    child: Opacity(
+                      opacity: ((0.8 - collapseValue) / 0.8).clamp(0.0, 1.0),
+                      child: DefaultTextStyle(
+                        style: theme.textTheme.h3,
+                        child: title,
+                      ),
                     ),
-                  ),
-                )
-              else
-                const Spacer(),
-              ...widget.actions.addBetween(const Gap(8.0)),
-            ],
-          );
+                  )
+                else
+                  const Spacer(),
+                ...widget.actions.addBetween(const Gap(8.0)),
+              ],
+            );
 
-    final upperRightActions = widget.upperActions.isEmpty
-        ? const SizedBox.shrink()
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Gap(16.0),
-              ...widget.upperActions.addBetween(const Gap(8.0)),
-              const Gap(16.0),
-            ],
-          );
+    final upperRightActions =
+        widget.upperActions.isEmpty
+            ? const SizedBox.shrink()
+            : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Gap(16.0),
+                ...widget.upperActions.addBetween(const Gap(8.0)),
+                const Gap(16.0),
+              ],
+            );
 
     final flexibleSpace = FlexibleSpaceBar(
       titlePadding: EdgeInsets.only(
@@ -183,38 +183,39 @@ class _PAppBarState extends State<PAppBar> {
 
     final effectiveLeading = widget.leading ?? const MaybeBackButton();
 
-    final appBar = widget._size == _AppBarSize.small
-        ? SliverAppBar(
-            backgroundColor: widget.backgroundColor,
-            scrolledUnderElevation: 0.0,
-            stretch: true,
-            automaticallyImplyLeading: false,
-            flexibleSpace: flexibleSpace,
-            actions: [upperRightActions],
-            leading: effectiveLeading,
-            bottom: widget.bottom,
-          )
-        : widget._size == _AppBarSize.medium
+    final appBar =
+        widget._size == _AppBarSize.small
+            ? SliverAppBar(
+              backgroundColor: widget.backgroundColor,
+              scrolledUnderElevation: 0.0,
+              stretch: true,
+              automaticallyImplyLeading: false,
+              flexibleSpace: flexibleSpace,
+              actions: [upperRightActions],
+              leading: effectiveLeading,
+              bottom: widget.bottom,
+            )
+            : widget._size == _AppBarSize.medium
             ? SliverAppBar.medium(
-                backgroundColor: widget.backgroundColor,
-                scrolledUnderElevation: 0.0,
-                stretch: true,
-                automaticallyImplyLeading: false,
-                flexibleSpace: flexibleSpace,
-                actions: [upperRightActions],
-                leading: effectiveLeading,
-                bottom: widget.bottom,
-              )
+              backgroundColor: widget.backgroundColor,
+              scrolledUnderElevation: 0.0,
+              stretch: true,
+              automaticallyImplyLeading: false,
+              flexibleSpace: flexibleSpace,
+              actions: [upperRightActions],
+              leading: effectiveLeading,
+              bottom: widget.bottom,
+            )
             : SliverAppBar.large(
-                backgroundColor: widget.backgroundColor,
-                scrolledUnderElevation: 0.0,
-                stretch: true,
-                automaticallyImplyLeading: false,
-                flexibleSpace: flexibleSpace,
-                actions: [upperRightActions],
-                leading: effectiveLeading,
-                bottom: widget.bottom,
-              );
+              backgroundColor: widget.backgroundColor,
+              scrolledUnderElevation: 0.0,
+              stretch: true,
+              automaticallyImplyLeading: false,
+              flexibleSpace: flexibleSpace,
+              actions: [upperRightActions],
+              leading: effectiveLeading,
+              bottom: widget.bottom,
+            );
 
     return SliverMainAxisGroup(
       slivers: [
@@ -312,7 +313,8 @@ class MaybeBackButton extends StatefulWidget {
 
 class _MaybeBackButtonState extends State<MaybeBackButton> {
   Future<void> _close(BuildContext context) async {
-    final shouldClose = widget.closeInterceptor == null ||
+    final shouldClose =
+        widget.closeInterceptor == null ||
         await widget.closeInterceptor!(context);
     if (!context.mounted) {
       return;
@@ -333,9 +335,10 @@ class _MaybeBackButtonState extends State<MaybeBackButton> {
         child: Padding(
           padding: const EdgeInsets.all(3.0),
           child: CButton(
-            tooltip: useCloseButton
-                ? localizations.closeButtonTooltip
-                : localizations.backButtonTooltip,
+            tooltip:
+                useCloseButton
+                    ? localizations.closeButtonTooltip
+                    : localizations.backButtonTooltip,
             cornerRadius: 12.0,
             onTap: () => _close(context),
             child: Icon(

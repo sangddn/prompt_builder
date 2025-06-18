@@ -27,47 +27,48 @@ class PromptGrid extends StatelessWidget {
       maxCrossAxisExtent: 300.0,
       mainAxisSpacing: 12.0,
       crossAxisSpacing: 12.0,
-      itemBuilder: (context, index, prompt) => PromptTile(
-        key: ValueKey(
-          Object.hash(
-            prompt,
-            controller.sortByNotifier?.value,
-            controller.projectIdNotifier?.value,
+      itemBuilder:
+          (context, index, prompt) => PromptTile(
+            key: ValueKey(
+              Object.hash(
+                prompt,
+                controller.sortByNotifier?.value,
+                controller.projectIdNotifier?.value,
+              ),
+            ),
+            onTap: () async {
+              await context.pushPromptRoute(id: prompt.id);
+              Future<void>.delayed(const Duration(seconds: 1)).then((_) {
+                if (!context.mounted) return;
+                controller.reloadPrompt(context, prompt.id);
+              });
+            },
+            onDeleted: () => controller.onPromptDeleted(prompt),
+            onDuplicated: controller.onPromptAdded,
+            onRemovedFromProject: () async {
+              final listProject =
+                  controller.projectIdNotifier?.value ?? const Value.absent();
+              if (!listProject.present) {
+                await controller.reloadPrompt(context, prompt.id);
+                return;
+              }
+              if (listProject.value == prompt.projectId) {
+                controller.onPromptDeleted(prompt);
+              }
+            },
+            onAddedToProject: (projectId) async {
+              final listProject =
+                  controller.projectIdNotifier?.value ?? const Value.absent();
+              if ((!listProject.present) || (listProject.value == projectId)) {
+                await controller.reloadPrompt(context, prompt.id);
+                return;
+              }
+              controller.onPromptDeleted(prompt);
+              return;
+            },
+            showProjectName: showProjectName,
+            prompt: prompt,
           ),
-        ),
-        onTap: () async {
-          await context.pushPromptRoute(id: prompt.id);
-          Future<void>.delayed(const Duration(seconds: 1)).then((_) {
-            if (!context.mounted) return;
-            controller.reloadPrompt(context, prompt.id);
-          });
-        },
-        onDeleted: () => controller.onPromptDeleted(prompt),
-        onDuplicated: controller.onPromptAdded,
-        onRemovedFromProject: () async {
-          final listProject =
-              controller.projectIdNotifier?.value ?? const Value.absent();
-          if (!listProject.present) {
-            await controller.reloadPrompt(context, prompt.id);
-            return;
-          }
-          if (listProject.value == prompt.projectId) {
-            controller.onPromptDeleted(prompt);
-          }
-        },
-        onAddedToProject: (projectId) async {
-          final listProject =
-              controller.projectIdNotifier?.value ?? const Value.absent();
-          if ((!listProject.present) || (listProject.value == projectId)) {
-            await controller.reloadPrompt(context, prompt.id);
-            return;
-          }
-          controller.onPromptDeleted(prompt);
-          return;
-        },
-        showProjectName: showProjectName,
-        prompt: prompt,
-      ),
     );
   }
 }

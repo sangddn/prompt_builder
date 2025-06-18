@@ -52,10 +52,7 @@ class _PromptChatUrl extends StatelessWidget {
             height: 36.0,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(child: _UrlField()),
-                _GoToChat(),
-              ],
+              children: [Expanded(child: _UrlField()), _GoToChat()],
             ),
           ),
         );
@@ -88,8 +85,9 @@ class _UrlField extends StatelessWidget {
           style: style,
           onTap: () async {
             if (url == null && controller.text.isEmpty) {
-              final uri = await Clipboard.getData('text/plain')
-                  .then((r) => _getUri(r?.text));
+              final uri = await Clipboard.getData(
+                'text/plain',
+              ).then((r) => _getUri(r?.text));
               if (uri != null) controller.text = uri.toString();
             }
           },
@@ -161,9 +159,7 @@ class _PromptNotes extends StatelessWidget {
     final style = context.textTheme.p;
     final notes = context.selectPrompt((p) => p?.notes);
     if (notes == null) {
-      return GrayShimmer(
-        child: Text('Loading…', style: style),
-      );
+      return GrayShimmer(child: Text('Loading…', style: style));
     }
     final id = context.selectPrompt((p) => p?.id);
     final db = context.db;
@@ -187,18 +183,20 @@ class _PromptNotes extends StatelessWidget {
             if (text == null) return;
             updatePromptNotes(text);
           },
-          builder: (context, child) => TextField(
-            controller: context.read(),
-            decoration: InputDecoration(
-              hintText: 'Aa',
-              hintStyle:
-                  style.copyWith(color: PColors.textGray.resolveFrom(context)),
-              border: InputBorder.none,
-            ),
-            minLines: 3,
-            maxLines: 15,
-            style: style,
-          ),
+          builder:
+              (context, child) => TextField(
+                controller: context.read(),
+                decoration: InputDecoration(
+                  hintText: 'Aa',
+                  hintStyle: style.copyWith(
+                    color: PColors.textGray.resolveFrom(context),
+                  ),
+                  border: InputBorder.none,
+                ),
+                minLines: 3,
+                maxLines: 15,
+                style: style,
+              ),
         ),
       ],
     );
@@ -228,10 +226,7 @@ class _PromptTags extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          'Tags',
-          style: context.textTheme.muted,
-        ),
+        Text('Tags', style: context.textTheme.muted),
         if (tags.isNotEmpty) const Gap(4.0),
         Wrap(
           spacing: 8.0,
@@ -239,29 +234,30 @@ class _PromptTags extends StatelessWidget {
           children: [
             ...tags.map(
               (tag) => Container(
-                padding: const EdgeInsets.only(left: 8.0),
-                decoration: ShapeDecoration(
-                  color: PColors.lightGray.resolveFrom(context),
-                  shape: const SquircleStadiumBorder(),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(tag, style: context.textTheme.small.addWeight(-1)),
-                    CButton(
-                      tooltip: 'Remove tag',
-                      onTap: () => removeTag(tag),
-                      padding: k4APadding + const EdgeInsets.only(right: 4.0),
-                      highlightColor: Colors.transparent,
-                      child: Icon(
-                        LucideIcons.x,
-                        size: 14.0,
-                        color: PColors.textGray.resolveFrom(context),
-                      ),
+                    padding: const EdgeInsets.only(left: 8.0),
+                    decoration: ShapeDecoration(
+                      color: PColors.lightGray.resolveFrom(context),
+                      shape: const SquircleStadiumBorder(),
                     ),
-                  ],
-                ),
-              )
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(tag, style: context.textTheme.small.addWeight(-1)),
+                        CButton(
+                          tooltip: 'Remove tag',
+                          onTap: () => removeTag(tag),
+                          padding:
+                              k4APadding + const EdgeInsets.only(right: 4.0),
+                          highlightColor: Colors.transparent,
+                          child: Icon(
+                            LucideIcons.x,
+                            size: 14.0,
+                            color: PColors.textGray.resolveFrom(context),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                   .animate()
                   .fadeIn(
                     duration: Effects.shortDuration,
@@ -277,24 +273,25 @@ class _PromptTags extends StatelessWidget {
         const Gap(8.0),
         ValueProvider<TextEditingController>(
           create: (_) => TextEditingController(),
-          builder: (context, _) => Padding(
-            padding: k4HPadding,
-            child: TextField(
-              controller: context.read(),
-              decoration: InputDecoration.collapsed(
-                hintText: 'Enter to add',
-                hintStyle: context.textTheme.muted,
+          builder:
+              (context, _) => Padding(
+                padding: k4HPadding,
+                child: TextField(
+                  controller: context.read(),
+                  decoration: InputDecoration.collapsed(
+                    hintText: 'Enter to add',
+                    hintStyle: context.textTheme.muted,
+                  ),
+                  style: context.textTheme.p,
+                  onEditingComplete: () {},
+                  onSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      addTag(value);
+                      context.read<TextEditingController>().clear();
+                    }
+                  },
+                ),
               ),
-              style: context.textTheme.p,
-              onEditingComplete: () {},
-              onSubmitted: (value) {
-                if (value.isNotEmpty) {
-                  addTag(value);
-                  context.read<TextEditingController>().clear();
-                }
-              },
-            ),
-          ),
         ),
       ],
     );

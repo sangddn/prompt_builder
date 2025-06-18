@@ -121,14 +121,15 @@ abstract final class SearchProviderPreference {
   static String get _preferenceKey => 'search_provider';
 
   static SearchProvider? _parseProvider(String? string) => string?.let(
-        (s) => kAllSearchProviders.firstWhere((provider) => provider.name == s),
-      );
+    (s) => kAllSearchProviders.firstWhere((provider) => provider.name == s),
+  );
 
   /// Returns the provider that has been chosen by the user and that has been
   /// set up. If no provider satisfies these 2 conditions, returns `null`.
   static SearchProvider? getValidProvider() {
-    final provider =
-        Database().stringRef.get(_preferenceKey).let(_parseProvider);
+    final provider = Database().stringRef
+        .get(_preferenceKey)
+        .let(_parseProvider);
     if (provider?.hasSetUp() ?? false) return provider;
     return provider;
   }
@@ -138,25 +139,23 @@ abstract final class SearchProviderPreference {
   /// it tries to yield a valid provider (Exa then Brave). If no valid provider is
   /// found, it yields `null`.
   static Stream<SearchProvider?> streamValidProviderWithFallback() {
-    final stream1 = Database()
-        .stringRef
+    final stream1 = Database().stringRef
         .watch(key: _preferenceKey)
         .map((e) => e.value as String?)
         .map(_parseProvider)
         .startsWith(getValidProvider());
     final braveStream = Brave().isSetUp().map((e) => e ? Brave() : null);
     final exaStream = Exa().isSetUp().map((e) => e ? Exa() : null);
-    return CombineAnyLatestStream.combine3(
-      stream1,
-      braveStream,
-      exaStream,
-      (chosenByUser, brave, exa) {
-        if (chosenByUser != null && chosenByUser.hasSetUp()) {
-          return chosenByUser;
-        }
-        return exa ?? brave;
-      },
-    );
+    return CombineAnyLatestStream.combine3(stream1, braveStream, exaStream, (
+      chosenByUser,
+      brave,
+      exa,
+    ) {
+      if (chosenByUser != null && chosenByUser.hasSetUp()) {
+        return chosenByUser;
+      }
+      return exa ?? brave;
+    });
   }
 
   /// Returns the provider that has been chosen by the user and that has been

@@ -3,9 +3,9 @@ part of 'ui.dart';
 const kThemeModeKey = 'theme-mode';
 const kInitialThemeMode = ThemeMode.system;
 ThemeMode _themeModeFromName(String? name) => ThemeMode.values.firstWhere(
-      (element) => element.toString() == name,
-      orElse: () => kInitialThemeMode,
-    );
+  (element) => element.toString() == name,
+  orElse: () => kInitialThemeMode,
+);
 Stream<ThemeMode> streamThemeMode() => Database()
     .stringRef //
     .watch(key: kThemeModeKey)
@@ -27,13 +27,12 @@ enum ThemeAccent {
   stone,
   violet,
   yellow,
-  zinc,
-  ;
+  zinc;
 
   static ThemeAccent _fromName(String? name) => ThemeAccent.values.firstWhere(
-        (element) => element.name == name,
-        orElse: () => kInitialThemeAccent,
-      );
+    (element) => element.name == name,
+    orElse: () => kInitialThemeAccent,
+  );
 }
 
 const kThemeAccentKey = 'theme-accent';
@@ -50,10 +49,13 @@ void setThemeAccent(ThemeAccent themeAccent) =>
 ShadThemeData getTheme(ThemeAccent themeAccent, Brightness brightness) =>
     ShadThemeData(
       brightness: brightness,
-      colorScheme:
-          ShadColorScheme.fromName(themeAccent.name, brightness: brightness),
-      switchTheme:
-          ShadSwitchTheme(margin: brightness == Brightness.light ? 0.0 : 1.0),
+      colorScheme: ShadColorScheme.fromName(
+        themeAccent.name,
+        brightness: brightness,
+      ),
+      switchTheme: ShadSwitchTheme(
+        margin: brightness == Brightness.light ? 0.0 : 1.0,
+      ),
       radius: BorderRadius.circular(8.0),
       sheetTheme: const ShadSheetTheme(
         gap: 16.0,
@@ -65,21 +67,25 @@ extension ThemeAccentRepresentativeColor on ThemeAccent {
   CupertinoDynamicColor _color(Color light, Color dark) =>
       CupertinoDynamicColor.withBrightness(color: light, darkColor: dark);
   CupertinoDynamicColor get representativeColor => switch (this) {
-        ThemeAccent.blue => _color(Colors.blue, Colors.blue.tint(.1)),
-        ThemeAccent.gray => _color(Colors.grey, Colors.grey.tint(.1)),
-        ThemeAccent.green => _color(Colors.green, Colors.green.tint(.1)),
-        ThemeAccent.neutral => _color(Colors.white, Colors.black),
-        ThemeAccent.orange => _color(Colors.orange, Colors.orange.tint(.1)),
-        ThemeAccent.red => _color(Colors.red, Colors.red.tint(.1)),
-        ThemeAccent.rose => _color(Colors.pink, Colors.pink.tint(.1)),
-        ThemeAccent.slate => _color(Colors.blueGrey, Colors.blueGrey.tint(.1)),
-        ThemeAccent.stone =>
-          _color(const Color(0xfff5f5f4), const Color(0xff292524)),
-        ThemeAccent.violet => _color(Colors.purple, Colors.purple.tint(.1)),
-        ThemeAccent.yellow => _color(Colors.yellow, Colors.yellow.tint(.1)),
-        ThemeAccent.zinc =>
-          _color(const Color(0xff27272a), const Color(0xfff4f4f5)),
-      };
+    ThemeAccent.blue => _color(Colors.blue, Colors.blue.tint(.1)),
+    ThemeAccent.gray => _color(Colors.grey, Colors.grey.tint(.1)),
+    ThemeAccent.green => _color(Colors.green, Colors.green.tint(.1)),
+    ThemeAccent.neutral => _color(Colors.white, Colors.black),
+    ThemeAccent.orange => _color(Colors.orange, Colors.orange.tint(.1)),
+    ThemeAccent.red => _color(Colors.red, Colors.red.tint(.1)),
+    ThemeAccent.rose => _color(Colors.pink, Colors.pink.tint(.1)),
+    ThemeAccent.slate => _color(Colors.blueGrey, Colors.blueGrey.tint(.1)),
+    ThemeAccent.stone => _color(
+      const Color(0xfff5f5f4),
+      const Color(0xff292524),
+    ),
+    ThemeAccent.violet => _color(Colors.purple, Colors.purple.tint(.1)),
+    ThemeAccent.yellow => _color(Colors.yellow, Colors.yellow.tint(.1)),
+    ThemeAccent.zinc => _color(
+      const Color(0xff27272a),
+      const Color(0xfff4f4f5),
+    ),
+  };
 }
 
 extension TextStyleUtils on TextStyle {
@@ -98,9 +104,11 @@ extension TextStyleUtils on TextStyle {
     if (delta == 0.0) {
       return this;
     }
-    final weight = fontVariations
-        ?.firstWhereOrNull((variation) => variation.axis == 'wght')
-        ?.value as num?;
+    final weight =
+        fontVariations
+                ?.firstWhereOrNull((variation) => variation.axis == 'wght')
+                ?.value
+            as num?;
     if (weight != null && fontVariations == null) {
       return apply(fontWeightDelta: delta.round());
     }
@@ -134,37 +142,25 @@ extension TextStyleUtils on TextStyle {
 
   TextStyle enableFeature(String feature) {
     return copyWith(
-      fontFeatures: [
-        ...?fontFeatures,
-        FontFeature.enable(feature),
-      ],
+      fontFeatures: [...?fontFeatures, FontFeature.enable(feature)],
     );
   }
 
   TextStyle enableFeatures(List<String> features) {
     return copyWith(
-      fontFeatures: [
-        ...?fontFeatures,
-        ...features.map(FontFeature.enable),
-      ],
+      fontFeatures: [...?fontFeatures, ...features.map(FontFeature.enable)],
     );
   }
 
   TextStyle disableFeature(String feature) {
     return copyWith(
-      fontFeatures: [
-        ...?fontFeatures,
-        FontFeature.disable(feature),
-      ],
+      fontFeatures: [...?fontFeatures, FontFeature.disable(feature)],
     );
   }
 
   TextStyle disableFeatures(List<String> features) {
     return copyWith(
-      fontFeatures: [
-        ...?fontFeatures,
-        ...features.map(FontFeature.disable),
-      ],
+      fontFeatures: [...?fontFeatures, ...features.map(FontFeature.disable)],
     );
   }
 }
@@ -239,11 +235,7 @@ extension BrightnessCheckData on ShadThemeData {
   /// or [resolveNum] when possible, since this method does not interpolate
   /// between the two values when the theme is animating.
   ///
-  T resolveBrightness<T>(
-    T light,
-    T dark, [
-    ThemeMode mode = ThemeMode.system,
-  ]) {
+  T resolveBrightness<T>(T light, T dark, [ThemeMode mode = ThemeMode.system]) {
     switch (mode) {
       case ThemeMode.system:
         return isDark ? dark : light;
@@ -267,17 +259,19 @@ extension BrightnessCheckData on ShadThemeData {
       case ThemeMode.dark:
         return inverse ? light : dark;
       case ThemeMode.system:
-        final dynamicColor =
-            CupertinoDynamicColor.withBrightness(color: light, darkColor: dark);
+        final dynamicColor = CupertinoDynamicColor.withBrightness(
+          color: light,
+          darkColor: dark,
+        );
         return inverse
             ? dynamicColor.reverseResolveWithTheme(
-                this,
-                isHighContrast: isHighContrast,
-              )
+              this,
+              isHighContrast: isHighContrast,
+            )
             : dynamicColor.resolveWithTheme(
-                this,
-                isHighContrast: isHighContrast,
-              );
+              this,
+              isHighContrast: isHighContrast,
+            );
     }
   }
 }
@@ -290,7 +284,7 @@ extension ThemeUtils on BuildContext {
   ShadToasterState get toaster => ShadToaster.of(this);
   ThemeAccent get themeAccent => watch<ThemeAccent>();
   Color get brightSurface => theme.resolveColor(
-        const Color.fromARGB(255, 252, 252, 252),
-        const Color(0xff222222),
-      );
+    const Color.fromARGB(255, 252, 252, 252),
+    const Color(0xff222222),
+  );
 }

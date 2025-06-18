@@ -8,10 +8,7 @@ part of '../prompt_page.dart';
 /// - Block reordering functionality
 /// - Local file and folder selection
 class _PPBlockScope extends StatelessWidget {
-  const _PPBlockScope({
-    required this.promptId,
-    required this.child,
-  });
+  const _PPBlockScope({required this.promptId, required this.child});
 
   /// The ID of the prompt this scope is associated with
   final int promptId;
@@ -25,12 +22,15 @@ class _PPBlockScope extends StatelessWidget {
       providers: [
         StreamProvider<_PromptBlockList>(
           initialData: const IList.empty(),
-          create: (context) =>
-              context.db.streamBlocksByPrompt(promptId).map((e) => IList(e)),
+          create:
+              (context) => context.db
+                  .streamBlocksByPrompt(promptId)
+                  .map((e) => IList(e)),
         ),
         ProxyProvider<_PromptBlockList, _BlockReorderCallback>(
-          update: (context, blocks, _) =>
-              (oldIndex, newIndex) => context.db.reorderBlock(
+          update:
+              (context, blocks, _) =>
+                  (oldIndex, newIndex) => context.db.reorderBlock(
                     promptId: promptId,
                     blockId: blocks[oldIndex].id,
                     newIndex: newIndex,
@@ -128,7 +128,7 @@ extension _PromptBlockScopeExtension on BuildContext {
     try {
       final (id, content) =
           await db.createWebBlock(promptId, url, searchProvider) ??
-              (null, null);
+          (null, null);
       if (content == null) return null;
       toaster.show(
         ShadToast(
@@ -197,8 +197,9 @@ extension _PromptBlockScopeExtension on BuildContext {
       // For data without a file path, we can only handle text-based formats.
       final availableFormats = reader.getFormats(kTextBasedFileFormats);
       if (availableFormats.isNotEmpty) {
-        reader.getFile(availableFormats.first as SimpleFileFormat,
-            (file) async {
+        reader.getFile(availableFormats.first as SimpleFileFormat, (
+          file,
+        ) async {
           if (!mounted) return;
           final content = await utf8.decodeStream(file.getStream());
           await createTextBlockAtIndex(

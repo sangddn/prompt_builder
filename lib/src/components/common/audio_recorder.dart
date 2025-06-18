@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:record/record.dart';
-import 'package:shadcn_ui/shadcn_ui.dart' hide TextDirection;
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../core/core.dart';
 import '../../services/services.dart';
@@ -33,30 +33,33 @@ class VoiceInputButton extends StatelessWidget {
       value: popoverController,
       child: ShadPopover(
         controller: popoverController,
-        popover: (context) => Provider<AudioRecorder>(
-          create: (_) => AudioRecorder(),
-          dispose: (_, recorder) => recorder.dispose(),
-          builder: (context, _) {
-            if (onEnd == null) return const SizedBox.shrink();
-            return SizedBox(
-              width: 300.0,
-              child: _AudioRecord(onEnd: onEnd!),
-            );
-          },
-        ),
+        popover:
+            (context) => Provider<AudioRecorder>(
+              create: (_) => AudioRecorder(),
+              dispose: (_, recorder) => recorder.dispose(),
+              builder: (context, _) {
+                if (onEnd == null) return const SizedBox.shrink();
+                return SizedBox(
+                  width: 300.0,
+                  child: _AudioRecord(onEnd: onEnd!),
+                );
+              },
+            ),
         child: CButton(
           tooltip: 'Voice Input',
           onTap: onEnd == null ? null : popoverController.toggle,
           padding: k8H4VPadding,
-          color: isOpen
-              ? context.colorScheme.primary
-              : PColors.opaqueLightGray.resolveFrom(context),
+          color:
+              isOpen
+                  ? context.colorScheme.primary
+                  : PColors.opaqueLightGray.resolveFrom(context),
           child: Icon(
             HugeIcons.strokeRoundedMic01,
             size: 16.0,
-            color: isOpen
-                ? context.colorScheme.primaryForeground
-                : PColors.textGray.resolveFrom(context),
+            color:
+                isOpen
+                    ? context.colorScheme.primaryForeground
+                    : PColors.textGray.resolveFrom(context),
           ),
         ),
       ),
@@ -173,8 +176,10 @@ class _AudioRecordState extends State<_AudioRecord> {
           builder: (context, snapshot) {
             final duration = DateTime.now().difference(_startTime);
             final minutes = duration.inMinutes;
-            final seconds =
-                (duration.inSeconds % 60).toString().padLeft(2, '0');
+            final seconds = (duration.inSeconds % 60).toString().padLeft(
+              2,
+              '0',
+            );
             return Row(
               children: [
                 Expanded(child: _Amplitudes(snapshot.data ?? [])),
@@ -198,9 +203,10 @@ class _AudioRecordState extends State<_AudioRecord> {
             ShadButton(
               onPressed: _transcribe,
               child: TranslationSwitcher.top(
-                child: _isTranscribing
-                    ? const GrayShimmer(child: Text('Transcribing…'))
-                    : const Text('Done'),
+                child:
+                    _isTranscribing
+                        ? const GrayShimmer(child: Text('Transcribing…'))
+                        : const Text('Done'),
               ),
             ),
           ],
@@ -232,14 +238,16 @@ class _Amplitudes extends StatelessWidget {
             child: Container(
               decoration: ShapeDecoration(
                 shape: const SquircleStadiumBorder(),
-                color:
-                    (amplitude == null ? PColors.opagueGray : PColors.textGray)
-                        .resolveFrom(context),
+                color: (amplitude == null
+                        ? PColors.opagueGray
+                        : PColors.textGray)
+                    .resolveFrom(context),
               ),
               width: width,
-              height: amplitude == null
-                  ? 12.0
-                  : 100.0 - (amplitude.abs().clamp(0.0, 46.0) * 2),
+              height:
+                  amplitude == null
+                      ? 12.0
+                      : 100.0 - (amplitude.abs().clamp(0.0, 46.0) * 2),
             ),
           );
         },

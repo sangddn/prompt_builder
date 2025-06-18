@@ -22,14 +22,14 @@ class AnimatedStateProvider<T> extends StateProvider<T> {
     Widget? child,
     super.key,
   }) : super(
-          child: _AnimatedConsumer<T>(
-            duration: duration,
-            curve: curve,
-            lerp: lerp,
-            builder: builder,
-            child: child,
-          ),
-        );
+         child: _AnimatedConsumer<T>(
+           duration: duration,
+           curve: curve,
+           lerp: lerp,
+           builder: builder,
+           child: child,
+         ),
+       );
 }
 
 class _AnimatedConsumer<T> extends StatefulWidget {
@@ -63,10 +63,7 @@ class __AnimatedConsumerState<T> extends State<_AnimatedConsumer<T>>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    );
+    _controller = AnimationController(duration: widget.duration, vsync: this);
     _curvedAnimation = CurvedAnimation(
       parent: _controller,
       curve: widget.curve,
@@ -104,14 +101,16 @@ class __AnimatedConsumerState<T> extends State<_AnimatedConsumer<T>>
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-        animation: _curvedAnimation,
-        builder: (context, child) => Provider<T>.value(
-          value: _curvedAnimation.isAnimating
-              ? widget.lerp(_oldValue, _value, _curvedAnimation.value)
-              : _value,
+    animation: _curvedAnimation,
+    builder:
+        (context, child) => Provider<T>.value(
+          value:
+              _curvedAnimation.isAnimating
+                  ? widget.lerp(_oldValue, _value, _curvedAnimation.value)
+                  : _value,
           builder: widget.builder,
           child: child,
         ),
-        child: widget.child,
-      );
+    child: widget.child,
+  );
 }

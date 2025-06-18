@@ -10,8 +10,9 @@ class _BCVImageViewer extends StatelessWidget {
     return Center(
       child: Image(
         image: provider,
-        errorBuilder: (context, error, stackTrace) =>
-            const Center(child: Text('Error loading image')),
+        errorBuilder:
+            (context, error, stackTrace) =>
+                const Center(child: Text('Error loading image')),
       ),
     );
   }

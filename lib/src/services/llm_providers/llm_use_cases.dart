@@ -336,7 +336,8 @@ class TranscribeAudioUseCase extends LLMUseCase {
   String? getPrompt() => null;
 
   @override
-  void _setPrompt(String prompt) => throw UnsupportedError(
+  void _setPrompt(String prompt) =>
+      throw UnsupportedError(
         'No prompt customization available for audio transcription',
       );
 

@@ -49,62 +49,63 @@ class TileButton extends StatelessWidget {
         builder: (context) {
           final foregroundColor = DefaultTextStyle.of(context).style.color;
           final title = IconTheme(
-            data: IconThemeData(
-              color: foregroundColor,
-            ),
+            data: IconThemeData(color: foregroundColor),
             child: DefaultTextStyle(
               style: TextStyle(color: foregroundColor),
               child: this.title,
             ),
           );
-          final leading = this.leading != null
-              ? IconTheme(
-                  data: IconThemeData(
-                    color: foregroundColor,
-                  ),
-                  child: DefaultTextStyle(
-                    style: TextStyle(color: foregroundColor),
-                    child: this.leading!,
-                  ),
-                )
-              : null;
+          final leading =
+              this.leading != null
+                  ? IconTheme(
+                    data: IconThemeData(color: foregroundColor),
+                    child: DefaultTextStyle(
+                      style: TextStyle(color: foregroundColor),
+                      child: this.leading!,
+                    ),
+                  )
+                  : null;
           final tile = CupertinoListTile.notched(
             backgroundColor: theme.colorScheme.background.replaceOpacity(0.9),
             padding: padding,
             leading: leading,
             title: title,
-            subtitle: isDisabled &&
-                    disabledText != null &&
-                    foregroundColor == disabledColor
-                ? Text(
-                    disabledText!,
-                    style: TextStyle(
-                      color: foregroundColor,
-                    ),
-                  ).animate().fadeIn()
-                : subtitleWhenEnabled,
+            subtitle:
+                isDisabled &&
+                        disabledText != null &&
+                        foregroundColor == disabledColor
+                    ? Text(
+                      disabledText!,
+                      style: TextStyle(color: foregroundColor),
+                    ).animate().fadeIn()
+                    : subtitleWhenEnabled,
             trailing: trailing,
-            additionalInfo: additionalInfo != null
-                ? DefaultTextStyle(
-                    style: theme.textTheme.p
-                        .copyWith(color: PColors.darkGray.resolveFrom(context)),
-                    child: additionalInfo ?? const SizedBox(),
-                  )
-                : null,
+            additionalInfo:
+                additionalInfo != null
+                    ? DefaultTextStyle(
+                      style: theme.textTheme.p.copyWith(
+                        color: PColors.darkGray.resolveFrom(context),
+                      ),
+                      child: additionalInfo ?? const SizedBox(),
+                    )
+                    : null,
             onTap: onPressed,
           );
 
-          final tileWithBackground = enableBlurredBackground
-              ? BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
-                  child: tile,
-                )
-              : tile;
+          final tileWithBackground =
+              enableBlurredBackground
+                  ? BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                    child: tile,
+                  )
+                  : tile;
 
-          final effectiveDecoration = decoration ??
+          final effectiveDecoration =
+              decoration ??
               ShapeDecoration(
-                color: theme.colorScheme.card
-                    .replaceOpacity(enableBlurredBackground ? 0.0 : 1.0),
+                color: theme.colorScheme.card.replaceOpacity(
+                  enableBlurredBackground ? 0.0 : 1.0,
+                ),
                 shape: Superellipse.border12,
                 shadows: broadShadows(context, elevation: 0.05),
               );
@@ -112,12 +113,12 @@ class TileButton extends StatelessWidget {
           final shape = switch (effectiveDecoration) {
             ShapeDecoration() => effectiveDecoration.shape,
             BoxDecoration() => switch (effectiveDecoration.shape) {
-                BoxShape.circle => const CircleBorder(),
-                BoxShape.rectangle => RoundedRectangleBorder(
-                    borderRadius:
-                        effectiveDecoration.borderRadius ?? BorderRadius.zero,
-                  )
-              },
+              BoxShape.circle => const CircleBorder(),
+              BoxShape.rectangle => RoundedRectangleBorder(
+                borderRadius:
+                    effectiveDecoration.borderRadius ?? BorderRadius.zero,
+              ),
+            },
             _ => null,
           };
 

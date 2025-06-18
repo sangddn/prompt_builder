@@ -1,16 +1,17 @@
 part of '../prompt_page.dart';
 
 Future<void> _showWebSearchDialog(BuildContext context) => showPDialog<void>(
-      context: context,
-      barrierColor: Colors.transparent,
-      builder: (_) => MultiProvider(
+  context: context,
+  barrierColor: Colors.transparent,
+  builder:
+      (_) => MultiProvider(
         providers: [
           Provider<Database>.value(value: context.db),
           Provider<Prompt?>.value(value: context.prompt),
         ],
         child: const _PPWebSearchDialog(),
       ),
-    );
+);
 
 class _WebSearchButton extends StatelessWidget {
   const _WebSearchButton();
@@ -34,10 +35,7 @@ class _WebSearchButton extends StatelessWidget {
                 color: PColors.textGray.resolveFrom(context),
               ),
               const SizedBox(width: 4.0),
-              Text(
-                'Web',
-                style: context.textTheme.muted,
-              ),
+              Text('Web', style: context.textTheme.muted),
             ],
           ),
           Text.rich(
@@ -66,8 +64,9 @@ class _PPWebSearchDialog extends StatelessWidget {
           StreamProvider<SearchProvider?>(
             initialData:
                 SearchProviderPreference.getValidProviderWithFallback(),
-            create: (_) =>
-                SearchProviderPreference.streamValidProviderWithFallback(),
+            create:
+                (_) =>
+                    SearchProviderPreference.streamValidProviderWithFallback(),
           ),
           ValueProvider<ValueNotifier<_WebSearchState>>(
             create: (_) => ValueNotifier(_WebSearchState.idle),
@@ -159,24 +158,26 @@ class _SearchBar extends StatelessWidget {
               final provider = context.watch<SearchProvider?>();
               return GrayShimmer(
                 enableShimmer: isLoading,
-                child: provider == null
-                    ? const Padding(
-                        padding: k12HPadding,
-                        child: ShadImage.square(
-                          HugeIcons.strokeRoundedGlobe02,
-                          size: 20.0,
+                child:
+                    provider == null
+                        ? const Padding(
+                          padding: k12HPadding,
+                          child: Icon(
+                            HugeIcons.strokeRoundedGlobe02,
+                            size: 20.0,
+                          ),
+                        )
+                        : ProviderPicker.searchWithDefaultUpdate(
+                          initialProvider: provider,
+                          decoration: const ShadDecoration(
+                            border: ShadBorder(),
+                          ),
+                          builder:
+                              (context, provider) => Padding(
+                                padding: const EdgeInsets.only(right: 4.0),
+                                child: ProviderLogo(provider: provider),
+                              ),
                         ),
-                      )
-                    : ProviderPicker.searchWithDefaultUpdate(
-                        initialProvider: provider,
-                        decoration: const ShadDecoration(
-                          border: ShadBorder(),
-                        ),
-                        builder: (context, provider) => Padding(
-                          padding: const EdgeInsets.only(right: 4.0),
-                          child: ProviderLogo(provider: provider),
-                        ),
-                      ),
               );
             },
           ),
@@ -200,13 +201,13 @@ class _UnderneathSearchBarText extends AnimatedStatelessWidget {
 
   @override
   Widget buildAnimation(BuildContext context, Widget child) => DefaultTextStyle(
-        style: context.textTheme.muted,
-        child: TranslationSwitcher.top(
-          offset: .2,
-          duration: Effects.veryShortDuration,
-          child: child,
-        ),
-      );
+    style: context.textTheme.muted,
+    child: TranslationSwitcher.top(
+      offset: .2,
+      duration: Effects.veryShortDuration,
+      child: child,
+    ),
+  );
 
   @override
   Widget buildChild(BuildContext context) {
@@ -242,12 +243,7 @@ class _ActionBar extends AnimatedStatelessWidget {
   Widget buildChild(BuildContext context) {
     return const Column(
       mainAxisSize: MainAxisSize.min,
-      children: [
-        Divider(height: 1.0),
-        Gap(12.0),
-        _SearchActions(),
-        Gap(12.0),
-      ],
+      children: [Divider(height: 1.0), Gap(12.0), _SearchActions(), Gap(12.0)],
     );
   }
 }
@@ -280,7 +276,8 @@ class _SearchActions extends AnimatedStatelessWidget {
       _SearchBarIntent.genericUrl => 'Extract & Add',
       _SearchBarIntent.youtubeUrl => 'Add Transcript',
     };
-    final canAddMore = intent == _SearchBarIntent.genericUrl ||
+    final canAddMore =
+        intent == _SearchBarIntent.genericUrl ||
         intent == _SearchBarIntent.youtubeUrl;
     var shouldAddMore = false;
     return Row(
@@ -289,7 +286,7 @@ class _SearchActions extends AnimatedStatelessWidget {
         if (canAddMore)
           StatefulBuilder(
             builder: (context, setState) {
-              final side = BorderSide(
+              final side = ShadBorderSide(
                 color: PColors.darkGray.resolveFrom(context),
               );
               return ShadCheckbox(
@@ -347,15 +344,16 @@ class _WebSearchResultList extends StatelessWidget {
     final count = context.select((_WebResultsNotifier n) => n.value.length);
     return SuperSliverList.builder(
       itemCount: count,
-      itemBuilder: (context, index) => Builder(
-        builder: (context) {
-          final result = context.select(
-            (_WebResultsNotifier n) => n.value.elementAtOrNull(index),
-          );
-          if (result == null) return const SizedBox.shrink();
-          return _WebSearchResult(result);
-        },
-      ),
+      itemBuilder:
+          (context, index) => Builder(
+            builder: (context) {
+              final result = context.select(
+                (_WebResultsNotifier n) => n.value.elementAtOrNull(index),
+              );
+              if (result == null) return const SizedBox.shrink();
+              return _WebSearchResult(result);
+            },
+          ),
     );
   }
 }
@@ -377,11 +375,7 @@ class _WebSearchResult extends StatelessWidget {
             if (context.prompt?.id case final id?) {
               final toaster = context.toaster;
               try {
-                await context.db.createWebBlockFromResult(
-                  id,
-                  result,
-                  provider,
-                );
+                await context.db.createWebBlockFromResult(id, result, provider);
                 toaster.show(
                   ShadToast(
                     title: Text('Added content from ${result.url}.'),
@@ -399,9 +393,13 @@ class _WebSearchResult extends StatelessWidget {
             }
           }
 
-          final trailing = isHovered
-              ? ShadBadge(onPressed: add, child: const Text('Add'))
-              : ShadBadge.secondary(onPressed: add, child: const Text('Add'));
+          final trailing =
+              isHovered
+                  ? ShadBadge(onPressed: add, child: const Text('Add'))
+                  : ShadBadge.secondary(
+                    onPressed: add,
+                    child: const Text('Add'),
+                  );
 
           final controller = context.read<ShadPopoverController>();
 
@@ -421,14 +419,12 @@ class _WebSearchResult extends StatelessWidget {
                       maxHeight: 700,
                     ),
                     child: SingleChildScrollView(
-                      child: content == null
-                          ? const Center(
-                              child: CircularProgressIndicator.adaptive(),
-                            )
-                          : Text(
-                              content,
-                              style: context.textTheme.p,
-                            ),
+                      child:
+                          content == null
+                              ? const Center(
+                                child: CircularProgressIndicator.adaptive(),
+                              )
+                              : Text(content, style: context.textTheme.p),
                     ),
                   );
                 },
@@ -439,32 +435,23 @@ class _WebSearchResult extends StatelessWidget {
               items: [
                 ShadContextMenuItem(
                   onPressed: () => controller.show(),
-                  trailing: const ShadImage.square(
-                    LucideIcons.eye,
-                    size: 16.0,
-                  ),
+                  trailing: const Icon(LucideIcons.eye, size: 16.0),
                   child: const Text('Peek Content'),
                 ),
                 ShadContextMenuItem(
                   onPressed: () => launchUrlString(result.url),
-                  trailing: const ShadImage.square(
-                    LucideIcons.arrowUpRight,
-                    size: 16.0,
-                  ),
+                  trailing: const Icon(LucideIcons.arrowUpRight, size: 16.0),
                   child: const Text('Open in Browser'),
                 ),
                 ShadContextMenuItem(
                   onPressed: add,
-                  trailing: const ShadImage.square(
-                    LucideIcons.plus,
-                    size: 16.0,
-                  ),
+                  trailing: const Icon(LucideIcons.plus, size: 16.0),
                   child: const Text('Add to Prompt'),
                 ),
               ],
               child: ListTile(
                 leading: result.faviconUrl?.let(
-                  (url) => ShadImage.square(url, size: 16.0),
+                  (url) => Image.network(url, width: 16.0, height: 16.0),
                 ),
                 title: Text(
                   result.title,
@@ -509,17 +496,9 @@ class _WebSearchResult extends StatelessWidget {
 typedef _WebResults = IList<SearchResult>;
 typedef _WebResultsNotifier = ValueNotifier<_WebResults>;
 
-enum _SearchBarIntent {
-  search,
-  genericUrl,
-  youtubeUrl,
-  ;
-}
+enum _SearchBarIntent { search, genericUrl, youtubeUrl }
 
-enum _WebSearchState {
-  idle,
-  loading,
-}
+enum _WebSearchState { idle, loading }
 
 void _inferIntent(BuildContext context, TextEditingController? controller) {
   final text = controller?.text;

@@ -10,9 +10,7 @@ class _LPProviders extends MultiProviderWidget {
     final db = context.read<Database>();
     final observer = LibraryObserver.of(context);
     return [
-      ValueProvider<TagFilterNotifier>(
-        create: (_) => ValueNotifier(null),
-      ),
+      ValueProvider<TagFilterNotifier>(create: (_) => ValueNotifier(null)),
       ChangeNotifierProvider<PromptSearchQueryNotifier>(
         create: (_) => PromptSearchQueryNotifier(),
       ),
@@ -56,7 +54,9 @@ const _kHasProject = 'library_has_project';
 /// Creates a [ValueNotifier] that persists the sort by and ascending state to the
 /// database.
 PromptSortByNotifier _createSortByNotifier(Database db) {
-  final sortBy = db.stringRef //
+  final sortBy =
+      db
+          .stringRef //
           .get(_kSortByKey)
           ?.let((x) => PromptSortBy.values.firstWhere((v) => v.name == x)) ??
       PromptSortBy.createdAt;

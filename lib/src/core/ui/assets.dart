@@ -63,8 +63,7 @@ enum UiAsset {
 
   // Graphics
   featureRequest('$_imgMisc/questions', 'png'),
-  inviteFriends('$_imgMisc/invite_friends', 'png'),
-  ;
+  inviteFriends('$_imgMisc/invite_friends', 'png');
 
   const UiAsset(this.pathWoExt, this.ext);
 

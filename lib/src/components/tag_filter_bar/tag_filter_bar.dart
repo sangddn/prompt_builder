@@ -27,10 +27,10 @@ class TagFilterBar extends MultiProviderWidget {
 
   @override
   List<SingleChildWidget> get providers => [
-        ChangeNotifierProvider<TagFilterNotifier>.value(value: notifier),
-        Provider<TagType>.value(value: type),
-        Provider<Value<int?>>.value(value: projectId),
-      ];
+    ChangeNotifierProvider<TagFilterNotifier>.value(value: notifier),
+    Provider<TagType>.value(value: type),
+    Provider<Value<int?>>.value(value: projectId),
+  ];
 
   @override
   Widget buildChild(BuildContext context) {
@@ -39,7 +39,7 @@ class TagFilterBar extends MultiProviderWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Row(
         children: [
-          const ShadImage.square(LucideIcons.filter, size: 16.0),
+          const Icon(LucideIcons.listFilter, size: 16.0),
           const Gap(8.0),
           const _PopularTagsList(),
           const Gap(8.0),
@@ -58,13 +58,14 @@ class TagFilterBar extends MultiProviderWidget {
       side: ShadSheetSide.right,
       barrierColor: Colors.transparent,
       context: context,
-      builder: (_) => Provider<Database>.value(
-        value: context.read<Database>(),
-        child: Provider<Value<int?>>.value(
-          value: projectId,
-          child: _AllTagsSheet(type),
-        ),
-      ),
+      builder:
+          (_) => Provider<Database>.value(
+            value: context.read<Database>(),
+            child: Provider<Value<int?>>.value(
+              value: projectId,
+              child: _AllTagsSheet(type),
+            ),
+          ),
     );
 
     if (selectedTag != null && context.mounted) {
@@ -82,13 +83,14 @@ class _PopularTagsList extends StatelessWidget {
 
     return StreamProvider<IList<TagCount>>(
       initialData: const IList.empty(),
-      create: (context) => context.db
-          .streamTagsByFrequency(
-            limit: 5,
-            type: context.type,
-            projectId: context.projectId,
-          )
-          .map((tags) => IList(tags)),
+      create:
+          (context) => context.db
+              .streamTagsByFrequency(
+                limit: 5,
+                type: context.type,
+                projectId: context.projectId,
+              )
+              .map((tags) => IList(tags)),
       builder: (context, snapshot) {
         var list = context.watch<IList<TagCount>>();
         // Make sure selectedTag is in the list
@@ -102,9 +104,10 @@ class _PopularTagsList extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 8.0),
                 child: ShadButton.ghost(
                   size: ShadButtonSize.sm,
-                  icon: selectedTag == tag.tag
-                      ? const ShadImage.square(LucideIcons.check, size: 16.0)
-                      : null,
+                  leading:
+                      selectedTag == tag.tag
+                          ? const Icon(LucideIcons.check, size: 16.0)
+                          : null,
                   onPressed: () {
                     final notifier = context.notifier;
                     if (selectedTag == tag.tag) {
@@ -166,18 +169,19 @@ class _AllTagsSheetState extends State<_AllTagsSheet> {
         slivers: [
           InfinityAndBeyond<TagCount>(
             controller: _controller,
-            itemBuilder: (context, _, tag) => CButton(
-              tooltip: 'Filter by ${tag.tag}',
-              onTap: () => Navigator.of(context).pop(tag.tag),
-              padding: k16H12VPadding,
-              child: Row(
-                children: [
-                  Text(tag.tag, style: context.textTheme.list),
-                  const Spacer(),
-                  Text('${tag.count}', style: context.textTheme.muted),
-                ],
-              ),
-            ),
+            itemBuilder:
+                (context, _, tag) => CButton(
+                  tooltip: 'Filter by ${tag.tag}',
+                  onTap: () => Navigator.of(context).pop(tag.tag),
+                  padding: k16H12VPadding,
+                  child: Row(
+                    children: [
+                      Text(tag.tag, style: context.textTheme.list),
+                      const Spacer(),
+                      Text('${tag.count}', style: context.textTheme.muted),
+                    ],
+                  ),
+                ),
           ),
         ],
       ),

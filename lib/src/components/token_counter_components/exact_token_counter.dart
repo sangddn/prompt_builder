@@ -19,7 +19,7 @@ class ExactTokenCounter extends StatefulWidget {
   });
 
   final bool Function(BuildContext context, String? currentContent)?
-      hasContentChanged;
+  hasContentChanged;
   final String? Function() getContent;
 
   @override
@@ -33,30 +33,26 @@ class ExactTokenCounterState extends State<ExactTokenCounter> {
   bool _hasContentChanged = false;
 
   void _count() {
-    setState(
-      () {
-        _content = widget.getContent();
-        _hasContentChanged = false;
-        final futures = kAllLLMProviders.map((provider) {
-          try {
-            final r = provider.countTokens(_content!);
-            if (r is SynchronousFuture) return Future.value(r);
-            return r;
-          } on ApiKeyNotSetException {
-            return Future.value(null);
-          } on HttpException {
-            return Future.value(null);
-          } catch (e) {
-            return Future.value(null);
-          }
-        });
-        _countFuture = Future.wait(futures).then(
-          (results) {
-            return Map.fromIterables(kAllLLMProviders, results);
-          },
-        );
-      },
-    );
+    setState(() {
+      _content = widget.getContent();
+      _hasContentChanged = false;
+      final futures = kAllLLMProviders.map((provider) {
+        try {
+          final r = provider.countTokens(_content!);
+          if (r is SynchronousFuture) return Future.value(r);
+          return r;
+        } on ApiKeyNotSetException {
+          return Future.value(null);
+        } on HttpException {
+          return Future.value(null);
+        } catch (e) {
+          return Future.value(null);
+        }
+      });
+      _countFuture = Future.wait(futures).then((results) {
+        return Map.fromIterables(kAllLLMProviders, results);
+      });
+    });
   }
 
   @override
@@ -69,7 +65,8 @@ class ExactTokenCounterState extends State<ExactTokenCounter> {
   Widget build(BuildContext context) {
     final theme = context.theme;
     if (!_hasContentChanged) {
-      _hasContentChanged = widget.hasContentChanged?.call(context, _content) ??
+      _hasContentChanged =
+          widget.hasContentChanged?.call(context, _content) ??
           _hasContentChanged;
     }
     return AnimatedFutureBuilder(
@@ -79,8 +76,8 @@ class ExactTokenCounterState extends State<ExactTokenCounter> {
         final counts = snapshot.data;
         return ShadPopover(
           controller: _controller,
-          popover: (_) =>
-              _ExactTokenCounts(counts, isLoading, _hasContentChanged),
+          popover:
+              (_) => _ExactTokenCounts(counts, isLoading, _hasContentChanged),
           child: MouseRegion(
             onHover: (_) => _controller.show(),
             onExit: (_) => _controller.hide(),
@@ -127,16 +124,17 @@ class _ExactTokenCounts extends StatelessWidget {
         width: 200.0,
         height: 48.0,
         child: Center(
-          child: isLoading
-              ? const CircularProgressIndicator.adaptive()
-              : Padding(
-                  padding: k8APadding,
-                  child: Text(
-                    'Count exact tokens with Tiktoken or API.',
-                    style: context.textTheme.small,
-                    textAlign: TextAlign.center,
+          child:
+              isLoading
+                  ? const CircularProgressIndicator.adaptive()
+                  : Padding(
+                    padding: k8APadding,
+                    child: Text(
+                      'Count exact tokens with Tiktoken or API.',
+                      style: context.textTheme.small,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
         ),
       );
     }
@@ -157,8 +155,9 @@ class _ExactTokenCounts extends StatelessWidget {
                   if (value != null)
                     Text(
                       '${value.$1}',
-                      style:
-                          textTheme.list.copyWith(fontWeight: FontWeight.bold),
+                      style: textTheme.list.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     )
                   else
                     Text('n/a', style: textTheme.muted),

@@ -20,10 +20,10 @@ class CopyButton extends StatelessWidget {
     required this.data,
     required this.builder,
     super.key,
-  })  : foregroundColor = null,
-        backgroundColor = null,
-        cornerRadius = null,
-        label = null;
+  }) : foregroundColor = null,
+       backgroundColor = null,
+       cornerRadius = null,
+       label = null;
 
   final Color? foregroundColor;
   final Color? backgroundColor;
@@ -34,7 +34,8 @@ class CopyButton extends StatelessWidget {
     BuildContext context,
     ValueChanged<bool?> showFeedback,
     VoidCallback copy,
-  )? builder;
+  )?
+  builder;
 
   @override
   Widget build(BuildContext context) {
@@ -102,8 +103,9 @@ class CopyButton extends StatelessWidget {
                     Flexible(
                       child: Text(
                         label!,
-                        style:
-                            theme.textTheme.p.copyWith(color: foregroundColor),
+                        style: theme.textTheme.p.copyWith(
+                          color: foregroundColor,
+                        ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),

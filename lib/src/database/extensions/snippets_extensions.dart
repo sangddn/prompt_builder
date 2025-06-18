@@ -2,12 +2,7 @@ import 'package:drift/drift.dart';
 import '../../core/core.dart';
 import '../database.dart';
 
-enum SnippetSortBy {
-  title,
-  createdAt,
-  updatedAt,
-  lastUsedAt,
-}
+enum SnippetSortBy { title, createdAt, updatedAt, lastUsedAt }
 
 extension SnippetsExtension on Database {
   /// Create a new text-based prompt
@@ -94,27 +89,31 @@ extension SnippetsExtension on Database {
     switch (sortBy) {
       case SnippetSortBy.title:
         q.orderBy([
-          (t) => ascending
-              ? OrderingTerm.asc(t.title)
-              : OrderingTerm.desc(t.title),
+          (t) =>
+              ascending
+                  ? OrderingTerm.asc(t.title)
+                  : OrderingTerm.desc(t.title),
         ]);
       case SnippetSortBy.createdAt:
         q.orderBy([
-          (t) => ascending
-              ? OrderingTerm.asc(t.createdAt)
-              : OrderingTerm.desc(t.createdAt),
+          (t) =>
+              ascending
+                  ? OrderingTerm.asc(t.createdAt)
+                  : OrderingTerm.desc(t.createdAt),
         ]);
       case SnippetSortBy.updatedAt:
         q.orderBy([
-          (t) => ascending
-              ? OrderingTerm.asc(t.updatedAt)
-              : OrderingTerm.desc(t.updatedAt),
+          (t) =>
+              ascending
+                  ? OrderingTerm.asc(t.updatedAt)
+                  : OrderingTerm.desc(t.updatedAt),
         ]);
       case SnippetSortBy.lastUsedAt:
         q.orderBy([
-          (t) => ascending
-              ? OrderingTerm.asc(t.lastUsedAt)
-              : OrderingTerm.desc(t.lastUsedAt),
+          (t) =>
+              ascending
+                  ? OrderingTerm.asc(t.lastUsedAt)
+                  : OrderingTerm.desc(t.lastUsedAt),
         ]);
     }
     return q.get();
@@ -139,9 +138,10 @@ extension SnippetsExtension on Database {
         title: title != null ? Value(title) : const Value.absent(),
         content: content != null ? Value(content) : const Value.absent(),
         summary: summary != null ? Value(summary) : const Value.absent(),
-        tags: tags != null
-            ? Value(PromptTagsExtension.tagsToString(tags))
-            : const Value.absent(),
+        tags:
+            tags != null
+                ? Value(PromptTagsExtension.tagsToString(tags))
+                : const Value.absent(),
         notes: notes != null ? Value(notes) : const Value.absent(),
         updatedAt: Value(DateTime.now()),
       ),
@@ -150,9 +150,9 @@ extension SnippetsExtension on Database {
 
   /// Record the last time the snippet was used.
   Future<void> recordSnippetUsage(int snippetId) async {
-    await (update(snippets)..where((t) => t.id.equals(snippetId))).write(
-      SnippetsCompanion(lastUsedAt: Value(DateTime.now())),
-    );
+    await (update(snippets)..where(
+      (t) => t.id.equals(snippetId),
+    )).write(SnippetsCompanion(lastUsedAt: Value(DateTime.now())));
   }
 }
 
@@ -172,8 +172,9 @@ extension SnippetExtension on Snippet {
     final variables = <String, String>{};
 
     // Match {{name=value}} format
-    final matchesWithValue =
-        RegExp(r'\{\{(\w+)=([^}]*)\}\}').allMatches(content);
+    final matchesWithValue = RegExp(
+      r'\{\{(\w+)=([^}]*)\}\}',
+    ).allMatches(content);
     for (final match in matchesWithValue) {
       variables[match.group(1)!] = match.group(2)!;
     }
@@ -205,17 +206,19 @@ extension SnippetExtension on Snippet {
     // Replace {{name=value}} format
     updatedContent = updatedContent.replaceAllMapped(
       RegExp(r'\{\{(\w+)=([^}]*)\}\}'),
-      (match) => match.group(1) == variableName
-          ? '{{$variableName=$newValue}}'
-          : match.group(0)!,
+      (match) =>
+          match.group(1) == variableName
+              ? '{{$variableName=$newValue}}'
+              : match.group(0)!,
     );
 
     // Replace {{name}} format
     updatedContent = updatedContent.replaceAllMapped(
       RegExp(r'\{\{(\w+)\}\}'),
-      (match) => match.group(1) == variableName
-          ? '{{$variableName=$newValue}}'
-          : match.group(0)!,
+      (match) =>
+          match.group(1) == variableName
+              ? '{{$variableName=$newValue}}'
+              : match.group(0)!,
     );
 
     return updatedContent;

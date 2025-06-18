@@ -53,9 +53,10 @@ final class SnippetListController implements InfinityController<Snippet> {
         limit: _kPageSize, // ignore: avoid_redundant_argument_values
         offset: pageKey * _kPageSize,
         searchQuery: searchQueryNotifier?.text ?? '',
-        tags: filterTagNotifier?.value != null
-            ? [filterTagNotifier!.value!]
-            : const [],
+        tags:
+            filterTagNotifier?.value != null
+                ? [filterTagNotifier!.value!]
+                : const [],
         // NOT Value.absent() -- defaults to non-project snippets
         projectId: projectIdNotifier?.value ?? const Value(null),
       );
@@ -89,8 +90,9 @@ final class SnippetListController implements InfinityController<Snippet> {
     if (!context.mounted) return;
     final index = c.itemList?.indexWhere((s) => s.id == snippetId);
     if (index == null || index == -1) return;
-    c.itemList = List.of(c.itemList ?? [])
-      ..removeAt(index)
-      ..insert(index, newSnippet);
+    c.itemList =
+        List.of(c.itemList ?? [])
+          ..removeAt(index)
+          ..insert(index, newSnippet);
   }
 }

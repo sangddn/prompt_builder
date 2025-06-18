@@ -17,10 +17,7 @@ class _SNPPRightSidebar extends StatelessWidget {
           Spacer(),
           _Variables(),
           Divider(height: 32.0),
-          Padding(
-            padding: k8HPadding,
-            child: _EstimatedTokenCount(),
-          ),
+          Padding(padding: k8HPadding, child: _EstimatedTokenCount()),
           Gap(12.0),
           _ExactTokenCounter(),
           Gap(20.0),
@@ -48,8 +45,9 @@ class _SnippetNotes extends StatelessWidget {
           controller: context.notesController,
           decoration: InputDecoration(
             hintText: 'Aa',
-            hintStyle:
-                style.copyWith(color: PColors.textGray.resolveFrom(context)),
+            hintStyle: style.copyWith(
+              color: PColors.textGray.resolveFrom(context),
+            ),
             border: InputBorder.none,
           ),
           minLines: 3,
@@ -71,10 +69,7 @@ class _SnippetTags extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          'Tags',
-          style: context.textTheme.muted,
-        ),
+        Text('Tags', style: context.textTheme.muted),
         if (tags.isNotEmpty) const Gap(4.0),
         Wrap(
           spacing: 8.0,
@@ -82,29 +77,30 @@ class _SnippetTags extends StatelessWidget {
           children: [
             ...tags.map(
               (tag) => Container(
-                padding: const EdgeInsets.only(left: 8.0),
-                decoration: ShapeDecoration(
-                  color: PColors.lightGray.resolveFrom(context),
-                  shape: const SquircleStadiumBorder(),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(tag, style: context.textTheme.small.addWeight(-1)),
-                    CButton(
-                      tooltip: 'Remove tag',
-                      onTap: () => context.removeTag(tag),
-                      padding: k4APadding + const EdgeInsets.only(right: 4.0),
-                      highlightColor: Colors.transparent,
-                      child: Icon(
-                        LucideIcons.x,
-                        size: 14.0,
-                        color: PColors.textGray.resolveFrom(context),
-                      ),
+                    padding: const EdgeInsets.only(left: 8.0),
+                    decoration: ShapeDecoration(
+                      color: PColors.lightGray.resolveFrom(context),
+                      shape: const SquircleStadiumBorder(),
                     ),
-                  ],
-                ),
-              )
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(tag, style: context.textTheme.small.addWeight(-1)),
+                        CButton(
+                          tooltip: 'Remove tag',
+                          onTap: () => context.removeTag(tag),
+                          padding:
+                              k4APadding + const EdgeInsets.only(right: 4.0),
+                          highlightColor: Colors.transparent,
+                          child: Icon(
+                            LucideIcons.x,
+                            size: 14.0,
+                            color: PColors.textGray.resolveFrom(context),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                   .animate()
                   .fadeIn(
                     duration: Effects.shortDuration,
@@ -120,24 +116,25 @@ class _SnippetTags extends StatelessWidget {
         const Gap(8.0),
         ValueProvider<TextEditingController>(
           create: (_) => TextEditingController(),
-          builder: (context, _) => Padding(
-            padding: k4HPadding,
-            child: TextField(
-              controller: context.read(),
-              decoration: InputDecoration.collapsed(
-                hintText: 'Enter to add',
-                hintStyle: context.textTheme.muted,
+          builder:
+              (context, _) => Padding(
+                padding: k4HPadding,
+                child: TextField(
+                  controller: context.read(),
+                  decoration: InputDecoration.collapsed(
+                    hintText: 'Enter to add',
+                    hintStyle: context.textTheme.muted,
+                  ),
+                  style: context.textTheme.p,
+                  onEditingComplete: () {},
+                  onSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      context.addTag(value);
+                      context.read<TextEditingController>().clear();
+                    }
+                  },
+                ),
               ),
-              style: context.textTheme.p,
-              onEditingComplete: () {},
-              onSubmitted: (value) {
-                if (value.isNotEmpty) {
-                  context.addTag(value);
-                  context.read<TextEditingController>().clear();
-                }
-              },
-            ),
-          ),
         ),
       ],
     );
@@ -172,10 +169,11 @@ class _ExactTokenCounter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExactTokenCounter(
-      hasContentChanged: (context, currentContent) =>
-          context.select<_ContentController?, bool>(
-        (c) => c?.text != currentContent,
-      ),
+      hasContentChanged:
+          (context, currentContent) =>
+              context.select<_ContentController?, bool>(
+                (c) => c?.text != currentContent,
+              ),
       getContent: () => context.contentController?.text ?? '',
     );
   }
@@ -200,17 +198,18 @@ class _CopySnippetButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ShadImage.square(
+              Icon(
                 HugeIcons.strokeRoundedCopy01,
                 size: 14.0,
-                color: theme.colorScheme.primaryForeground,
+                color: theme.colorScheme.accentForeground,
               ),
               const Gap(8.0),
               Flexible(
                 child: Text(
                   'Copy Snippet',
-                  style: theme.textTheme.p
-                      .copyWith(color: theme.colorScheme.primaryForeground),
+                  style: theme.textTheme.p.copyWith(
+                    color: theme.colorScheme.primaryForeground,
+                  ),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),

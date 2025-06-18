@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import '../../core/core.dart';
 import '../components.dart';
 
-typedef TransitionWidgetBuilder = Widget Function(
-  BuildContext context,
-  Widget child,
-);
+typedef TransitionWidgetBuilder =
+    Widget Function(BuildContext context, Widget child);
 
 /// An animated version of Flutter's [State].
 ///
@@ -59,14 +57,14 @@ class AnimatedFutureBuilder<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => FutureBuilder(
-        future: future,
-        initialData: initialData,
-        builder: (context, snapshot) {
-          final child = builder(context, snapshot);
-          return transitionBuilder?.call(context, child) ??
-              StateAnimations.sizeFade(child);
-        },
-      );
+    future: future,
+    initialData: initialData,
+    builder: (context, snapshot) {
+      final child = builder(context, snapshot);
+      return transitionBuilder?.call(context, child) ??
+          StateAnimations.sizeFade(child);
+    },
+  );
 }
 
 /// Pre-built high-quality animations to be used with StateAnimations.
@@ -92,17 +90,16 @@ class StateAnimations {
     AnimatedSwitcherLayoutBuilder? layoutBuilder,
     bool enableBlur = false,
     bool enableScale = false,
-  }) =>
-      SizeFadeSwitcher(
-        duration: duration,
-        reverseDuration: reverseDuration,
-        axis: axis,
-        axisAlignment: alignment,
-        switchInCurve: switchInCurve,
-        switchOutCurve: switchOutCurve,
-        layoutBuilder: layoutBuilder,
-        child: child,
-      );
+  }) => SizeFadeSwitcher(
+    duration: duration,
+    reverseDuration: reverseDuration,
+    axis: axis,
+    axisAlignment: alignment,
+    switchInCurve: switchInCurve,
+    switchOutCurve: switchOutCurve,
+    layoutBuilder: layoutBuilder,
+    child: child,
+  );
 
   static Widget fade(
     Widget child, {
@@ -110,16 +107,13 @@ class StateAnimations {
     Curve switchInCurve = Curves.easeOut,
     Curve switchOutCurve = Curves.easeIn,
     AnimatedSwitcherLayoutBuilder? layoutBuilder,
-  }) =>
-      AnimatedSwitcher(
-        duration: duration,
-        switchInCurve: switchInCurve,
-        switchOutCurve: switchOutCurve,
-        layoutBuilder: layoutBuilder ?? AnimatedSwitcher.defaultLayoutBuilder,
-        transitionBuilder: (child, animation) => FadeTransition(
-          opacity: animation,
-          child: child,
-        ),
-        child: child,
-      );
+  }) => AnimatedSwitcher(
+    duration: duration,
+    switchInCurve: switchInCurve,
+    switchOutCurve: switchOutCurve,
+    layoutBuilder: layoutBuilder ?? AnimatedSwitcher.defaultLayoutBuilder,
+    transitionBuilder:
+        (child, animation) => FadeTransition(opacity: animation, child: child),
+    child: child,
+  );
 }

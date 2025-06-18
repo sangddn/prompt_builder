@@ -51,9 +51,10 @@ class _HoverTapBuilderState extends State<HoverTapBuilder> {
       },
       onExit: (_) => _onHoverOrTapExit(),
       child: InkResponse(
-        mouseCursor: widget.onClicked != null
-            ? SystemMouseCursors.click
-            : MouseCursor.defer,
+        mouseCursor:
+            widget.onClicked != null
+                ? SystemMouseCursors.click
+                : MouseCursor.defer,
         onTap: widget.onClicked,
         onTapDown: (_) => _isMouse ? null : _onHoverOrTapEnter(),
         onTapUp: (_) => _isMouse ? null : _onHoverOrTapExit(),
@@ -86,7 +87,7 @@ class DisambiguatedHoverTapBuilder extends StatefulWidget {
   final VoidCallback? onTapDown, onTapUp, onTapCancel, onTap;
 
   final Widget Function(BuildContext context, bool isHovering, bool isPressing)
-      builder;
+  builder;
 
   @override
   State<DisambiguatedHoverTapBuilder> createState() =>

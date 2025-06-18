@@ -62,10 +62,7 @@ class SnippetTile extends StatelessWidget {
                   onPressed: () async {
                     context.pushProjectRoute(id: projectId);
                   },
-                  trailing: const ShadImage.square(
-                    LucideIcons.folderSearch,
-                    size: 16.0,
-                  ),
+                  trailing: const Icon(LucideIcons.folderSearch, size: 16.0),
                   child: const Text('Go to Project'),
                 ),
               ShadContextMenuItem(
@@ -73,10 +70,7 @@ class SnippetTile extends StatelessWidget {
                   await context.db.removeSnippetFromProject(snippet.id);
                   onProjectChanged?.call(null);
                 },
-                trailing: const ShadImage.square(
-                  LucideIcons.folderMinus,
-                  size: 16,
-                ),
+                trailing: const Icon(LucideIcons.folderMinus, size: 16),
                 child: const Text('Remove from Project'),
               ),
             ],
@@ -97,10 +91,7 @@ class SnippetTile extends StatelessWidget {
                   onProjectChanged?.call(project.value);
                 }
               },
-              trailing: const ShadImage.square(
-                LucideIcons.folderInput,
-                size: 16.0,
-              ),
+              trailing: const Icon(LucideIcons.folderInput, size: 16.0),
               child: const Text('Move to Project…'),
             ),
             const Divider(height: 8.0),
@@ -109,7 +100,7 @@ class SnippetTile extends StatelessWidget {
                 await context.db.deleteSnippet(snippet.id);
                 onDelete?.call();
               },
-              trailing: const ShadImage.square(LucideIcons.trash, size: 16),
+              trailing: const Icon(LucideIcons.trash, size: 16),
               child: const Text('Delete'),
             ),
           ],
@@ -131,7 +122,7 @@ class _CollapsedContent extends StatelessWidget {
     final textTheme = context.textTheme;
     final snippet = context.snippet;
     return ListTile(
-      leading: const ShadImage.square(LucideIcons.quote, size: 16.0),
+      leading: const Icon(LucideIcons.quote, size: 16.0),
       title: Text(
         snippet.title.isEmpty ? 'Untitled' : snippet.title,
         style: textTheme.p,
@@ -244,7 +235,7 @@ class _ExpansionButton extends StatelessWidget {
       tooltip: 'Open',
       onTap: context.watch<VoidCallback?>(),
       padding: k8APadding,
-      child: const ShadImage.square(LucideIcons.bookOpenText, size: 16.0),
+      child: const Icon(LucideIcons.bookOpenText, size: 16.0),
     );
   }
 }

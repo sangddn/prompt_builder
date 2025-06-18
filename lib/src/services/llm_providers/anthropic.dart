@@ -30,10 +30,10 @@ final class Anthropic extends LLMProvider {
   static const _defaultMaxTokens = 3000;
 
   Map<String, String> _getHeaders() => {
-        'x-api-key': getApiKey(),
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json',
-      };
+    'x-api-key': getApiKey(),
+    'anthropic-version': '2023-06-01',
+    'Content-Type': 'application/json',
+  };
 
   @override
   Future<List<String>> listModels() async {
@@ -144,7 +144,7 @@ final class Anthropic extends LLMProvider {
 
     return (
       data['input_tokens'] as int,
-      'Anthropic API • ${model ?? defaultModel}'
+      'Anthropic API • ${model ?? defaultModel}',
     );
   }
 
@@ -260,9 +260,9 @@ final class Anthropic extends LLMProvider {
     String? summarizationPrompt,
     String? model,
   ]) async {
-    final prompt =
-        (summarizationPrompt ?? ModelPreferences.getSummarizationPrompt())
-            .replaceAll('{{CONTENT}}', content);
+    final prompt = (summarizationPrompt ??
+            ModelPreferences.getSummarizationPrompt())
+        .replaceAll('{{CONTENT}}', content);
 
     final response = await http.post(
       Uri.parse('https://api.anthropic.com/v1/messages'),

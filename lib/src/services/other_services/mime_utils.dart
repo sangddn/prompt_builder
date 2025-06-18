@@ -229,19 +229,18 @@ const emlFileFormat = SimpleFileFormat(
   mimeTypes: ['message/rfc822', 'application/eml', 'text/eml'],
 );
 
-final kAllowedFileFormats = [
-  ...Formats.standardFormats,
-  emlFileFormat,
-];
+final kAllowedFileFormats = [...Formats.standardFormats, emlFileFormat];
 
-final kTextBasedFileFormats = kAllowedFileFormats
-    .where(
-      (e) =>
-          e is SimpleFileFormat &&
-          (e.mimeTypes?.any((m) => canMimeTypeBeRepresentedAsText(m)) ?? false),
-    )
-    .toList()
-    .cast<SimpleFileFormat>();
+final kTextBasedFileFormats =
+    kAllowedFileFormats
+        .where(
+          (e) =>
+              e is SimpleFileFormat &&
+              (e.mimeTypes?.any((m) => canMimeTypeBeRepresentedAsText(m)) ??
+                  false),
+        )
+        .toList()
+        .cast<SimpleFileFormat>();
 
 DataFormat? getDataFormat(String filePath) {
   final extension = filePath.split('.').last.toLowerCase();

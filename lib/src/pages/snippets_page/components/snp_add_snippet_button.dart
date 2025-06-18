@@ -13,11 +13,13 @@ class _SPAddSnippetButton extends StatelessWidget {
         if (!context.mounted) return;
         final c = context.read<SnippetListController>().pagingController;
         c.itemList = List.of(c.itemList ?? [])..insert(0, snippet);
-        context.read<SnippetSortByNotifier>().value =
-            (SnippetSortBy.createdAt, false);
+        context.read<SnippetSortByNotifier>().value = (
+          SnippetSortBy.createdAt,
+          false,
+        );
       },
       size: ShadButtonSize.sm,
-      icon: const Icon(LucideIcons.plus, size: 16.0),
+      leading: const Icon(LucideIcons.plus, size: 16.0),
     );
   }
 }

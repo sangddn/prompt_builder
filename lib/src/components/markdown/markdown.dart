@@ -10,10 +10,7 @@ import '../../services/services.dart';
 part 'syntax_highlighter.dart';
 
 class Markdown extends StatelessWidget {
-  const Markdown({
-    required this.data,
-    super.key,
-  });
+  const Markdown({required this.data, super.key});
 
   final String data;
 

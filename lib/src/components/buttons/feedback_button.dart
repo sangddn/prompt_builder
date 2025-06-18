@@ -26,7 +26,8 @@ class FeedbackButton<T> extends StatefulWidget {
   final AxisDirection Function(
     bool isInTopHalfOfScreen,
     bool isInStartHalfOfScreen,
-  )? feedbackPosition;
+  )?
+  feedbackPosition;
 
   final Duration timeToLive;
 
@@ -38,7 +39,8 @@ class FeedbackButton<T> extends StatefulWidget {
     BuildContext context,
     VoidCallback hideFeedback,
     T? isSuccess,
-  ) feedbackBuilder;
+  )
+  feedbackBuilder;
 
   /// Builds the button that will be shown to the user.
   ///
@@ -48,7 +50,7 @@ class FeedbackButton<T> extends StatefulWidget {
   /// If false, [Haptics.error()] will be called.
   ///
   final Widget Function(BuildContext context, ValueChanged<T?> showFeedback)
-      builder;
+  builder;
 
   @override
   State<FeedbackButton<T>> createState() => _FeedbackButtonState<T>();
@@ -74,25 +76,20 @@ class _FeedbackButtonState<T> extends State<FeedbackButton<T>>
     _isSuccess = isSuccess;
     _overlayController.show();
     _animationController.forward().then(
-          (value) => Future.delayed(
-            widget.timeToLive,
-            () {
-              if (mounted && _animationController.isCompleted) {
-                _hide();
-              }
-            },
-          ),
-        );
+      (value) => Future.delayed(widget.timeToLive, () {
+        if (mounted && _animationController.isCompleted) {
+          _hide();
+        }
+      }),
+    );
   }
 
   void _hide() {
-    _animationController.reverse().then(
-      (_) {
-        if (mounted) {
-          _overlayController.hide();
-        }
-      },
-    );
+    _animationController.reverse().then((_) {
+      if (mounted) {
+        _overlayController.hide();
+      }
+    });
   }
 
   @override
@@ -102,17 +99,17 @@ class _FeedbackButtonState<T> extends State<FeedbackButton<T>>
       controller: _overlayController,
       overlayChildBuilder: (overlayContext) {
         final button = context.findRenderObject()! as RenderBox;
-        final overlay = Navigator.of(context)
-            .overlay!
-            .context
-            .findRenderObject()! as RenderBox;
+        final overlay =
+            Navigator.of(context).overlay!.context.findRenderObject()!
+                as RenderBox;
 
         late final Size childSize = button.size;
 
         late final Offset childPosition;
         final childPositionInRoot = button.localToGlobal(Offset.zero);
-        final childPositionInOverlay =
-            overlay.globalToLocal(childPositionInRoot);
+        final childPositionInOverlay = overlay.globalToLocal(
+          childPositionInRoot,
+        );
         childPosition = childPositionInOverlay;
 
         final overlayContextSize = overlay.size;
@@ -132,9 +129,11 @@ class _FeedbackButtonState<T> extends State<FeedbackButton<T>>
         final shouldShowBelow =
             desiredPosition?.isBelow() ?? childPosition.dy <= height / 2;
         final shouldShowVertical = shouldShowAbove || shouldShowBelow;
-        final shouldShowStart = desiredPosition?.isStart(context) ??
+        final shouldShowStart =
+            desiredPosition?.isStart(context) ??
             (!shouldShowVertical && childPosition.dx > width / 2);
-        final shouldShowEnd = desiredPosition?.isEnd(context) ??
+        final shouldShowEnd =
+            desiredPosition?.isEnd(context) ??
             (!shouldShowVertical && childPosition.dx <= width / 2);
         // final shouldShowHorizontal = shouldShowStart || shouldShowEnd;
 
@@ -156,56 +155,61 @@ class _FeedbackButtonState<T> extends State<FeedbackButton<T>>
             ),
             Positioned.directional(
               textDirection: TextDirection.ltr,
-              top: shouldShowAbove
-                  ? 0.0
-                  : shouldShowBelow
+              top:
+                  shouldShowAbove
+                      ? 0.0
+                      : shouldShowBelow
                       ? topOfButton + childSize.height
                       : topOfButton - minVertical,
-              bottom: shouldShowBelow
-                  ? 0.0
-                  : shouldShowAbove
+              bottom:
+                  shouldShowBelow
+                      ? 0.0
+                      : shouldShowAbove
                       ? bottomOfButton + childSize.height
                       : bottomOfButton - minVertical,
-              start: shouldShowStart
-                  ? 0.0
-                  : shouldShowEnd
+              start:
+                  shouldShowStart
+                      ? 0.0
+                      : shouldShowEnd
                       ? startOfButton + childSize.width
                       : startOfButton - minHorizontal,
-              end: shouldShowEnd
-                  ? 0.0
-                  : shouldShowStart
+              end:
+                  shouldShowEnd
+                      ? 0.0
+                      : shouldShowStart
                       ? endOfButton + childSize.width
                       : endOfButton - minHorizontal,
               child: Align(
-                alignment: shouldShowAbove
-                    ? Alignment.bottomCenter
-                    : shouldShowBelow
+                alignment:
+                    shouldShowAbove
+                        ? Alignment.bottomCenter
+                        : shouldShowBelow
                         ? Alignment.topCenter
                         : shouldShowStart
-                            ? AlignmentDirectional.centerEnd
-                            : AlignmentDirectional.centerStart,
+                        ? AlignmentDirectional.centerEnd
+                        : AlignmentDirectional.centerStart,
                 child: IconTheme(
                   data: theme.iconTheme.copyWith(size: 20.0),
                   child: Container(
-                    decoration: ShapeDecoration(
-                      shape: const SquircleStadiumBorder(),
-                      color: context.colorScheme.secondary,
-                      shadows: focusedShadows(),
-                    ),
-                    padding: k8VPadding + k8HPadding,
-                    margin: k16H8VPadding,
-                    // width: 600.0,
-                    child: Material(
-                      color: Colors.transparent,
-                      shape: Superellipse.border12,
-                      clipBehavior: Clip.antiAlias,
-                      child: widget.feedbackBuilder(
-                        context,
-                        _hide,
-                        _isSuccess,
-                      ),
-                    ),
-                  )
+                        decoration: ShapeDecoration(
+                          shape: const SquircleStadiumBorder(),
+                          color: context.colorScheme.secondary,
+                          shadows: focusedShadows(),
+                        ),
+                        padding: k8VPadding + k8HPadding,
+                        margin: k16H8VPadding,
+                        // width: 600.0,
+                        child: Material(
+                          color: Colors.transparent,
+                          shape: Superellipse.border12,
+                          clipBehavior: Clip.antiAlias,
+                          child: widget.feedbackBuilder(
+                            context,
+                            _hide,
+                            _isSuccess,
+                          ),
+                        ),
+                      )
                       .animate(
                         autoPlay: false,
                         controller: _animationController,
@@ -218,19 +222,21 @@ class _FeedbackButtonState<T> extends State<FeedbackButton<T>>
                         duration: Effects.veryShortDuration,
                         curve: Easing.emphasizedDecelerate,
                         end: const Offset(1.0, 1.0),
-                        begin: shouldShowVertical
-                            ? const Offset(0.5, 0.8)
-                            : const Offset(0.8, 0.5),
+                        begin:
+                            shouldShowVertical
+                                ? const Offset(0.5, 0.8)
+                                : const Offset(0.8, 0.5),
                       )
                       .slide(
                         duration: Effects.veryShortDuration,
                         curve: Easing.emphasizedDecelerate,
                         end: Offset.zero,
-                        begin: shouldShowVertical
-                            ? shouldShowAbove
-                                ? const Offset(0.0, 1.0)
-                                : const Offset(0.0, -1.0)
-                            : shouldShowStart
+                        begin:
+                            shouldShowVertical
+                                ? shouldShowAbove
+                                    ? const Offset(0.0, 1.0)
+                                    : const Offset(0.0, -1.0)
+                                : shouldShowStart
                                 ? const Offset(1.0, 0.0)
                                 : const Offset(-1.0, 0.0),
                       ),

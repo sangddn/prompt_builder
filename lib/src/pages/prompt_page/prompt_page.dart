@@ -55,10 +55,7 @@ class PromptPage extends StatelessWidget {
       child: const Scaffold(
         body: _PPDropRegion(
           child: Column(
-            children: [
-              _PPAppBar(),
-              Expanded(child: _PPMainBody()),
-            ],
+            children: [_PPAppBar(), Expanded(child: _PPMainBody())],
           ),
         ),
       ),

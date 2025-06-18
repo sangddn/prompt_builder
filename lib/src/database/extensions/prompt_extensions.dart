@@ -125,27 +125,31 @@ extension PromptsExtension on Database {
     switch (sortBy) {
       case PromptSortBy.title:
         q.orderBy([
-          (t) => ascending
-              ? OrderingTerm.asc(t.title)
-              : OrderingTerm.desc(t.title),
+          (t) =>
+              ascending
+                  ? OrderingTerm.asc(t.title)
+                  : OrderingTerm.desc(t.title),
         ]);
       case PromptSortBy.updatedAt:
         q.orderBy([
-          (t) => ascending
-              ? OrderingTerm.asc(t.updatedAt)
-              : OrderingTerm.desc(t.updatedAt),
+          (t) =>
+              ascending
+                  ? OrderingTerm.asc(t.updatedAt)
+                  : OrderingTerm.desc(t.updatedAt),
         ]);
       case PromptSortBy.lastOpened:
         q.orderBy([
-          (t) => ascending
-              ? OrderingTerm.asc(t.lastOpenedAt)
-              : OrderingTerm.desc(t.lastOpenedAt),
+          (t) =>
+              ascending
+                  ? OrderingTerm.asc(t.lastOpenedAt)
+                  : OrderingTerm.desc(t.lastOpenedAt),
         ]);
       case PromptSortBy.createdAt:
         q.orderBy([
-          (t) => ascending
-              ? OrderingTerm.asc(t.createdAt)
-              : OrderingTerm.desc(t.createdAt),
+          (t) =>
+              ascending
+                  ? OrderingTerm.asc(t.createdAt)
+                  : OrderingTerm.desc(t.createdAt),
         ]);
     }
 
@@ -179,12 +183,14 @@ extension PromptsExtension on Database {
         notes: notes != null ? Value(notes) : const Value.absent(),
         folderPath:
             folderPath != null ? Value(folderPath) : const Value.absent(),
-        ignorePatterns: ignorePatterns != null
-            ? Value(ignorePatterns)
-            : const Value.absent(),
-        tags: tags != null
-            ? Value(PromptTagsExtension.tagsToString(tags))
-            : const Value.absent(),
+        ignorePatterns:
+            ignorePatterns != null
+                ? Value(ignorePatterns)
+                : const Value.absent(),
+        tags:
+            tags != null
+                ? Value(PromptTagsExtension.tagsToString(tags))
+                : const Value.absent(),
         updatedAt: Value(now),
         lastOpenedAt:
             lastOpenedAt != null ? Value(lastOpenedAt) : const Value.absent(),
@@ -198,10 +204,8 @@ extension PromptsExtension on Database {
   /// Parameters:
   /// - [promptId] ID of the prompt to update
   /// - [lastOpenedAt] Optional new last opened timestamp
-  Future<void> recordPromptOpened(int promptId) => updatePrompt(
-        promptId,
-        lastOpenedAt: DateTime.now(),
-      );
+  Future<void> recordPromptOpened(int promptId) =>
+      updatePrompt(promptId, lastOpenedAt: DateTime.now());
 
   /// Deletes a prompt and all its associated blocks.
   ///

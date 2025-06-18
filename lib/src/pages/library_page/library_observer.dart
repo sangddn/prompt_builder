@@ -88,11 +88,7 @@ class LibraryObserverState extends State<LibraryObserver> {
     }
 
     newIds.forEach(_notifyNewPromptListeners);
-    toaster.show(
-      ShadToast(
-        title: Text('Imported ${newIds.length} prompts.'),
-      ),
-    );
+    toaster.show(ShadToast(title: Text('Imported ${newIds.length} prompts.')));
   }
 
   @override

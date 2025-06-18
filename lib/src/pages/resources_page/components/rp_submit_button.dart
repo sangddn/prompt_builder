@@ -10,9 +10,10 @@ class _RPSubmitButton extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         child: ShadButton(
-          onPressed: () => launchUrlString(
-            'https://github.com/sangddn/prompt_builder/issues/new',
-          ),
+          onPressed:
+              () => launchUrlString(
+                'https://github.com/sangddn/prompt_builder/issues/new',
+              ),
           child: const Text('Submit'),
         ),
       ),

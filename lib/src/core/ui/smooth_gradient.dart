@@ -13,13 +13,10 @@ class SmoothGradient extends LinearGradient {
     Curve curve = Curves.easeInOut,
     int steps = 16,
   }) : super(
-          colors: List.generate(
-            steps + 1,
-            (i) => Color.lerp(from, to, i / steps)!,
-          ),
-          stops: List.generate(
-            steps + 1,
-            (i) => curve.transform(i / steps),
-          ),
-        );
+         colors: List.generate(
+           steps + 1,
+           (i) => Color.lerp(from, to, i / steps)!,
+         ),
+         stops: List.generate(steps + 1, (i) => curve.transform(i / steps)),
+       );
 }

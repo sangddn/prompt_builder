@@ -90,8 +90,11 @@ class _FileTreeState extends State<FileTree> with _WatchDirectoryMixin {
       );
       if (result != null && mounted) {
         _root = result.$1;
-        TreeReadyNotification(result.$1, result.$2, result.$3)
-            .dispatch(context);
+        TreeReadyNotification(
+          result.$1,
+          result.$2,
+          result.$3,
+        ).dispatch(context);
       }
       return result;
     } catch (e) {
@@ -125,11 +128,11 @@ class _FileTreeState extends State<FileTree> with _WatchDirectoryMixin {
         final loadingIndicator = StateAnimations.sizeFade(
           isLoading
               ? const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12.0),
-                    child: CircularProgressIndicator.adaptive(),
-                  ),
-                )
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12.0),
+                  child: CircularProgressIndicator.adaptive(),
+                ),
+              )
               : const SizedBox.shrink(),
           layoutBuilder: alignedLayoutBuilder(Alignment.topCenter),
         );
@@ -148,38 +151,43 @@ class _FileTreeState extends State<FileTree> with _WatchDirectoryMixin {
                 SliverTreeView.indexed(
                   tree: tree.$1,
                   showRootNode: widget.showRootNode,
-                  animation: (animation) => CurvedAnimation(
-                    parent: animation,
-                    curve: widget.curve,
-                    reverseCurve: widget.curve,
-                  ),
-                  builder: widget.builder ??
+                  animation:
+                      (animation) => CurvedAnimation(
+                        parent: animation,
+                        curve: widget.curve,
+                        reverseCurve: widget.curve,
+                      ),
+                  builder:
+                      widget.builder ??
                       (context, IndexedTreeNode<FileTreeItem> node) {
                         return SelectableFileTreeItem(
-                          selectionCount: widget.countSelection
-                                  ?.call(context, node.data!) ??
+                          selectionCount:
+                              widget.countSelection?.call(
+                                context,
+                                node.data!,
+                              ) ??
                               0,
-                          onItemSelected: (isSelected) async =>
-                              NodeSelectionNotification(
-                            node.data!.path,
-                            isSelected,
-                          ).dispatch(context),
+                          onItemSelected:
+                              (isSelected) async => NodeSelectionNotification(
+                                node.data!.path,
+                                isSelected,
+                              ).dispatch(context),
                           node: node,
                         );
                       },
-                  expansionIndicatorBuilder: (context, node) =>
-                      ChevronIndicator.rightDown(
-                    tree: node,
-                    color: PColors.textGray.resolveFrom(context),
-                    padding: const EdgeInsets.all(8),
-                  ),
+                  expansionIndicatorBuilder:
+                      (context, node) => ChevronIndicator.rightDown(
+                        tree: node,
+                        color: PColors.textGray.resolveFrom(context),
+                        padding: const EdgeInsets.all(8),
+                      ),
                   indentation: Indentation(
                     style: IndentStyle.roundJoint,
                     color: PColors.gray.resolveFrom(context),
                     offset: const Offset(6.0, 0.0),
                   ),
-                  onTreeReady: (controller) =>
-                      setState(() => _controller = controller),
+                  onTreeReady:
+                      (controller) => setState(() => _controller = controller),
                 ),
               const SliverGap(8.0),
             ],

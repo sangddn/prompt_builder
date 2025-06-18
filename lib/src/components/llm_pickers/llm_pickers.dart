@@ -18,9 +18,9 @@ class LLMPicker extends StatelessWidget {
     required this.onChange,
     super.key,
   }) : assert(
-          ((initialProvider == null) == (initialModel == null)),
-          'initialProvider and initialModel must be both null or both non-null',
-        );
+         ((initialProvider == null) == (initialModel == null)),
+         'initialProvider and initialModel must be both null or both non-null',
+       );
 
   final LLMProvider? initialProvider;
   final String? initialModel;
@@ -48,11 +48,7 @@ class LLMPicker extends StatelessWidget {
         height: 50.0,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _ProviderPicker(),
-            Gap(4.0),
-            _ModelPicker(),
-          ],
+          children: [_ProviderPicker(), Gap(4.0), _ModelPicker()],
         ),
       ),
     );
@@ -120,9 +116,10 @@ class _ModelPickerState extends State<_ModelPicker> {
         final models = snapshot.data;
         final isEnabled = _provider != null && models != null;
         return ShadSelect<String>(
-          placeholder: _provider == null
-              ? const Text('Choose a provider first')
-              : !isEnabled
+          placeholder:
+              _provider == null
+                  ? const Text('Choose a provider first')
+                  : !isEnabled
                   ? const Text('Loading models…')
                   : const Text('Select a model'),
           enabled: isEnabled,

@@ -25,11 +25,15 @@ abstract final class SnippetResourceService {
     } on http.ClientException {
       response = null;
     }
-    final data = jsonDecode(
-      response != null && response.statusCode == 200
-          ? response.body
-          : await rootBundle.loadString('assets/snippet_resources.json'),
-    ) as Map<String, dynamic>;
+    final data =
+        jsonDecode(
+              response != null && response.statusCode == 200
+                  ? response.body
+                  : await rootBundle.loadString(
+                    'assets/snippet_resources.json',
+                  ),
+            )
+            as Map<String, dynamic>;
     final snippetsJson = data['snippets'] as List<dynamic>;
     return snippetsJson
         .cast<Map<String, dynamic>>()
@@ -71,13 +75,13 @@ class SnippetResource {
 
   /// Converts the resource to a JSON map
   Map<String, dynamic> toJson() => {
-        'title': title,
-        'content': content,
-        'date_created': dateCreated,
-        'author': author,
-        'author_url': authorUrl,
-        'tags': tags.toList(),
-      };
+    'title': title,
+    'content': content,
+    'date_created': dateCreated,
+    'author': author,
+    'author_url': authorUrl,
+    'tags': tags.toList(),
+  };
 
   @override
   String toString() {

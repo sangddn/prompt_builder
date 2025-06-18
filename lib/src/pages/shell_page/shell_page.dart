@@ -34,12 +34,7 @@ class _AppShellPageState extends State<AppShellPage> {
     return ListenableProvider<TabsRouter?>.value(
       value: _tabsRouter,
       child: const Scaffold(
-        body: Row(
-          children: [
-            _Sidebar(),
-            Expanded(child: AutoRouter()),
-          ],
-        ),
+        body: Row(children: [_Sidebar(), Expanded(child: AutoRouter())]),
       ),
     );
   }
@@ -70,34 +65,27 @@ class MainTabsPage extends StatelessWidget {
           begin: Offset(0.0, lastIndex < newIndex ? 0.05 : -0.05),
           end: Offset.zero,
         ).animate(
-          CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeOutCubic,
-          ),
+          CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
         );
 
         return FadeTransition(
-          opacity: CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeOut,
-          ),
-          child: SlideTransition(
-            position: position,
-            child: child,
-          ),
+          opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+          child: SlideTransition(position: position, child: child),
         );
       },
       builder: (context, child) {
-        final noTabsRouter =
-            context.select((TabsRouter? tabsRouter) => tabsRouter == null);
+        final noTabsRouter = context.select(
+          (TabsRouter? tabsRouter) => tabsRouter == null,
+        );
         if (noTabsRouter) {
-          context.findAncestorStateOfType<_AppShellPageState>()!.tabsRouter =
-              AutoTabsRouter.of(context, watch: true);
+          context
+              .findAncestorStateOfType<_AppShellPageState>()!
+              .tabsRouter = AutoTabsRouter.of(context, watch: true);
         }
         return CallbackShortcuts(
           bindings: {
-            const SingleActivator(meta: true, LogicalKeyboardKey.keyN): () =>
-                _openNewPrompt(context),
+            const SingleActivator(meta: true, LogicalKeyboardKey.keyN):
+                () => _openNewPrompt(context),
           },
           child: child,
         );
@@ -149,9 +137,10 @@ class _NavButton extends StatelessWidget {
         child: Icon(
           icon,
           size: 24.0,
-          color: isActive
-              ? context.colorScheme.foreground
-              : PColors.darkGray.resolveFrom(context),
+          color:
+              isActive
+                  ? context.colorScheme.foreground
+                  : PColors.darkGray.resolveFrom(context),
         ),
       ),
       onTap: () {

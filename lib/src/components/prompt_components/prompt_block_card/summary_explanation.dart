@@ -27,10 +27,7 @@ class _SummaryExplanationState extends State<_SummaryExplanation> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Summary',
-                style: textTheme.muted,
-              ),
+              Text('Summary', style: textTheme.muted),
               const Gap(4.0),
               Text(
                 'Some content such as web pages, text files, and audio transcripts can be summarized '
@@ -48,10 +45,7 @@ class _SummaryExplanationState extends State<_SummaryExplanation> {
         child: const ShadButton.ghost(
           padding: k8H4VPadding,
           size: ShadButtonSize.sm,
-          child: ShadImage.square(
-            CupertinoIcons.question_circle,
-            size: 16.0,
-          ),
+          child: Icon(CupertinoIcons.question_circle, size: 16.0),
         ),
       ),
     );

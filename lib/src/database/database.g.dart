@@ -11,71 +11,113 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(''));
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
-      'notes', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(''));
+    'notes',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _emojiMeta = const VerificationMeta('emoji');
   @override
   late final GeneratedColumn<String> emoji = GeneratedColumn<String>(
-      'emoji', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'emoji',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _colorMeta = const VerificationMeta('color');
   @override
   late final GeneratedColumn<int> color = GeneratedColumn<int>(
-      'color', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _isStarredMeta =
-      const VerificationMeta('isStarred');
+    'color',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isStarredMeta = const VerificationMeta(
+    'isStarred',
+  );
   @override
   late final GeneratedColumn<bool> isStarred = GeneratedColumn<bool>(
-      'is_starred', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('CHECK ("is_starred" IN (0, 1))'),
-      defaultValue: const Constant(false));
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
+    'is_starred',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_starred" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  static const VerificationMeta _updatedAtMeta =
-      const VerificationMeta('updatedAt');
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, title, notes, emoji, color, isStarred, createdAt, updatedAt];
+  List<GeneratedColumn> get $columns => [
+    id,
+    title,
+    notes,
+    emoji,
+    color,
+    isStarred,
+    createdAt,
+    updatedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'projects';
   @override
-  VerificationContext validateIntegrity(Insertable<Project> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<Project> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
@@ -83,31 +125,45 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     }
     if (data.containsKey('title')) {
       context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
     }
     if (data.containsKey('notes')) {
       context.handle(
-          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
     }
     if (data.containsKey('emoji')) {
       context.handle(
-          _emojiMeta, emoji.isAcceptableOrUnknown(data['emoji']!, _emojiMeta));
+        _emojiMeta,
+        emoji.isAcceptableOrUnknown(data['emoji']!, _emojiMeta),
+      );
     }
     if (data.containsKey('color')) {
       context.handle(
-          _colorMeta, color.isAcceptableOrUnknown(data['color']!, _colorMeta));
+        _colorMeta,
+        color.isAcceptableOrUnknown(data['color']!, _colorMeta),
+      );
     }
     if (data.containsKey('is_starred')) {
-      context.handle(_isStarredMeta,
-          isStarred.isAcceptableOrUnknown(data['is_starred']!, _isStarredMeta));
+      context.handle(
+        _isStarredMeta,
+        isStarred.isAcceptableOrUnknown(data['is_starred']!, _isStarredMeta),
+      );
     }
     if (data.containsKey('created_at')) {
-      context.handle(_createdAtMeta,
-          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
     }
     if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta,
-          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
     }
     return context;
   }
@@ -118,22 +174,43 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   Project map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Project(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      notes: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}notes'])!,
-      emoji: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}emoji']),
-      color: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}color']),
-      isStarred: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_starred'])!,
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at']),
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      title:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}title'],
+          )!,
+      notes:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}notes'],
+          )!,
+      emoji: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}emoji'],
+      ),
+      color: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}color'],
+      ),
+      isStarred:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_starred'],
+          )!,
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}created_at'],
+          )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
     );
   }
 
@@ -167,15 +244,16 @@ class Project extends DataClass implements Insertable<Project> {
 
   /// When the project was last modified
   final DateTime? updatedAt;
-  const Project(
-      {required this.id,
-      required this.title,
-      required this.notes,
-      this.emoji,
-      this.color,
-      required this.isStarred,
-      required this.createdAt,
-      this.updatedAt});
+  const Project({
+    required this.id,
+    required this.title,
+    required this.notes,
+    this.emoji,
+    this.color,
+    required this.isStarred,
+    required this.createdAt,
+    this.updatedAt,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -207,14 +285,17 @@ class Project extends DataClass implements Insertable<Project> {
           color == null && nullToAbsent ? const Value.absent() : Value(color),
       isStarred: Value(isStarred),
       createdAt: Value(createdAt),
-      updatedAt: updatedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(updatedAt),
+      updatedAt:
+          updatedAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(updatedAt),
     );
   }
 
-  factory Project.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory Project.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Project(
       id: serializer.fromJson<int>(json['id']),
@@ -242,25 +323,25 @@ class Project extends DataClass implements Insertable<Project> {
     };
   }
 
-  Project copyWith(
-          {int? id,
-          String? title,
-          String? notes,
-          Value<String?> emoji = const Value.absent(),
-          Value<int?> color = const Value.absent(),
-          bool? isStarred,
-          DateTime? createdAt,
-          Value<DateTime?> updatedAt = const Value.absent()}) =>
-      Project(
-        id: id ?? this.id,
-        title: title ?? this.title,
-        notes: notes ?? this.notes,
-        emoji: emoji.present ? emoji.value : this.emoji,
-        color: color.present ? color.value : this.color,
-        isStarred: isStarred ?? this.isStarred,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
-      );
+  Project copyWith({
+    int? id,
+    String? title,
+    String? notes,
+    Value<String?> emoji = const Value.absent(),
+    Value<int?> color = const Value.absent(),
+    bool? isStarred,
+    DateTime? createdAt,
+    Value<DateTime?> updatedAt = const Value.absent(),
+  }) => Project(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    notes: notes ?? this.notes,
+    emoji: emoji.present ? emoji.value : this.emoji,
+    color: color.present ? color.value : this.color,
+    isStarred: isStarred ?? this.isStarred,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+  );
   Project copyWithCompanion(ProjectsCompanion data) {
     return Project(
       id: data.id.present ? data.id.value : this.id,
@@ -291,7 +372,15 @@ class Project extends DataClass implements Insertable<Project> {
 
   @override
   int get hashCode => Object.hash(
-      id, title, notes, emoji, color, isStarred, createdAt, updatedAt);
+    id,
+    title,
+    notes,
+    emoji,
+    color,
+    isStarred,
+    createdAt,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -357,15 +446,16 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     });
   }
 
-  ProjectsCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? title,
-      Value<String>? notes,
-      Value<String?>? emoji,
-      Value<int?>? color,
-      Value<bool>? isStarred,
-      Value<DateTime>? createdAt,
-      Value<DateTime?>? updatedAt}) {
+  ProjectsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? title,
+    Value<String>? notes,
+    Value<String?>? emoji,
+    Value<int?>? color,
+    Value<bool>? isStarred,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? updatedAt,
+  }) {
     return ProjectsCompanion(
       id: id ?? this.id,
       title: title ?? this.title,
@@ -432,154 +522,222 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _projectIdMeta =
-      const VerificationMeta('projectId');
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _projectIdMeta = const VerificationMeta(
+    'projectId',
+  );
   @override
   late final GeneratedColumn<int> projectId = GeneratedColumn<int>(
-      'project_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES projects (id)'));
+    'project_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES projects (id)',
+    ),
+  );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(''));
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
-      'notes', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(''));
-  static const VerificationMeta _chatUrlMeta =
-      const VerificationMeta('chatUrl');
+    'notes',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _chatUrlMeta = const VerificationMeta(
+    'chatUrl',
+  );
   @override
   late final GeneratedColumn<String> chatUrl = GeneratedColumn<String>(
-      'chat_url', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'chat_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _tagsMeta = const VerificationMeta('tags');
   @override
   late final GeneratedColumn<String> tags = GeneratedColumn<String>(
-      'tags', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(''));
-  static const VerificationMeta _folderPathMeta =
-      const VerificationMeta('folderPath');
+    'tags',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _folderPathMeta = const VerificationMeta(
+    'folderPath',
+  );
   @override
   late final GeneratedColumn<String> folderPath = GeneratedColumn<String>(
-      'folder_path', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _ignorePatternsMeta =
-      const VerificationMeta('ignorePatterns');
+    'folder_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _ignorePatternsMeta = const VerificationMeta(
+    'ignorePatterns',
+  );
   @override
   late final GeneratedColumn<String> ignorePatterns = GeneratedColumn<String>(
-      'ignore_patterns', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(''));
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
+    'ignore_patterns',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  static const VerificationMeta _updatedAtMeta =
-      const VerificationMeta('updatedAt');
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
-  static const VerificationMeta _lastOpenedAtMeta =
-      const VerificationMeta('lastOpenedAt');
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastOpenedAtMeta = const VerificationMeta(
+    'lastOpenedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> lastOpenedAt = GeneratedColumn<DateTime>(
-      'last_opened_at', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+    'last_opened_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
-        id,
-        projectId,
-        title,
-        notes,
-        chatUrl,
-        tags,
-        folderPath,
-        ignorePatterns,
-        createdAt,
-        updatedAt,
-        lastOpenedAt
-      ];
+    id,
+    projectId,
+    title,
+    notes,
+    chatUrl,
+    tags,
+    folderPath,
+    ignorePatterns,
+    createdAt,
+    updatedAt,
+    lastOpenedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'prompts';
   @override
-  VerificationContext validateIntegrity(Insertable<Prompt> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<Prompt> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('project_id')) {
-      context.handle(_projectIdMeta,
-          projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta));
+      context.handle(
+        _projectIdMeta,
+        projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta),
+      );
     }
     if (data.containsKey('title')) {
       context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
     }
     if (data.containsKey('notes')) {
       context.handle(
-          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
     }
     if (data.containsKey('chat_url')) {
-      context.handle(_chatUrlMeta,
-          chatUrl.isAcceptableOrUnknown(data['chat_url']!, _chatUrlMeta));
+      context.handle(
+        _chatUrlMeta,
+        chatUrl.isAcceptableOrUnknown(data['chat_url']!, _chatUrlMeta),
+      );
     }
     if (data.containsKey('tags')) {
       context.handle(
-          _tagsMeta, tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta));
+        _tagsMeta,
+        tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta),
+      );
     }
     if (data.containsKey('folder_path')) {
       context.handle(
-          _folderPathMeta,
-          folderPath.isAcceptableOrUnknown(
-              data['folder_path']!, _folderPathMeta));
+        _folderPathMeta,
+        folderPath.isAcceptableOrUnknown(data['folder_path']!, _folderPathMeta),
+      );
     }
     if (data.containsKey('ignore_patterns')) {
       context.handle(
+        _ignorePatternsMeta,
+        ignorePatterns.isAcceptableOrUnknown(
+          data['ignore_patterns']!,
           _ignorePatternsMeta,
-          ignorePatterns.isAcceptableOrUnknown(
-              data['ignore_patterns']!, _ignorePatternsMeta));
+        ),
+      );
     }
     if (data.containsKey('created_at')) {
-      context.handle(_createdAtMeta,
-          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
     }
     if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta,
-          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
     }
     if (data.containsKey('last_opened_at')) {
       context.handle(
+        _lastOpenedAtMeta,
+        lastOpenedAt.isAcceptableOrUnknown(
+          data['last_opened_at']!,
           _lastOpenedAtMeta,
-          lastOpenedAt.isAcceptableOrUnknown(
-              data['last_opened_at']!, _lastOpenedAtMeta));
+        ),
+      );
     }
     return context;
   }
@@ -590,28 +748,56 @@ class $PromptsTable extends Prompts with TableInfo<$PromptsTable, Prompt> {
   Prompt map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Prompt(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      projectId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}project_id']),
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      notes: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}notes'])!,
-      chatUrl: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}chat_url']),
-      tags: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}tags'])!,
-      folderPath: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}folder_path']),
-      ignorePatterns: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}ignore_patterns'])!,
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at']),
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      projectId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}project_id'],
+      ),
+      title:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}title'],
+          )!,
+      notes:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}notes'],
+          )!,
+      chatUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}chat_url'],
+      ),
+      tags:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}tags'],
+          )!,
+      folderPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}folder_path'],
+      ),
+      ignorePatterns:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}ignore_patterns'],
+          )!,
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}created_at'],
+          )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
       lastOpenedAt: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}last_opened_at']),
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_opened_at'],
+      ),
     );
   }
 
@@ -674,18 +860,19 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   ///
   /// Null if the prompt has never been opened.
   final DateTime? lastOpenedAt;
-  const Prompt(
-      {required this.id,
-      this.projectId,
-      required this.title,
-      required this.notes,
-      this.chatUrl,
-      required this.tags,
-      this.folderPath,
-      required this.ignorePatterns,
-      required this.createdAt,
-      this.updatedAt,
-      this.lastOpenedAt});
+  const Prompt({
+    required this.id,
+    this.projectId,
+    required this.title,
+    required this.notes,
+    this.chatUrl,
+    required this.tags,
+    this.folderPath,
+    required this.ignorePatterns,
+    required this.createdAt,
+    this.updatedAt,
+    this.lastOpenedAt,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -716,31 +903,38 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   PromptsCompanion toCompanion(bool nullToAbsent) {
     return PromptsCompanion(
       id: Value(id),
-      projectId: projectId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(projectId),
+      projectId:
+          projectId == null && nullToAbsent
+              ? const Value.absent()
+              : Value(projectId),
       title: Value(title),
       notes: Value(notes),
-      chatUrl: chatUrl == null && nullToAbsent
-          ? const Value.absent()
-          : Value(chatUrl),
+      chatUrl:
+          chatUrl == null && nullToAbsent
+              ? const Value.absent()
+              : Value(chatUrl),
       tags: Value(tags),
-      folderPath: folderPath == null && nullToAbsent
-          ? const Value.absent()
-          : Value(folderPath),
+      folderPath:
+          folderPath == null && nullToAbsent
+              ? const Value.absent()
+              : Value(folderPath),
       ignorePatterns: Value(ignorePatterns),
       createdAt: Value(createdAt),
-      updatedAt: updatedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(updatedAt),
-      lastOpenedAt: lastOpenedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastOpenedAt),
+      updatedAt:
+          updatedAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(updatedAt),
+      lastOpenedAt:
+          lastOpenedAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(lastOpenedAt),
     );
   }
 
-  factory Prompt.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory Prompt.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Prompt(
       id: serializer.fromJson<int>(json['id']),
@@ -774,32 +968,31 @@ class Prompt extends DataClass implements Insertable<Prompt> {
     };
   }
 
-  Prompt copyWith(
-          {int? id,
-          Value<int?> projectId = const Value.absent(),
-          String? title,
-          String? notes,
-          Value<String?> chatUrl = const Value.absent(),
-          String? tags,
-          Value<String?> folderPath = const Value.absent(),
-          String? ignorePatterns,
-          DateTime? createdAt,
-          Value<DateTime?> updatedAt = const Value.absent(),
-          Value<DateTime?> lastOpenedAt = const Value.absent()}) =>
-      Prompt(
-        id: id ?? this.id,
-        projectId: projectId.present ? projectId.value : this.projectId,
-        title: title ?? this.title,
-        notes: notes ?? this.notes,
-        chatUrl: chatUrl.present ? chatUrl.value : this.chatUrl,
-        tags: tags ?? this.tags,
-        folderPath: folderPath.present ? folderPath.value : this.folderPath,
-        ignorePatterns: ignorePatterns ?? this.ignorePatterns,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
-        lastOpenedAt:
-            lastOpenedAt.present ? lastOpenedAt.value : this.lastOpenedAt,
-      );
+  Prompt copyWith({
+    int? id,
+    Value<int?> projectId = const Value.absent(),
+    String? title,
+    String? notes,
+    Value<String?> chatUrl = const Value.absent(),
+    String? tags,
+    Value<String?> folderPath = const Value.absent(),
+    String? ignorePatterns,
+    DateTime? createdAt,
+    Value<DateTime?> updatedAt = const Value.absent(),
+    Value<DateTime?> lastOpenedAt = const Value.absent(),
+  }) => Prompt(
+    id: id ?? this.id,
+    projectId: projectId.present ? projectId.value : this.projectId,
+    title: title ?? this.title,
+    notes: notes ?? this.notes,
+    chatUrl: chatUrl.present ? chatUrl.value : this.chatUrl,
+    tags: tags ?? this.tags,
+    folderPath: folderPath.present ? folderPath.value : this.folderPath,
+    ignorePatterns: ignorePatterns ?? this.ignorePatterns,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    lastOpenedAt: lastOpenedAt.present ? lastOpenedAt.value : this.lastOpenedAt,
+  );
   Prompt copyWithCompanion(PromptsCompanion data) {
     return Prompt(
       id: data.id.present ? data.id.value : this.id,
@@ -810,14 +1003,16 @@ class Prompt extends DataClass implements Insertable<Prompt> {
       tags: data.tags.present ? data.tags.value : this.tags,
       folderPath:
           data.folderPath.present ? data.folderPath.value : this.folderPath,
-      ignorePatterns: data.ignorePatterns.present
-          ? data.ignorePatterns.value
-          : this.ignorePatterns,
+      ignorePatterns:
+          data.ignorePatterns.present
+              ? data.ignorePatterns.value
+              : this.ignorePatterns,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-      lastOpenedAt: data.lastOpenedAt.present
-          ? data.lastOpenedAt.value
-          : this.lastOpenedAt,
+      lastOpenedAt:
+          data.lastOpenedAt.present
+              ? data.lastOpenedAt.value
+              : this.lastOpenedAt,
     );
   }
 
@@ -840,8 +1035,19 @@ class Prompt extends DataClass implements Insertable<Prompt> {
   }
 
   @override
-  int get hashCode => Object.hash(id, projectId, title, notes, chatUrl, tags,
-      folderPath, ignorePatterns, createdAt, updatedAt, lastOpenedAt);
+  int get hashCode => Object.hash(
+    id,
+    projectId,
+    title,
+    notes,
+    chatUrl,
+    tags,
+    folderPath,
+    ignorePatterns,
+    createdAt,
+    updatedAt,
+    lastOpenedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -925,18 +1131,19 @@ class PromptsCompanion extends UpdateCompanion<Prompt> {
     });
   }
 
-  PromptsCompanion copyWith(
-      {Value<int>? id,
-      Value<int?>? projectId,
-      Value<String>? title,
-      Value<String>? notes,
-      Value<String?>? chatUrl,
-      Value<String>? tags,
-      Value<String?>? folderPath,
-      Value<String>? ignorePatterns,
-      Value<DateTime>? createdAt,
-      Value<DateTime?>? updatedAt,
-      Value<DateTime?>? lastOpenedAt}) {
+  PromptsCompanion copyWith({
+    Value<int>? id,
+    Value<int?>? projectId,
+    Value<String>? title,
+    Value<String>? notes,
+    Value<String?>? chatUrl,
+    Value<String>? tags,
+    Value<String?>? folderPath,
+    Value<String>? ignorePatterns,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? updatedAt,
+    Value<DateTime?>? lastOpenedAt,
+  }) {
     return PromptsCompanion(
       id: id ?? this.id,
       projectId: projectId ?? this.projectId,
@@ -1019,272 +1226,408 @@ class $PromptBlocksTable extends PromptBlocks
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _promptIdMeta =
-      const VerificationMeta('promptId');
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _promptIdMeta = const VerificationMeta(
+    'promptId',
+  );
   @override
   late final GeneratedColumn<int> promptId = GeneratedColumn<int>(
-      'prompt_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES prompts (id)'));
-  static const VerificationMeta _sortOrderMeta =
-      const VerificationMeta('sortOrder');
+    'prompt_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES prompts (id)',
+    ),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
   @override
   late final GeneratedColumn<double> sortOrder = GeneratedColumn<double>(
-      'sort_order', aliasedName, false,
-      type: DriftSqlType.double,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(0.0));
-  static const VerificationMeta _blockTypeMeta =
-      const VerificationMeta('blockType');
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _blockTypeMeta = const VerificationMeta(
+    'blockType',
+  );
   @override
   late final GeneratedColumn<String> blockType = GeneratedColumn<String>(
-      'block_type', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _displayNameMeta =
-      const VerificationMeta('displayName');
+    'block_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _displayNameMeta = const VerificationMeta(
+    'displayName',
+  );
   @override
   late final GeneratedColumn<String> displayName = GeneratedColumn<String>(
-      'display_name', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(''));
+    'display_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _fullContentTokenCountMeta =
       const VerificationMeta('fullContentTokenCount');
   @override
   late final GeneratedColumn<int> fullContentTokenCount = GeneratedColumn<int>(
-      'full_content_token_count', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _summaryTokenCountMeta =
-      const VerificationMeta('summaryTokenCount');
+    'full_content_token_count',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _summaryTokenCountMeta = const VerificationMeta(
+    'summaryTokenCount',
+  );
   @override
   late final GeneratedColumn<int> summaryTokenCount = GeneratedColumn<int>(
-      'summary_token_count', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
+    'summary_token_count',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _fullContentTokenCountMethodMeta =
       const VerificationMeta('fullContentTokenCountMethod');
   @override
   late final GeneratedColumn<String> fullContentTokenCountMethod =
       GeneratedColumn<String>(
-          'full_content_token_count_method', aliasedName, true,
-          type: DriftSqlType.string, requiredDuringInsert: false);
+        'full_content_token_count_method',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _summaryTokenCountMethodMeta =
       const VerificationMeta('summaryTokenCountMethod');
   @override
   late final GeneratedColumn<String> summaryTokenCountMethod =
-      GeneratedColumn<String>('summary_token_count_method', aliasedName, true,
-          type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _preferSummaryMeta =
-      const VerificationMeta('preferSummary');
+      GeneratedColumn<String>(
+        'summary_token_count_method',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _preferSummaryMeta = const VerificationMeta(
+    'preferSummary',
+  );
   @override
   late final GeneratedColumn<bool> preferSummary = GeneratedColumn<bool>(
-      'prefer_summary', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'CHECK ("prefer_summary" IN (0, 1))'),
-      defaultValue: const Constant(false));
-  static const VerificationMeta _textContentMeta =
-      const VerificationMeta('textContent');
+    'prefer_summary',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("prefer_summary" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _textContentMeta = const VerificationMeta(
+    'textContent',
+  );
   @override
   late final GeneratedColumn<String> textContent = GeneratedColumn<String>(
-      'text_content', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _filePathMeta =
-      const VerificationMeta('filePath');
+    'text_content',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _filePathMeta = const VerificationMeta(
+    'filePath',
+  );
   @override
   late final GeneratedColumn<String> filePath = GeneratedColumn<String>(
-      'file_path', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _mimeTypeMeta =
-      const VerificationMeta('mimeType');
+    'file_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _mimeTypeMeta = const VerificationMeta(
+    'mimeType',
+  );
   @override
   late final GeneratedColumn<String> mimeType = GeneratedColumn<String>(
-      'mime_type', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _fileSizeMeta =
-      const VerificationMeta('fileSize');
+    'mime_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fileSizeMeta = const VerificationMeta(
+    'fileSize',
+  );
   @override
   late final GeneratedColumn<int> fileSize = GeneratedColumn<int>(
-      'file_size', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
+    'file_size',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _urlMeta = const VerificationMeta('url');
   @override
   late final GeneratedColumn<String> url = GeneratedColumn<String>(
-      'url', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _transcriptMeta =
-      const VerificationMeta('transcript');
+    'url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _transcriptMeta = const VerificationMeta(
+    'transcript',
+  );
   @override
   late final GeneratedColumn<String> transcript = GeneratedColumn<String>(
-      'transcript', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _captionMeta =
-      const VerificationMeta('caption');
+    'transcript',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _captionMeta = const VerificationMeta(
+    'caption',
+  );
   @override
   late final GeneratedColumn<String> caption = GeneratedColumn<String>(
-      'caption', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _summaryMeta =
-      const VerificationMeta('summary');
+    'caption',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _summaryMeta = const VerificationMeta(
+    'summary',
+  );
   @override
   late final GeneratedColumn<String> summary = GeneratedColumn<String>(
-      'summary', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
+    'summary',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  static const VerificationMeta _updatedAtMeta =
-      const VerificationMeta('updatedAt');
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
-        id,
-        promptId,
-        sortOrder,
-        blockType,
-        displayName,
-        fullContentTokenCount,
-        summaryTokenCount,
-        fullContentTokenCountMethod,
-        summaryTokenCountMethod,
-        preferSummary,
-        textContent,
-        filePath,
-        mimeType,
-        fileSize,
-        url,
-        transcript,
-        caption,
-        summary,
-        createdAt,
-        updatedAt
-      ];
+    id,
+    promptId,
+    sortOrder,
+    blockType,
+    displayName,
+    fullContentTokenCount,
+    summaryTokenCount,
+    fullContentTokenCountMethod,
+    summaryTokenCountMethod,
+    preferSummary,
+    textContent,
+    filePath,
+    mimeType,
+    fileSize,
+    url,
+    transcript,
+    caption,
+    summary,
+    createdAt,
+    updatedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'prompt_blocks';
   @override
-  VerificationContext validateIntegrity(Insertable<PromptBlock> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<PromptBlock> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('prompt_id')) {
-      context.handle(_promptIdMeta,
-          promptId.isAcceptableOrUnknown(data['prompt_id']!, _promptIdMeta));
+      context.handle(
+        _promptIdMeta,
+        promptId.isAcceptableOrUnknown(data['prompt_id']!, _promptIdMeta),
+      );
     } else if (isInserting) {
       context.missing(_promptIdMeta);
     }
     if (data.containsKey('sort_order')) {
-      context.handle(_sortOrderMeta,
-          sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta));
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
     }
     if (data.containsKey('block_type')) {
-      context.handle(_blockTypeMeta,
-          blockType.isAcceptableOrUnknown(data['block_type']!, _blockTypeMeta));
+      context.handle(
+        _blockTypeMeta,
+        blockType.isAcceptableOrUnknown(data['block_type']!, _blockTypeMeta),
+      );
     } else if (isInserting) {
       context.missing(_blockTypeMeta);
     }
     if (data.containsKey('display_name')) {
       context.handle(
+        _displayNameMeta,
+        displayName.isAcceptableOrUnknown(
+          data['display_name']!,
           _displayNameMeta,
-          displayName.isAcceptableOrUnknown(
-              data['display_name']!, _displayNameMeta));
+        ),
+      );
     }
     if (data.containsKey('full_content_token_count')) {
       context.handle(
+        _fullContentTokenCountMeta,
+        fullContentTokenCount.isAcceptableOrUnknown(
+          data['full_content_token_count']!,
           _fullContentTokenCountMeta,
-          fullContentTokenCount.isAcceptableOrUnknown(
-              data['full_content_token_count']!, _fullContentTokenCountMeta));
+        ),
+      );
     }
     if (data.containsKey('summary_token_count')) {
       context.handle(
+        _summaryTokenCountMeta,
+        summaryTokenCount.isAcceptableOrUnknown(
+          data['summary_token_count']!,
           _summaryTokenCountMeta,
-          summaryTokenCount.isAcceptableOrUnknown(
-              data['summary_token_count']!, _summaryTokenCountMeta));
+        ),
+      );
     }
     if (data.containsKey('full_content_token_count_method')) {
       context.handle(
+        _fullContentTokenCountMethodMeta,
+        fullContentTokenCountMethod.isAcceptableOrUnknown(
+          data['full_content_token_count_method']!,
           _fullContentTokenCountMethodMeta,
-          fullContentTokenCountMethod.isAcceptableOrUnknown(
-              data['full_content_token_count_method']!,
-              _fullContentTokenCountMethodMeta));
+        ),
+      );
     }
     if (data.containsKey('summary_token_count_method')) {
       context.handle(
+        _summaryTokenCountMethodMeta,
+        summaryTokenCountMethod.isAcceptableOrUnknown(
+          data['summary_token_count_method']!,
           _summaryTokenCountMethodMeta,
-          summaryTokenCountMethod.isAcceptableOrUnknown(
-              data['summary_token_count_method']!,
-              _summaryTokenCountMethodMeta));
+        ),
+      );
     }
     if (data.containsKey('prefer_summary')) {
       context.handle(
+        _preferSummaryMeta,
+        preferSummary.isAcceptableOrUnknown(
+          data['prefer_summary']!,
           _preferSummaryMeta,
-          preferSummary.isAcceptableOrUnknown(
-              data['prefer_summary']!, _preferSummaryMeta));
+        ),
+      );
     }
     if (data.containsKey('text_content')) {
       context.handle(
+        _textContentMeta,
+        textContent.isAcceptableOrUnknown(
+          data['text_content']!,
           _textContentMeta,
-          textContent.isAcceptableOrUnknown(
-              data['text_content']!, _textContentMeta));
+        ),
+      );
     }
     if (data.containsKey('file_path')) {
-      context.handle(_filePathMeta,
-          filePath.isAcceptableOrUnknown(data['file_path']!, _filePathMeta));
+      context.handle(
+        _filePathMeta,
+        filePath.isAcceptableOrUnknown(data['file_path']!, _filePathMeta),
+      );
     }
     if (data.containsKey('mime_type')) {
-      context.handle(_mimeTypeMeta,
-          mimeType.isAcceptableOrUnknown(data['mime_type']!, _mimeTypeMeta));
+      context.handle(
+        _mimeTypeMeta,
+        mimeType.isAcceptableOrUnknown(data['mime_type']!, _mimeTypeMeta),
+      );
     }
     if (data.containsKey('file_size')) {
-      context.handle(_fileSizeMeta,
-          fileSize.isAcceptableOrUnknown(data['file_size']!, _fileSizeMeta));
+      context.handle(
+        _fileSizeMeta,
+        fileSize.isAcceptableOrUnknown(data['file_size']!, _fileSizeMeta),
+      );
     }
     if (data.containsKey('url')) {
       context.handle(
-          _urlMeta, url.isAcceptableOrUnknown(data['url']!, _urlMeta));
+        _urlMeta,
+        url.isAcceptableOrUnknown(data['url']!, _urlMeta),
+      );
     }
     if (data.containsKey('transcript')) {
       context.handle(
-          _transcriptMeta,
-          transcript.isAcceptableOrUnknown(
-              data['transcript']!, _transcriptMeta));
+        _transcriptMeta,
+        transcript.isAcceptableOrUnknown(data['transcript']!, _transcriptMeta),
+      );
     }
     if (data.containsKey('caption')) {
-      context.handle(_captionMeta,
-          caption.isAcceptableOrUnknown(data['caption']!, _captionMeta));
+      context.handle(
+        _captionMeta,
+        caption.isAcceptableOrUnknown(data['caption']!, _captionMeta),
+      );
     }
     if (data.containsKey('summary')) {
-      context.handle(_summaryMeta,
-          summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta));
+      context.handle(
+        _summaryMeta,
+        summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta),
+      );
     }
     if (data.containsKey('created_at')) {
-      context.handle(_createdAtMeta,
-          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
     }
     if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta,
-          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
     }
     return context;
   }
@@ -1295,48 +1638,93 @@ class $PromptBlocksTable extends PromptBlocks
   PromptBlock map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return PromptBlock(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      promptId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}prompt_id'])!,
-      sortOrder: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}sort_order'])!,
-      blockType: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}block_type'])!,
-      displayName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}display_name'])!,
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      promptId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}prompt_id'],
+          )!,
+      sortOrder:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.double,
+            data['${effectivePrefix}sort_order'],
+          )!,
+      blockType:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}block_type'],
+          )!,
+      displayName:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}display_name'],
+          )!,
       fullContentTokenCount: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}full_content_token_count']),
+        DriftSqlType.int,
+        data['${effectivePrefix}full_content_token_count'],
+      ),
       summaryTokenCount: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}summary_token_count']),
+        DriftSqlType.int,
+        data['${effectivePrefix}summary_token_count'],
+      ),
       fullContentTokenCountMethod: attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}full_content_token_count_method']),
+        DriftSqlType.string,
+        data['${effectivePrefix}full_content_token_count_method'],
+      ),
       summaryTokenCountMethod: attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}summary_token_count_method']),
-      preferSummary: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}prefer_summary'])!,
-      textContent: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}text_content']),
-      filePath: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}file_path']),
-      mimeType: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}mime_type']),
-      fileSize: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}file_size']),
-      url: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}url']),
-      transcript: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}transcript']),
-      caption: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}caption']),
-      summary: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}summary']),
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at']),
+        DriftSqlType.string,
+        data['${effectivePrefix}summary_token_count_method'],
+      ),
+      preferSummary:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}prefer_summary'],
+          )!,
+      textContent: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}text_content'],
+      ),
+      filePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_path'],
+      ),
+      mimeType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mime_type'],
+      ),
+      fileSize: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}file_size'],
+      ),
+      url: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}url'],
+      ),
+      transcript: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transcript'],
+      ),
+      caption: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}caption'],
+      ),
+      summary: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}summary'],
+      ),
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}created_at'],
+          )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
     );
   }
 
@@ -1412,27 +1800,28 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
 
   /// Timestamp when this block was last modified.
   final DateTime? updatedAt;
-  const PromptBlock(
-      {required this.id,
-      required this.promptId,
-      required this.sortOrder,
-      required this.blockType,
-      required this.displayName,
-      this.fullContentTokenCount,
-      this.summaryTokenCount,
-      this.fullContentTokenCountMethod,
-      this.summaryTokenCountMethod,
-      required this.preferSummary,
-      this.textContent,
-      this.filePath,
-      this.mimeType,
-      this.fileSize,
-      this.url,
-      this.transcript,
-      this.caption,
-      this.summary,
-      required this.createdAt,
-      this.updatedAt});
+  const PromptBlock({
+    required this.id,
+    required this.promptId,
+    required this.sortOrder,
+    required this.blockType,
+    required this.displayName,
+    this.fullContentTokenCount,
+    this.summaryTokenCount,
+    this.fullContentTokenCountMethod,
+    this.summaryTokenCountMethod,
+    required this.preferSummary,
+    this.textContent,
+    this.filePath,
+    this.mimeType,
+    this.fileSize,
+    this.url,
+    this.transcript,
+    this.caption,
+    this.summary,
+    required this.createdAt,
+    this.updatedAt,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1448,12 +1837,14 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
       map['summary_token_count'] = Variable<int>(summaryTokenCount);
     }
     if (!nullToAbsent || fullContentTokenCountMethod != null) {
-      map['full_content_token_count_method'] =
-          Variable<String>(fullContentTokenCountMethod);
+      map['full_content_token_count_method'] = Variable<String>(
+        fullContentTokenCountMethod,
+      );
     }
     if (!nullToAbsent || summaryTokenCountMethod != null) {
-      map['summary_token_count_method'] =
-          Variable<String>(summaryTokenCountMethod);
+      map['summary_token_count_method'] = Variable<String>(
+        summaryTokenCountMethod,
+      );
     }
     map['prefer_summary'] = Variable<bool>(preferSummary);
     if (!nullToAbsent || textContent != null) {
@@ -1494,51 +1885,64 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
       sortOrder: Value(sortOrder),
       blockType: Value(blockType),
       displayName: Value(displayName),
-      fullContentTokenCount: fullContentTokenCount == null && nullToAbsent
-          ? const Value.absent()
-          : Value(fullContentTokenCount),
-      summaryTokenCount: summaryTokenCount == null && nullToAbsent
-          ? const Value.absent()
-          : Value(summaryTokenCount),
+      fullContentTokenCount:
+          fullContentTokenCount == null && nullToAbsent
+              ? const Value.absent()
+              : Value(fullContentTokenCount),
+      summaryTokenCount:
+          summaryTokenCount == null && nullToAbsent
+              ? const Value.absent()
+              : Value(summaryTokenCount),
       fullContentTokenCountMethod:
           fullContentTokenCountMethod == null && nullToAbsent
               ? const Value.absent()
               : Value(fullContentTokenCountMethod),
-      summaryTokenCountMethod: summaryTokenCountMethod == null && nullToAbsent
-          ? const Value.absent()
-          : Value(summaryTokenCountMethod),
+      summaryTokenCountMethod:
+          summaryTokenCountMethod == null && nullToAbsent
+              ? const Value.absent()
+              : Value(summaryTokenCountMethod),
       preferSummary: Value(preferSummary),
-      textContent: textContent == null && nullToAbsent
-          ? const Value.absent()
-          : Value(textContent),
-      filePath: filePath == null && nullToAbsent
-          ? const Value.absent()
-          : Value(filePath),
-      mimeType: mimeType == null && nullToAbsent
-          ? const Value.absent()
-          : Value(mimeType),
-      fileSize: fileSize == null && nullToAbsent
-          ? const Value.absent()
-          : Value(fileSize),
+      textContent:
+          textContent == null && nullToAbsent
+              ? const Value.absent()
+              : Value(textContent),
+      filePath:
+          filePath == null && nullToAbsent
+              ? const Value.absent()
+              : Value(filePath),
+      mimeType:
+          mimeType == null && nullToAbsent
+              ? const Value.absent()
+              : Value(mimeType),
+      fileSize:
+          fileSize == null && nullToAbsent
+              ? const Value.absent()
+              : Value(fileSize),
       url: url == null && nullToAbsent ? const Value.absent() : Value(url),
-      transcript: transcript == null && nullToAbsent
-          ? const Value.absent()
-          : Value(transcript),
-      caption: caption == null && nullToAbsent
-          ? const Value.absent()
-          : Value(caption),
-      summary: summary == null && nullToAbsent
-          ? const Value.absent()
-          : Value(summary),
+      transcript:
+          transcript == null && nullToAbsent
+              ? const Value.absent()
+              : Value(transcript),
+      caption:
+          caption == null && nullToAbsent
+              ? const Value.absent()
+              : Value(caption),
+      summary:
+          summary == null && nullToAbsent
+              ? const Value.absent()
+              : Value(summary),
       createdAt: Value(createdAt),
-      updatedAt: updatedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(updatedAt),
+      updatedAt:
+          updatedAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(updatedAt),
     );
   }
 
-  factory PromptBlock.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory PromptBlock.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return PromptBlock(
       id: serializer.fromJson<int>(json['id']),
@@ -1546,13 +1950,16 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
       sortOrder: serializer.fromJson<double>(json['sortOrder']),
       blockType: serializer.fromJson<String>(json['blockType']),
       displayName: serializer.fromJson<String>(json['displayName']),
-      fullContentTokenCount:
-          serializer.fromJson<int?>(json['fullContentTokenCount']),
+      fullContentTokenCount: serializer.fromJson<int?>(
+        json['fullContentTokenCount'],
+      ),
       summaryTokenCount: serializer.fromJson<int?>(json['summaryTokenCount']),
-      fullContentTokenCountMethod:
-          serializer.fromJson<String?>(json['fullContentTokenCountMethod']),
-      summaryTokenCountMethod:
-          serializer.fromJson<String?>(json['summaryTokenCountMethod']),
+      fullContentTokenCountMethod: serializer.fromJson<String?>(
+        json['fullContentTokenCountMethod'],
+      ),
+      summaryTokenCountMethod: serializer.fromJson<String?>(
+        json['summaryTokenCountMethod'],
+      ),
       preferSummary: serializer.fromJson<bool>(json['preferSummary']),
       textContent: serializer.fromJson<String?>(json['textContent']),
       filePath: serializer.fromJson<String?>(json['filePath']),
@@ -1577,10 +1984,12 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
       'displayName': serializer.toJson<String>(displayName),
       'fullContentTokenCount': serializer.toJson<int?>(fullContentTokenCount),
       'summaryTokenCount': serializer.toJson<int?>(summaryTokenCount),
-      'fullContentTokenCountMethod':
-          serializer.toJson<String?>(fullContentTokenCountMethod),
-      'summaryTokenCountMethod':
-          serializer.toJson<String?>(summaryTokenCountMethod),
+      'fullContentTokenCountMethod': serializer.toJson<String?>(
+        fullContentTokenCountMethod,
+      ),
+      'summaryTokenCountMethod': serializer.toJson<String?>(
+        summaryTokenCountMethod,
+      ),
       'preferSummary': serializer.toJson<bool>(preferSummary),
       'textContent': serializer.toJson<String?>(textContent),
       'filePath': serializer.toJson<String?>(filePath),
@@ -1595,57 +2004,61 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
     };
   }
 
-  PromptBlock copyWith(
-          {int? id,
-          int? promptId,
-          double? sortOrder,
-          String? blockType,
-          String? displayName,
-          Value<int?> fullContentTokenCount = const Value.absent(),
-          Value<int?> summaryTokenCount = const Value.absent(),
-          Value<String?> fullContentTokenCountMethod = const Value.absent(),
-          Value<String?> summaryTokenCountMethod = const Value.absent(),
-          bool? preferSummary,
-          Value<String?> textContent = const Value.absent(),
-          Value<String?> filePath = const Value.absent(),
-          Value<String?> mimeType = const Value.absent(),
-          Value<int?> fileSize = const Value.absent(),
-          Value<String?> url = const Value.absent(),
-          Value<String?> transcript = const Value.absent(),
-          Value<String?> caption = const Value.absent(),
-          Value<String?> summary = const Value.absent(),
-          DateTime? createdAt,
-          Value<DateTime?> updatedAt = const Value.absent()}) =>
-      PromptBlock(
-        id: id ?? this.id,
-        promptId: promptId ?? this.promptId,
-        sortOrder: sortOrder ?? this.sortOrder,
-        blockType: blockType ?? this.blockType,
-        displayName: displayName ?? this.displayName,
-        fullContentTokenCount: fullContentTokenCount.present
+  PromptBlock copyWith({
+    int? id,
+    int? promptId,
+    double? sortOrder,
+    String? blockType,
+    String? displayName,
+    Value<int?> fullContentTokenCount = const Value.absent(),
+    Value<int?> summaryTokenCount = const Value.absent(),
+    Value<String?> fullContentTokenCountMethod = const Value.absent(),
+    Value<String?> summaryTokenCountMethod = const Value.absent(),
+    bool? preferSummary,
+    Value<String?> textContent = const Value.absent(),
+    Value<String?> filePath = const Value.absent(),
+    Value<String?> mimeType = const Value.absent(),
+    Value<int?> fileSize = const Value.absent(),
+    Value<String?> url = const Value.absent(),
+    Value<String?> transcript = const Value.absent(),
+    Value<String?> caption = const Value.absent(),
+    Value<String?> summary = const Value.absent(),
+    DateTime? createdAt,
+    Value<DateTime?> updatedAt = const Value.absent(),
+  }) => PromptBlock(
+    id: id ?? this.id,
+    promptId: promptId ?? this.promptId,
+    sortOrder: sortOrder ?? this.sortOrder,
+    blockType: blockType ?? this.blockType,
+    displayName: displayName ?? this.displayName,
+    fullContentTokenCount:
+        fullContentTokenCount.present
             ? fullContentTokenCount.value
             : this.fullContentTokenCount,
-        summaryTokenCount: summaryTokenCount.present
+    summaryTokenCount:
+        summaryTokenCount.present
             ? summaryTokenCount.value
             : this.summaryTokenCount,
-        fullContentTokenCountMethod: fullContentTokenCountMethod.present
+    fullContentTokenCountMethod:
+        fullContentTokenCountMethod.present
             ? fullContentTokenCountMethod.value
             : this.fullContentTokenCountMethod,
-        summaryTokenCountMethod: summaryTokenCountMethod.present
+    summaryTokenCountMethod:
+        summaryTokenCountMethod.present
             ? summaryTokenCountMethod.value
             : this.summaryTokenCountMethod,
-        preferSummary: preferSummary ?? this.preferSummary,
-        textContent: textContent.present ? textContent.value : this.textContent,
-        filePath: filePath.present ? filePath.value : this.filePath,
-        mimeType: mimeType.present ? mimeType.value : this.mimeType,
-        fileSize: fileSize.present ? fileSize.value : this.fileSize,
-        url: url.present ? url.value : this.url,
-        transcript: transcript.present ? transcript.value : this.transcript,
-        caption: caption.present ? caption.value : this.caption,
-        summary: summary.present ? summary.value : this.summary,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
-      );
+    preferSummary: preferSummary ?? this.preferSummary,
+    textContent: textContent.present ? textContent.value : this.textContent,
+    filePath: filePath.present ? filePath.value : this.filePath,
+    mimeType: mimeType.present ? mimeType.value : this.mimeType,
+    fileSize: fileSize.present ? fileSize.value : this.fileSize,
+    url: url.present ? url.value : this.url,
+    transcript: transcript.present ? transcript.value : this.transcript,
+    caption: caption.present ? caption.value : this.caption,
+    summary: summary.present ? summary.value : this.summary,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+  );
   PromptBlock copyWithCompanion(PromptBlocksCompanion data) {
     return PromptBlock(
       id: data.id.present ? data.id.value : this.id,
@@ -1654,21 +2067,26 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
       blockType: data.blockType.present ? data.blockType.value : this.blockType,
       displayName:
           data.displayName.present ? data.displayName.value : this.displayName,
-      fullContentTokenCount: data.fullContentTokenCount.present
-          ? data.fullContentTokenCount.value
-          : this.fullContentTokenCount,
-      summaryTokenCount: data.summaryTokenCount.present
-          ? data.summaryTokenCount.value
-          : this.summaryTokenCount,
-      fullContentTokenCountMethod: data.fullContentTokenCountMethod.present
-          ? data.fullContentTokenCountMethod.value
-          : this.fullContentTokenCountMethod,
-      summaryTokenCountMethod: data.summaryTokenCountMethod.present
-          ? data.summaryTokenCountMethod.value
-          : this.summaryTokenCountMethod,
-      preferSummary: data.preferSummary.present
-          ? data.preferSummary.value
-          : this.preferSummary,
+      fullContentTokenCount:
+          data.fullContentTokenCount.present
+              ? data.fullContentTokenCount.value
+              : this.fullContentTokenCount,
+      summaryTokenCount:
+          data.summaryTokenCount.present
+              ? data.summaryTokenCount.value
+              : this.summaryTokenCount,
+      fullContentTokenCountMethod:
+          data.fullContentTokenCountMethod.present
+              ? data.fullContentTokenCountMethod.value
+              : this.fullContentTokenCountMethod,
+      summaryTokenCountMethod:
+          data.summaryTokenCountMethod.present
+              ? data.summaryTokenCountMethod.value
+              : this.summaryTokenCountMethod,
+      preferSummary:
+          data.preferSummary.present
+              ? data.preferSummary.value
+              : this.preferSummary,
       textContent:
           data.textContent.present ? data.textContent.value : this.textContent,
       filePath: data.filePath.present ? data.filePath.value : this.filePath,
@@ -1713,26 +2131,27 @@ class PromptBlock extends DataClass implements Insertable<PromptBlock> {
 
   @override
   int get hashCode => Object.hash(
-      id,
-      promptId,
-      sortOrder,
-      blockType,
-      displayName,
-      fullContentTokenCount,
-      summaryTokenCount,
-      fullContentTokenCountMethod,
-      summaryTokenCountMethod,
-      preferSummary,
-      textContent,
-      filePath,
-      mimeType,
-      fileSize,
-      url,
-      transcript,
-      caption,
-      summary,
-      createdAt,
-      updatedAt);
+    id,
+    promptId,
+    sortOrder,
+    blockType,
+    displayName,
+    fullContentTokenCount,
+    summaryTokenCount,
+    fullContentTokenCountMethod,
+    summaryTokenCountMethod,
+    preferSummary,
+    textContent,
+    filePath,
+    mimeType,
+    fileSize,
+    url,
+    transcript,
+    caption,
+    summary,
+    createdAt,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1824,8 +2243,8 @@ class PromptBlocksCompanion extends UpdateCompanion<PromptBlock> {
     this.summary = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
-  })  : promptId = Value(promptId),
-        blockType = Value(blockType);
+  }) : promptId = Value(promptId),
+       blockType = Value(blockType);
   static Insertable<PromptBlock> custom({
     Expression<int>? id,
     Expression<int>? promptId,
@@ -1875,27 +2294,28 @@ class PromptBlocksCompanion extends UpdateCompanion<PromptBlock> {
     });
   }
 
-  PromptBlocksCompanion copyWith(
-      {Value<int>? id,
-      Value<int>? promptId,
-      Value<double>? sortOrder,
-      Value<String>? blockType,
-      Value<String>? displayName,
-      Value<int?>? fullContentTokenCount,
-      Value<int?>? summaryTokenCount,
-      Value<String?>? fullContentTokenCountMethod,
-      Value<String?>? summaryTokenCountMethod,
-      Value<bool>? preferSummary,
-      Value<String?>? textContent,
-      Value<String?>? filePath,
-      Value<String?>? mimeType,
-      Value<int?>? fileSize,
-      Value<String?>? url,
-      Value<String?>? transcript,
-      Value<String?>? caption,
-      Value<String?>? summary,
-      Value<DateTime>? createdAt,
-      Value<DateTime?>? updatedAt}) {
+  PromptBlocksCompanion copyWith({
+    Value<int>? id,
+    Value<int>? promptId,
+    Value<double>? sortOrder,
+    Value<String>? blockType,
+    Value<String>? displayName,
+    Value<int?>? fullContentTokenCount,
+    Value<int?>? summaryTokenCount,
+    Value<String?>? fullContentTokenCountMethod,
+    Value<String?>? summaryTokenCountMethod,
+    Value<bool>? preferSummary,
+    Value<String?>? textContent,
+    Value<String?>? filePath,
+    Value<String?>? mimeType,
+    Value<int?>? fileSize,
+    Value<String?>? url,
+    Value<String?>? transcript,
+    Value<String?>? caption,
+    Value<String?>? summary,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? updatedAt,
+  }) {
     return PromptBlocksCompanion(
       id: id ?? this.id,
       promptId: promptId ?? this.promptId,
@@ -1942,19 +2362,22 @@ class PromptBlocksCompanion extends UpdateCompanion<PromptBlock> {
       map['display_name'] = Variable<String>(displayName.value);
     }
     if (fullContentTokenCount.present) {
-      map['full_content_token_count'] =
-          Variable<int>(fullContentTokenCount.value);
+      map['full_content_token_count'] = Variable<int>(
+        fullContentTokenCount.value,
+      );
     }
     if (summaryTokenCount.present) {
       map['summary_token_count'] = Variable<int>(summaryTokenCount.value);
     }
     if (fullContentTokenCountMethod.present) {
-      map['full_content_token_count_method'] =
-          Variable<String>(fullContentTokenCountMethod.value);
+      map['full_content_token_count_method'] = Variable<String>(
+        fullContentTokenCountMethod.value,
+      );
     }
     if (summaryTokenCountMethod.present) {
-      map['summary_token_count_method'] =
-          Variable<String>(summaryTokenCountMethod.value);
+      map['summary_token_count_method'] = Variable<String>(
+        summaryTokenCountMethod.value,
+      );
     }
     if (preferSummary.present) {
       map['prefer_summary'] = Variable<bool>(preferSummary.value);
@@ -2028,135 +2451,199 @@ class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _projectIdMeta =
-      const VerificationMeta('projectId');
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _projectIdMeta = const VerificationMeta(
+    'projectId',
+  );
   @override
   late final GeneratedColumn<int> projectId = GeneratedColumn<int>(
-      'project_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES projects (id)'));
+    'project_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES projects (id)',
+    ),
+  );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(''));
-  static const VerificationMeta _contentMeta =
-      const VerificationMeta('content');
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _contentMeta = const VerificationMeta(
+    'content',
+  );
   @override
   late final GeneratedColumn<String> content = GeneratedColumn<String>(
-      'content', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(''));
-  static const VerificationMeta _summaryMeta =
-      const VerificationMeta('summary');
+    'content',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _summaryMeta = const VerificationMeta(
+    'summary',
+  );
   @override
   late final GeneratedColumn<String> summary = GeneratedColumn<String>(
-      'summary', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'summary',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
-      'notes', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _tagsMeta = const VerificationMeta('tags');
   @override
   late final GeneratedColumn<String> tags = GeneratedColumn<String>(
-      'tags', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
+    'tags',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  static const VerificationMeta _updatedAtMeta =
-      const VerificationMeta('updatedAt');
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
-  static const VerificationMeta _lastUsedAtMeta =
-      const VerificationMeta('lastUsedAt');
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastUsedAtMeta = const VerificationMeta(
+    'lastUsedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> lastUsedAt = GeneratedColumn<DateTime>(
-      'last_used_at', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+    'last_used_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
-        id,
-        projectId,
-        title,
-        content,
-        summary,
-        notes,
-        tags,
-        createdAt,
-        updatedAt,
-        lastUsedAt
-      ];
+    id,
+    projectId,
+    title,
+    content,
+    summary,
+    notes,
+    tags,
+    createdAt,
+    updatedAt,
+    lastUsedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'snippets';
   @override
-  VerificationContext validateIntegrity(Insertable<Snippet> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<Snippet> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('project_id')) {
-      context.handle(_projectIdMeta,
-          projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta));
+      context.handle(
+        _projectIdMeta,
+        projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta),
+      );
     }
     if (data.containsKey('title')) {
       context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
     }
     if (data.containsKey('content')) {
-      context.handle(_contentMeta,
-          content.isAcceptableOrUnknown(data['content']!, _contentMeta));
+      context.handle(
+        _contentMeta,
+        content.isAcceptableOrUnknown(data['content']!, _contentMeta),
+      );
     }
     if (data.containsKey('summary')) {
-      context.handle(_summaryMeta,
-          summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta));
+      context.handle(
+        _summaryMeta,
+        summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta),
+      );
     }
     if (data.containsKey('notes')) {
       context.handle(
-          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
     }
     if (data.containsKey('tags')) {
       context.handle(
-          _tagsMeta, tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta));
+        _tagsMeta,
+        tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta),
+      );
     }
     if (data.containsKey('created_at')) {
-      context.handle(_createdAtMeta,
-          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
     }
     if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta,
-          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
     }
     if (data.containsKey('last_used_at')) {
       context.handle(
+        _lastUsedAtMeta,
+        lastUsedAt.isAcceptableOrUnknown(
+          data['last_used_at']!,
           _lastUsedAtMeta,
-          lastUsedAt.isAcceptableOrUnknown(
-              data['last_used_at']!, _lastUsedAtMeta));
+        ),
+      );
     }
     return context;
   }
@@ -2167,26 +2654,50 @@ class $SnippetsTable extends Snippets with TableInfo<$SnippetsTable, Snippet> {
   Snippet map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Snippet(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      projectId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}project_id']),
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      content: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
-      summary: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}summary']),
-      notes: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}notes']),
-      tags: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}tags']),
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at']),
-      lastUsedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}last_used_at']),
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      projectId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}project_id'],
+      ),
+      title:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}title'],
+          )!,
+      content:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}content'],
+          )!,
+      summary: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}summary'],
+      ),
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      tags: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tags'],
+      ),
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}created_at'],
+          )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
+      lastUsedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_used_at'],
+      ),
     );
   }
 
@@ -2233,17 +2744,18 @@ class Snippet extends DataClass implements Insertable<Snippet> {
   /// When the snippet was last accessed/used
   /// Can be null if never used after creation
   final DateTime? lastUsedAt;
-  const Snippet(
-      {required this.id,
-      this.projectId,
-      required this.title,
-      required this.content,
-      this.summary,
-      this.notes,
-      this.tags,
-      required this.createdAt,
-      this.updatedAt,
-      this.lastUsedAt});
+  const Snippet({
+    required this.id,
+    this.projectId,
+    required this.title,
+    required this.content,
+    this.summary,
+    this.notes,
+    this.tags,
+    required this.createdAt,
+    this.updatedAt,
+    this.lastUsedAt,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2275,29 +2787,35 @@ class Snippet extends DataClass implements Insertable<Snippet> {
   SnippetsCompanion toCompanion(bool nullToAbsent) {
     return SnippetsCompanion(
       id: Value(id),
-      projectId: projectId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(projectId),
+      projectId:
+          projectId == null && nullToAbsent
+              ? const Value.absent()
+              : Value(projectId),
       title: Value(title),
       content: Value(content),
-      summary: summary == null && nullToAbsent
-          ? const Value.absent()
-          : Value(summary),
+      summary:
+          summary == null && nullToAbsent
+              ? const Value.absent()
+              : Value(summary),
       notes:
           notes == null && nullToAbsent ? const Value.absent() : Value(notes),
       tags: tags == null && nullToAbsent ? const Value.absent() : Value(tags),
       createdAt: Value(createdAt),
-      updatedAt: updatedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(updatedAt),
-      lastUsedAt: lastUsedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastUsedAt),
+      updatedAt:
+          updatedAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(updatedAt),
+      lastUsedAt:
+          lastUsedAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(lastUsedAt),
     );
   }
 
-  factory Snippet.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory Snippet.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Snippet(
       id: serializer.fromJson<int>(json['id']),
@@ -2329,29 +2847,29 @@ class Snippet extends DataClass implements Insertable<Snippet> {
     };
   }
 
-  Snippet copyWith(
-          {int? id,
-          Value<int?> projectId = const Value.absent(),
-          String? title,
-          String? content,
-          Value<String?> summary = const Value.absent(),
-          Value<String?> notes = const Value.absent(),
-          Value<String?> tags = const Value.absent(),
-          DateTime? createdAt,
-          Value<DateTime?> updatedAt = const Value.absent(),
-          Value<DateTime?> lastUsedAt = const Value.absent()}) =>
-      Snippet(
-        id: id ?? this.id,
-        projectId: projectId.present ? projectId.value : this.projectId,
-        title: title ?? this.title,
-        content: content ?? this.content,
-        summary: summary.present ? summary.value : this.summary,
-        notes: notes.present ? notes.value : this.notes,
-        tags: tags.present ? tags.value : this.tags,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
-        lastUsedAt: lastUsedAt.present ? lastUsedAt.value : this.lastUsedAt,
-      );
+  Snippet copyWith({
+    int? id,
+    Value<int?> projectId = const Value.absent(),
+    String? title,
+    String? content,
+    Value<String?> summary = const Value.absent(),
+    Value<String?> notes = const Value.absent(),
+    Value<String?> tags = const Value.absent(),
+    DateTime? createdAt,
+    Value<DateTime?> updatedAt = const Value.absent(),
+    Value<DateTime?> lastUsedAt = const Value.absent(),
+  }) => Snippet(
+    id: id ?? this.id,
+    projectId: projectId.present ? projectId.value : this.projectId,
+    title: title ?? this.title,
+    content: content ?? this.content,
+    summary: summary.present ? summary.value : this.summary,
+    notes: notes.present ? notes.value : this.notes,
+    tags: tags.present ? tags.value : this.tags,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    lastUsedAt: lastUsedAt.present ? lastUsedAt.value : this.lastUsedAt,
+  );
   Snippet copyWithCompanion(SnippetsCompanion data) {
     return Snippet(
       id: data.id.present ? data.id.value : this.id,
@@ -2386,8 +2904,18 @@ class Snippet extends DataClass implements Insertable<Snippet> {
   }
 
   @override
-  int get hashCode => Object.hash(id, projectId, title, content, summary, notes,
-      tags, createdAt, updatedAt, lastUsedAt);
+  int get hashCode => Object.hash(
+    id,
+    projectId,
+    title,
+    content,
+    summary,
+    notes,
+    tags,
+    createdAt,
+    updatedAt,
+    lastUsedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2465,17 +2993,18 @@ class SnippetsCompanion extends UpdateCompanion<Snippet> {
     });
   }
 
-  SnippetsCompanion copyWith(
-      {Value<int>? id,
-      Value<int?>? projectId,
-      Value<String>? title,
-      Value<String>? content,
-      Value<String?>? summary,
-      Value<String?>? notes,
-      Value<String?>? tags,
-      Value<DateTime>? createdAt,
-      Value<DateTime?>? updatedAt,
-      Value<DateTime?>? lastUsedAt}) {
+  SnippetsCompanion copyWith({
+    Value<int>? id,
+    Value<int?>? projectId,
+    Value<String>? title,
+    Value<String>? content,
+    Value<String?>? summary,
+    Value<String?>? notes,
+    Value<String?>? tags,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? updatedAt,
+    Value<DateTime?>? lastUsedAt,
+  }) {
     return SnippetsCompanion(
       id: id ?? this.id,
       projectId: projectId ?? this.projectId,
@@ -2555,63 +3084,77 @@ abstract class _$Database extends GeneratedDatabase {
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [projects, prompts, promptBlocks, snippets];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    projects,
+    prompts,
+    promptBlocks,
+    snippets,
+  ];
 }
 
-typedef $$ProjectsTableCreateCompanionBuilder = ProjectsCompanion Function({
-  Value<int> id,
-  Value<String> title,
-  Value<String> notes,
-  Value<String?> emoji,
-  Value<int?> color,
-  Value<bool> isStarred,
-  Value<DateTime> createdAt,
-  Value<DateTime?> updatedAt,
-});
-typedef $$ProjectsTableUpdateCompanionBuilder = ProjectsCompanion Function({
-  Value<int> id,
-  Value<String> title,
-  Value<String> notes,
-  Value<String?> emoji,
-  Value<int?> color,
-  Value<bool> isStarred,
-  Value<DateTime> createdAt,
-  Value<DateTime?> updatedAt,
-});
+typedef $$ProjectsTableCreateCompanionBuilder =
+    ProjectsCompanion Function({
+      Value<int> id,
+      Value<String> title,
+      Value<String> notes,
+      Value<String?> emoji,
+      Value<int?> color,
+      Value<bool> isStarred,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+    });
+typedef $$ProjectsTableUpdateCompanionBuilder =
+    ProjectsCompanion Function({
+      Value<int> id,
+      Value<String> title,
+      Value<String> notes,
+      Value<String?> emoji,
+      Value<int?> color,
+      Value<bool> isStarred,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+    });
 
 final class $$ProjectsTableReferences
     extends BaseReferences<_$Database, $ProjectsTable, Project> {
   $$ProjectsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static MultiTypedResultKey<$PromptsTable, List<Prompt>> _promptsRefsTable(
-          _$Database db) =>
-      MultiTypedResultKey.fromTable(db.prompts,
-          aliasName:
-              $_aliasNameGenerator(db.projects.id, db.prompts.projectId));
+    _$Database db,
+  ) => MultiTypedResultKey.fromTable(
+    db.prompts,
+    aliasName: $_aliasNameGenerator(db.projects.id, db.prompts.projectId),
+  );
 
   $$PromptsTableProcessedTableManager get promptsRefs {
-    final manager = $$PromptsTableTableManager($_db, $_db.prompts)
-        .filter((f) => f.projectId.id($_item.id));
+    final manager = $$PromptsTableTableManager(
+      $_db,
+      $_db.prompts,
+    ).filter((f) => f.projectId.id($_item.id));
 
     final cache = $_typedResult.readTableOrNull(_promptsRefsTable($_db));
     return ProcessedTableManager(
-        manager.$state.copyWith(prefetchedData: cache));
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
   static MultiTypedResultKey<$SnippetsTable, List<Snippet>> _snippetsRefsTable(
-          _$Database db) =>
-      MultiTypedResultKey.fromTable(db.snippets,
-          aliasName:
-              $_aliasNameGenerator(db.projects.id, db.snippets.projectId));
+    _$Database db,
+  ) => MultiTypedResultKey.fromTable(
+    db.snippets,
+    aliasName: $_aliasNameGenerator(db.projects.id, db.snippets.projectId),
+  );
 
   $$SnippetsTableProcessedTableManager get snippetsRefs {
-    final manager = $$SnippetsTableTableManager($_db, $_db.snippets)
-        .filter((f) => f.projectId.id($_item.id));
+    final manager = $$SnippetsTableTableManager(
+      $_db,
+      $_db.snippets,
+    ).filter((f) => f.projectId.id($_item.id));
 
     final cache = $_typedResult.readTableOrNull(_snippetsRefsTable($_db));
     return ProcessedTableManager(
-        manager.$state.copyWith(prefetchedData: cache));
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 }
 
@@ -2625,68 +3168,92 @@ class $$ProjectsTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnFilters(column));
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get notes => $composableBuilder(
-      column: $table.notes, builder: (column) => ColumnFilters(column));
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get emoji => $composableBuilder(
-      column: $table.emoji, builder: (column) => ColumnFilters(column));
+    column: $table.emoji,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get color => $composableBuilder(
-      column: $table.color, builder: (column) => ColumnFilters(column));
+    column: $table.color,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<bool> get isStarred => $composableBuilder(
-      column: $table.isStarred, builder: (column) => ColumnFilters(column));
+    column: $table.isStarred,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   Expression<bool> promptsRefs(
-      Expression<bool> Function($$PromptsTableFilterComposer f) f) {
+    Expression<bool> Function($$PromptsTableFilterComposer f) f,
+  ) {
     final $$PromptsTableFilterComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $db.prompts,
-        getReferencedColumn: (t) => t.projectId,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$PromptsTableFilterComposer(
-              $db: $db,
-              $table: $db.prompts,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.prompts,
+      getReferencedColumn: (t) => t.projectId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PromptsTableFilterComposer(
+            $db: $db,
+            $table: $db.prompts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return f(composer);
   }
 
   Expression<bool> snippetsRefs(
-      Expression<bool> Function($$SnippetsTableFilterComposer f) f) {
+    Expression<bool> Function($$SnippetsTableFilterComposer f) f,
+  ) {
     final $$SnippetsTableFilterComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $db.snippets,
-        getReferencedColumn: (t) => t.projectId,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$SnippetsTableFilterComposer(
-              $db: $db,
-              $table: $db.snippets,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.snippets,
+      getReferencedColumn: (t) => t.projectId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SnippetsTableFilterComposer(
+            $db: $db,
+            $table: $db.snippets,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return f(composer);
   }
 }
@@ -2701,28 +3268,44 @@ class $$ProjectsTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnOrderings(column));
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get notes => $composableBuilder(
-      column: $table.notes, builder: (column) => ColumnOrderings(column));
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get emoji => $composableBuilder(
-      column: $table.emoji, builder: (column) => ColumnOrderings(column));
+    column: $table.emoji,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get color => $composableBuilder(
-      column: $table.color, builder: (column) => ColumnOrderings(column));
+    column: $table.color,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<bool> get isStarred => $composableBuilder(
-      column: $table.isStarred, builder: (column) => ColumnOrderings(column));
+    column: $table.isStarred,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ProjectsTableAnnotationComposer
@@ -2759,193 +3342,228 @@ class $$ProjectsTableAnnotationComposer
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
   Expression<T> promptsRefs<T extends Object>(
-      Expression<T> Function($$PromptsTableAnnotationComposer a) f) {
+    Expression<T> Function($$PromptsTableAnnotationComposer a) f,
+  ) {
     final $$PromptsTableAnnotationComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $db.prompts,
-        getReferencedColumn: (t) => t.projectId,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$PromptsTableAnnotationComposer(
-              $db: $db,
-              $table: $db.prompts,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.prompts,
+      getReferencedColumn: (t) => t.projectId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PromptsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.prompts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return f(composer);
   }
 
   Expression<T> snippetsRefs<T extends Object>(
-      Expression<T> Function($$SnippetsTableAnnotationComposer a) f) {
+    Expression<T> Function($$SnippetsTableAnnotationComposer a) f,
+  ) {
     final $$SnippetsTableAnnotationComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $db.snippets,
-        getReferencedColumn: (t) => t.projectId,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$SnippetsTableAnnotationComposer(
-              $db: $db,
-              $table: $db.snippets,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.snippets,
+      getReferencedColumn: (t) => t.projectId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SnippetsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.snippets,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return f(composer);
   }
 }
 
-class $$ProjectsTableTableManager extends RootTableManager<
-    _$Database,
-    $ProjectsTable,
-    Project,
-    $$ProjectsTableFilterComposer,
-    $$ProjectsTableOrderingComposer,
-    $$ProjectsTableAnnotationComposer,
-    $$ProjectsTableCreateCompanionBuilder,
-    $$ProjectsTableUpdateCompanionBuilder,
-    (Project, $$ProjectsTableReferences),
-    Project,
-    PrefetchHooks Function({bool promptsRefs, bool snippetsRefs})> {
+class $$ProjectsTableTableManager
+    extends
+        RootTableManager<
+          _$Database,
+          $ProjectsTable,
+          Project,
+          $$ProjectsTableFilterComposer,
+          $$ProjectsTableOrderingComposer,
+          $$ProjectsTableAnnotationComposer,
+          $$ProjectsTableCreateCompanionBuilder,
+          $$ProjectsTableUpdateCompanionBuilder,
+          (Project, $$ProjectsTableReferences),
+          Project,
+          PrefetchHooks Function({bool promptsRefs, bool snippetsRefs})
+        > {
   $$ProjectsTableTableManager(_$Database db, $ProjectsTable table)
-      : super(TableManagerState(
+    : super(
+        TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$ProjectsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$ProjectsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$ProjectsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> notes = const Value.absent(),
-            Value<String?> emoji = const Value.absent(),
-            Value<int?> color = const Value.absent(),
-            Value<bool> isStarred = const Value.absent(),
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime?> updatedAt = const Value.absent(),
-          }) =>
-              ProjectsCompanion(
-            id: id,
-            title: title,
-            notes: notes,
-            emoji: emoji,
-            color: color,
-            isStarred: isStarred,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> notes = const Value.absent(),
-            Value<String?> emoji = const Value.absent(),
-            Value<int?> color = const Value.absent(),
-            Value<bool> isStarred = const Value.absent(),
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime?> updatedAt = const Value.absent(),
-          }) =>
-              ProjectsCompanion.insert(
-            id: id,
-            title: title,
-            notes: notes,
-            emoji: emoji,
-            color: color,
-            isStarred: isStarred,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-          ),
-          withReferenceMapper: (p0) => p0
-              .map((e) =>
-                  (e.readTable(table), $$ProjectsTableReferences(db, table, e)))
-              .toList(),
+          createFilteringComposer:
+              () => $$ProjectsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$ProjectsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$ProjectsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> notes = const Value.absent(),
+                Value<String?> emoji = const Value.absent(),
+                Value<int?> color = const Value.absent(),
+                Value<bool> isStarred = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+              }) => ProjectsCompanion(
+                id: id,
+                title: title,
+                notes: notes,
+                emoji: emoji,
+                color: color,
+                isStarred: isStarred,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> notes = const Value.absent(),
+                Value<String?> emoji = const Value.absent(),
+                Value<int?> color = const Value.absent(),
+                Value<bool> isStarred = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+              }) => ProjectsCompanion.insert(
+                id: id,
+                title: title,
+                notes: notes,
+                emoji: emoji,
+                color: color,
+                isStarred: isStarred,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          $$ProjectsTableReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
           prefetchHooksCallback: ({promptsRefs = false, snippetsRefs = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [
                 if (promptsRefs) db.prompts,
-                if (snippetsRefs) db.snippets
+                if (snippetsRefs) db.snippets,
               ],
               addJoins: null,
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (promptsRefs)
                     await $_getPrefetchedData(
-                        currentTable: table,
-                        referencedTable:
-                            $$ProjectsTableReferences._promptsRefsTable(db),
-                        managerFromTypedResult: (p0) =>
-                            $$ProjectsTableReferences(db, table, p0)
-                                .promptsRefs,
-                        referencedItemsForCurrentItem:
-                            (item, referencedItems) => referencedItems
-                                .where((e) => e.projectId == item.id),
-                        typedResults: items),
+                      currentTable: table,
+                      referencedTable: $$ProjectsTableReferences
+                          ._promptsRefsTable(db),
+                      managerFromTypedResult:
+                          (p0) =>
+                              $$ProjectsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).promptsRefs,
+                      referencedItemsForCurrentItem:
+                          (item, referencedItems) => referencedItems.where(
+                            (e) => e.projectId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
                   if (snippetsRefs)
                     await $_getPrefetchedData(
-                        currentTable: table,
-                        referencedTable:
-                            $$ProjectsTableReferences._snippetsRefsTable(db),
-                        managerFromTypedResult: (p0) =>
-                            $$ProjectsTableReferences(db, table, p0)
-                                .snippetsRefs,
-                        referencedItemsForCurrentItem:
-                            (item, referencedItems) => referencedItems
-                                .where((e) => e.projectId == item.id),
-                        typedResults: items)
+                      currentTable: table,
+                      referencedTable: $$ProjectsTableReferences
+                          ._snippetsRefsTable(db),
+                      managerFromTypedResult:
+                          (p0) =>
+                              $$ProjectsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).snippetsRefs,
+                      referencedItemsForCurrentItem:
+                          (item, referencedItems) => referencedItems.where(
+                            (e) => e.projectId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
                 ];
               },
             );
           },
-        ));
+        ),
+      );
 }
 
-typedef $$ProjectsTableProcessedTableManager = ProcessedTableManager<
-    _$Database,
-    $ProjectsTable,
-    Project,
-    $$ProjectsTableFilterComposer,
-    $$ProjectsTableOrderingComposer,
-    $$ProjectsTableAnnotationComposer,
-    $$ProjectsTableCreateCompanionBuilder,
-    $$ProjectsTableUpdateCompanionBuilder,
-    (Project, $$ProjectsTableReferences),
-    Project,
-    PrefetchHooks Function({bool promptsRefs, bool snippetsRefs})>;
-typedef $$PromptsTableCreateCompanionBuilder = PromptsCompanion Function({
-  Value<int> id,
-  Value<int?> projectId,
-  Value<String> title,
-  Value<String> notes,
-  Value<String?> chatUrl,
-  Value<String> tags,
-  Value<String?> folderPath,
-  Value<String> ignorePatterns,
-  Value<DateTime> createdAt,
-  Value<DateTime?> updatedAt,
-  Value<DateTime?> lastOpenedAt,
-});
-typedef $$PromptsTableUpdateCompanionBuilder = PromptsCompanion Function({
-  Value<int> id,
-  Value<int?> projectId,
-  Value<String> title,
-  Value<String> notes,
-  Value<String?> chatUrl,
-  Value<String> tags,
-  Value<String?> folderPath,
-  Value<String> ignorePatterns,
-  Value<DateTime> createdAt,
-  Value<DateTime?> updatedAt,
-  Value<DateTime?> lastOpenedAt,
-});
+typedef $$ProjectsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$Database,
+      $ProjectsTable,
+      Project,
+      $$ProjectsTableFilterComposer,
+      $$ProjectsTableOrderingComposer,
+      $$ProjectsTableAnnotationComposer,
+      $$ProjectsTableCreateCompanionBuilder,
+      $$ProjectsTableUpdateCompanionBuilder,
+      (Project, $$ProjectsTableReferences),
+      Project,
+      PrefetchHooks Function({bool promptsRefs, bool snippetsRefs})
+    >;
+typedef $$PromptsTableCreateCompanionBuilder =
+    PromptsCompanion Function({
+      Value<int> id,
+      Value<int?> projectId,
+      Value<String> title,
+      Value<String> notes,
+      Value<String?> chatUrl,
+      Value<String> tags,
+      Value<String?> folderPath,
+      Value<String> ignorePatterns,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+      Value<DateTime?> lastOpenedAt,
+    });
+typedef $$PromptsTableUpdateCompanionBuilder =
+    PromptsCompanion Function({
+      Value<int> id,
+      Value<int?> projectId,
+      Value<String> title,
+      Value<String> notes,
+      Value<String?> chatUrl,
+      Value<String> tags,
+      Value<String?> folderPath,
+      Value<String> ignorePatterns,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+      Value<DateTime?> lastOpenedAt,
+    });
 
 final class $$PromptsTableReferences
     extends BaseReferences<_$Database, $PromptsTable, Prompt> {
@@ -2956,27 +3574,33 @@ final class $$PromptsTableReferences
 
   $$ProjectsTableProcessedTableManager? get projectId {
     if ($_item.projectId == null) return null;
-    final manager = $$ProjectsTableTableManager($_db, $_db.projects)
-        .filter((f) => f.id($_item.projectId!));
+    final manager = $$ProjectsTableTableManager(
+      $_db,
+      $_db.projects,
+    ).filter((f) => f.id($_item.projectId!));
     final item = $_typedResult.readTableOrNull(_projectIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
-        manager.$state.copyWith(prefetchedData: [item]));
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 
   static MultiTypedResultKey<$PromptBlocksTable, List<PromptBlock>>
-      _promptBlocksRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
-          db.promptBlocks,
-          aliasName:
-              $_aliasNameGenerator(db.prompts.id, db.promptBlocks.promptId));
+  _promptBlocksRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
+    db.promptBlocks,
+    aliasName: $_aliasNameGenerator(db.prompts.id, db.promptBlocks.promptId),
+  );
 
   $$PromptBlocksTableProcessedTableManager get promptBlocksRefs {
-    final manager = $$PromptBlocksTableTableManager($_db, $_db.promptBlocks)
-        .filter((f) => f.promptId.id($_item.id));
+    final manager = $$PromptBlocksTableTableManager(
+      $_db,
+      $_db.promptBlocks,
+    ).filter((f) => f.promptId.id($_item.id));
 
     final cache = $_typedResult.readTableOrNull(_promptBlocksRefsTable($_db));
     return ProcessedTableManager(
-        manager.$state.copyWith(prefetchedData: cache));
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 }
 
@@ -2989,74 +3613,100 @@ class $$PromptsTableFilterComposer extends Composer<_$Database, $PromptsTable> {
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnFilters(column));
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get notes => $composableBuilder(
-      column: $table.notes, builder: (column) => ColumnFilters(column));
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get chatUrl => $composableBuilder(
-      column: $table.chatUrl, builder: (column) => ColumnFilters(column));
+    column: $table.chatUrl,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get tags => $composableBuilder(
-      column: $table.tags, builder: (column) => ColumnFilters(column));
+    column: $table.tags,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get folderPath => $composableBuilder(
-      column: $table.folderPath, builder: (column) => ColumnFilters(column));
+    column: $table.folderPath,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get ignorePatterns => $composableBuilder(
-      column: $table.ignorePatterns,
-      builder: (column) => ColumnFilters(column));
+    column: $table.ignorePatterns,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<DateTime> get lastOpenedAt => $composableBuilder(
-      column: $table.lastOpenedAt, builder: (column) => ColumnFilters(column));
+    column: $table.lastOpenedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   $$ProjectsTableFilterComposer get projectId {
     final $$ProjectsTableFilterComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.projectId,
-        referencedTable: $db.projects,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$ProjectsTableFilterComposer(
-              $db: $db,
-              $table: $db.projects,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.projects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectsTableFilterComposer(
+            $db: $db,
+            $table: $db.projects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return composer;
   }
 
   Expression<bool> promptBlocksRefs(
-      Expression<bool> Function($$PromptBlocksTableFilterComposer f) f) {
+    Expression<bool> Function($$PromptBlocksTableFilterComposer f) f,
+  ) {
     final $$PromptBlocksTableFilterComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $db.promptBlocks,
-        getReferencedColumn: (t) => t.promptId,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$PromptBlocksTableFilterComposer(
-              $db: $db,
-              $table: $db.promptBlocks,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.promptBlocks,
+      getReferencedColumn: (t) => t.promptId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PromptBlocksTableFilterComposer(
+            $db: $db,
+            $table: $db.promptBlocks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return f(composer);
   }
 }
@@ -3071,54 +3721,75 @@ class $$PromptsTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnOrderings(column));
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get notes => $composableBuilder(
-      column: $table.notes, builder: (column) => ColumnOrderings(column));
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get chatUrl => $composableBuilder(
-      column: $table.chatUrl, builder: (column) => ColumnOrderings(column));
+    column: $table.chatUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get tags => $composableBuilder(
-      column: $table.tags, builder: (column) => ColumnOrderings(column));
+    column: $table.tags,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get folderPath => $composableBuilder(
-      column: $table.folderPath, builder: (column) => ColumnOrderings(column));
+    column: $table.folderPath,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get ignorePatterns => $composableBuilder(
-      column: $table.ignorePatterns,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.ignorePatterns,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<DateTime> get lastOpenedAt => $composableBuilder(
-      column: $table.lastOpenedAt,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.lastOpenedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   $$ProjectsTableOrderingComposer get projectId {
     final $$ProjectsTableOrderingComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.projectId,
-        referencedTable: $db.projects,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$ProjectsTableOrderingComposer(
-              $db: $db,
-              $table: $db.projects,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.projects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectsTableOrderingComposer(
+            $db: $db,
+            $table: $db.projects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return composer;
   }
 }
@@ -3148,10 +3819,14 @@ class $$PromptsTableAnnotationComposer
       $composableBuilder(column: $table.tags, builder: (column) => column);
 
   GeneratedColumn<String> get folderPath => $composableBuilder(
-      column: $table.folderPath, builder: (column) => column);
+    column: $table.folderPath,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get ignorePatterns => $composableBuilder(
-      column: $table.ignorePatterns, builder: (column) => column);
+    column: $table.ignorePatterns,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -3160,155 +3835,180 @@ class $$PromptsTableAnnotationComposer
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
   GeneratedColumn<DateTime> get lastOpenedAt => $composableBuilder(
-      column: $table.lastOpenedAt, builder: (column) => column);
+    column: $table.lastOpenedAt,
+    builder: (column) => column,
+  );
 
   $$ProjectsTableAnnotationComposer get projectId {
     final $$ProjectsTableAnnotationComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.projectId,
-        referencedTable: $db.projects,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$ProjectsTableAnnotationComposer(
-              $db: $db,
-              $table: $db.projects,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.projects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.projects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return composer;
   }
 
   Expression<T> promptBlocksRefs<T extends Object>(
-      Expression<T> Function($$PromptBlocksTableAnnotationComposer a) f) {
+    Expression<T> Function($$PromptBlocksTableAnnotationComposer a) f,
+  ) {
     final $$PromptBlocksTableAnnotationComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $db.promptBlocks,
-        getReferencedColumn: (t) => t.promptId,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$PromptBlocksTableAnnotationComposer(
-              $db: $db,
-              $table: $db.promptBlocks,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.promptBlocks,
+      getReferencedColumn: (t) => t.promptId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PromptBlocksTableAnnotationComposer(
+            $db: $db,
+            $table: $db.promptBlocks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return f(composer);
   }
 }
 
-class $$PromptsTableTableManager extends RootTableManager<
-    _$Database,
-    $PromptsTable,
-    Prompt,
-    $$PromptsTableFilterComposer,
-    $$PromptsTableOrderingComposer,
-    $$PromptsTableAnnotationComposer,
-    $$PromptsTableCreateCompanionBuilder,
-    $$PromptsTableUpdateCompanionBuilder,
-    (Prompt, $$PromptsTableReferences),
-    Prompt,
-    PrefetchHooks Function({bool projectId, bool promptBlocksRefs})> {
+class $$PromptsTableTableManager
+    extends
+        RootTableManager<
+          _$Database,
+          $PromptsTable,
+          Prompt,
+          $$PromptsTableFilterComposer,
+          $$PromptsTableOrderingComposer,
+          $$PromptsTableAnnotationComposer,
+          $$PromptsTableCreateCompanionBuilder,
+          $$PromptsTableUpdateCompanionBuilder,
+          (Prompt, $$PromptsTableReferences),
+          Prompt,
+          PrefetchHooks Function({bool projectId, bool promptBlocksRefs})
+        > {
   $$PromptsTableTableManager(_$Database db, $PromptsTable table)
-      : super(TableManagerState(
+    : super(
+        TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$PromptsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$PromptsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$PromptsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<int?> projectId = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> notes = const Value.absent(),
-            Value<String?> chatUrl = const Value.absent(),
-            Value<String> tags = const Value.absent(),
-            Value<String?> folderPath = const Value.absent(),
-            Value<String> ignorePatterns = const Value.absent(),
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime?> updatedAt = const Value.absent(),
-            Value<DateTime?> lastOpenedAt = const Value.absent(),
-          }) =>
-              PromptsCompanion(
-            id: id,
-            projectId: projectId,
-            title: title,
-            notes: notes,
-            chatUrl: chatUrl,
-            tags: tags,
-            folderPath: folderPath,
-            ignorePatterns: ignorePatterns,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-            lastOpenedAt: lastOpenedAt,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<int?> projectId = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> notes = const Value.absent(),
-            Value<String?> chatUrl = const Value.absent(),
-            Value<String> tags = const Value.absent(),
-            Value<String?> folderPath = const Value.absent(),
-            Value<String> ignorePatterns = const Value.absent(),
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime?> updatedAt = const Value.absent(),
-            Value<DateTime?> lastOpenedAt = const Value.absent(),
-          }) =>
-              PromptsCompanion.insert(
-            id: id,
-            projectId: projectId,
-            title: title,
-            notes: notes,
-            chatUrl: chatUrl,
-            tags: tags,
-            folderPath: folderPath,
-            ignorePatterns: ignorePatterns,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-            lastOpenedAt: lastOpenedAt,
-          ),
-          withReferenceMapper: (p0) => p0
-              .map((e) =>
-                  (e.readTable(table), $$PromptsTableReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: (
-              {projectId = false, promptBlocksRefs = false}) {
+          createFilteringComposer:
+              () => $$PromptsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$PromptsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$PromptsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> projectId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> notes = const Value.absent(),
+                Value<String?> chatUrl = const Value.absent(),
+                Value<String> tags = const Value.absent(),
+                Value<String?> folderPath = const Value.absent(),
+                Value<String> ignorePatterns = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<DateTime?> lastOpenedAt = const Value.absent(),
+              }) => PromptsCompanion(
+                id: id,
+                projectId: projectId,
+                title: title,
+                notes: notes,
+                chatUrl: chatUrl,
+                tags: tags,
+                folderPath: folderPath,
+                ignorePatterns: ignorePatterns,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                lastOpenedAt: lastOpenedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> projectId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> notes = const Value.absent(),
+                Value<String?> chatUrl = const Value.absent(),
+                Value<String> tags = const Value.absent(),
+                Value<String?> folderPath = const Value.absent(),
+                Value<String> ignorePatterns = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<DateTime?> lastOpenedAt = const Value.absent(),
+              }) => PromptsCompanion.insert(
+                id: id,
+                projectId: projectId,
+                title: title,
+                notes: notes,
+                chatUrl: chatUrl,
+                tags: tags,
+                folderPath: folderPath,
+                ignorePatterns: ignorePatterns,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                lastOpenedAt: lastOpenedAt,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          $$PromptsTableReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: ({
+            projectId = false,
+            promptBlocksRefs = false,
+          }) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [if (promptBlocksRefs) db.promptBlocks],
               addJoins: <
-                  T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic>>(state) {
+                T extends TableManagerState<
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic
+                >
+              >(state) {
                 if (projectId) {
-                  state = state.withJoin(
-                    currentTable: table,
-                    currentColumn: table.projectId,
-                    referencedTable:
-                        $$PromptsTableReferences._projectIdTable(db),
-                    referencedColumn:
-                        $$PromptsTableReferences._projectIdTable(db).id,
-                  ) as T;
+                  state =
+                      state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.projectId,
+                            referencedTable: $$PromptsTableReferences
+                                ._projectIdTable(db),
+                            referencedColumn:
+                                $$PromptsTableReferences._projectIdTable(db).id,
+                          )
+                          as T;
                 }
 
                 return state;
@@ -3317,96 +4017,109 @@ class $$PromptsTableTableManager extends RootTableManager<
                 return [
                   if (promptBlocksRefs)
                     await $_getPrefetchedData(
-                        currentTable: table,
-                        referencedTable:
-                            $$PromptsTableReferences._promptBlocksRefsTable(db),
-                        managerFromTypedResult: (p0) =>
-                            $$PromptsTableReferences(db, table, p0)
-                                .promptBlocksRefs,
-                        referencedItemsForCurrentItem: (item,
-                                referencedItems) =>
-                            referencedItems.where((e) => e.promptId == item.id),
-                        typedResults: items)
+                      currentTable: table,
+                      referencedTable: $$PromptsTableReferences
+                          ._promptBlocksRefsTable(db),
+                      managerFromTypedResult:
+                          (p0) =>
+                              $$PromptsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).promptBlocksRefs,
+                      referencedItemsForCurrentItem:
+                          (item, referencedItems) => referencedItems.where(
+                            (e) => e.promptId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
                 ];
               },
             );
           },
-        ));
+        ),
+      );
 }
 
-typedef $$PromptsTableProcessedTableManager = ProcessedTableManager<
-    _$Database,
-    $PromptsTable,
-    Prompt,
-    $$PromptsTableFilterComposer,
-    $$PromptsTableOrderingComposer,
-    $$PromptsTableAnnotationComposer,
-    $$PromptsTableCreateCompanionBuilder,
-    $$PromptsTableUpdateCompanionBuilder,
-    (Prompt, $$PromptsTableReferences),
-    Prompt,
-    PrefetchHooks Function({bool projectId, bool promptBlocksRefs})>;
-typedef $$PromptBlocksTableCreateCompanionBuilder = PromptBlocksCompanion
-    Function({
-  Value<int> id,
-  required int promptId,
-  Value<double> sortOrder,
-  required String blockType,
-  Value<String> displayName,
-  Value<int?> fullContentTokenCount,
-  Value<int?> summaryTokenCount,
-  Value<String?> fullContentTokenCountMethod,
-  Value<String?> summaryTokenCountMethod,
-  Value<bool> preferSummary,
-  Value<String?> textContent,
-  Value<String?> filePath,
-  Value<String?> mimeType,
-  Value<int?> fileSize,
-  Value<String?> url,
-  Value<String?> transcript,
-  Value<String?> caption,
-  Value<String?> summary,
-  Value<DateTime> createdAt,
-  Value<DateTime?> updatedAt,
-});
-typedef $$PromptBlocksTableUpdateCompanionBuilder = PromptBlocksCompanion
-    Function({
-  Value<int> id,
-  Value<int> promptId,
-  Value<double> sortOrder,
-  Value<String> blockType,
-  Value<String> displayName,
-  Value<int?> fullContentTokenCount,
-  Value<int?> summaryTokenCount,
-  Value<String?> fullContentTokenCountMethod,
-  Value<String?> summaryTokenCountMethod,
-  Value<bool> preferSummary,
-  Value<String?> textContent,
-  Value<String?> filePath,
-  Value<String?> mimeType,
-  Value<int?> fileSize,
-  Value<String?> url,
-  Value<String?> transcript,
-  Value<String?> caption,
-  Value<String?> summary,
-  Value<DateTime> createdAt,
-  Value<DateTime?> updatedAt,
-});
+typedef $$PromptsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$Database,
+      $PromptsTable,
+      Prompt,
+      $$PromptsTableFilterComposer,
+      $$PromptsTableOrderingComposer,
+      $$PromptsTableAnnotationComposer,
+      $$PromptsTableCreateCompanionBuilder,
+      $$PromptsTableUpdateCompanionBuilder,
+      (Prompt, $$PromptsTableReferences),
+      Prompt,
+      PrefetchHooks Function({bool projectId, bool promptBlocksRefs})
+    >;
+typedef $$PromptBlocksTableCreateCompanionBuilder =
+    PromptBlocksCompanion Function({
+      Value<int> id,
+      required int promptId,
+      Value<double> sortOrder,
+      required String blockType,
+      Value<String> displayName,
+      Value<int?> fullContentTokenCount,
+      Value<int?> summaryTokenCount,
+      Value<String?> fullContentTokenCountMethod,
+      Value<String?> summaryTokenCountMethod,
+      Value<bool> preferSummary,
+      Value<String?> textContent,
+      Value<String?> filePath,
+      Value<String?> mimeType,
+      Value<int?> fileSize,
+      Value<String?> url,
+      Value<String?> transcript,
+      Value<String?> caption,
+      Value<String?> summary,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+    });
+typedef $$PromptBlocksTableUpdateCompanionBuilder =
+    PromptBlocksCompanion Function({
+      Value<int> id,
+      Value<int> promptId,
+      Value<double> sortOrder,
+      Value<String> blockType,
+      Value<String> displayName,
+      Value<int?> fullContentTokenCount,
+      Value<int?> summaryTokenCount,
+      Value<String?> fullContentTokenCountMethod,
+      Value<String?> summaryTokenCountMethod,
+      Value<bool> preferSummary,
+      Value<String?> textContent,
+      Value<String?> filePath,
+      Value<String?> mimeType,
+      Value<int?> fileSize,
+      Value<String?> url,
+      Value<String?> transcript,
+      Value<String?> caption,
+      Value<String?> summary,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+    });
 
 final class $$PromptBlocksTableReferences
     extends BaseReferences<_$Database, $PromptBlocksTable, PromptBlock> {
   $$PromptBlocksTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $PromptsTable _promptIdTable(_$Database db) => db.prompts.createAlias(
-      $_aliasNameGenerator(db.promptBlocks.promptId, db.prompts.id));
+    $_aliasNameGenerator(db.promptBlocks.promptId, db.prompts.id),
+  );
 
   $$PromptsTableProcessedTableManager get promptId {
-    final manager = $$PromptsTableTableManager($_db, $_db.prompts)
-        .filter((f) => f.id($_item.promptId!));
+    final manager = $$PromptsTableTableManager(
+      $_db,
+      $_db.prompts,
+    ).filter((f) => f.id($_item.promptId!));
     final item = $_typedResult.readTableOrNull(_promptIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
-        manager.$state.copyWith(prefetchedData: [item]));
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -3420,83 +4133,120 @@ class $$PromptBlocksTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<double> get sortOrder => $composableBuilder(
-      column: $table.sortOrder, builder: (column) => ColumnFilters(column));
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get blockType => $composableBuilder(
-      column: $table.blockType, builder: (column) => ColumnFilters(column));
+    column: $table.blockType,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get displayName => $composableBuilder(
-      column: $table.displayName, builder: (column) => ColumnFilters(column));
+    column: $table.displayName,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get fullContentTokenCount => $composableBuilder(
-      column: $table.fullContentTokenCount,
-      builder: (column) => ColumnFilters(column));
+    column: $table.fullContentTokenCount,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get summaryTokenCount => $composableBuilder(
-      column: $table.summaryTokenCount,
-      builder: (column) => ColumnFilters(column));
+    column: $table.summaryTokenCount,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get fullContentTokenCountMethod => $composableBuilder(
-      column: $table.fullContentTokenCountMethod,
-      builder: (column) => ColumnFilters(column));
+    column: $table.fullContentTokenCountMethod,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get summaryTokenCountMethod => $composableBuilder(
-      column: $table.summaryTokenCountMethod,
-      builder: (column) => ColumnFilters(column));
+    column: $table.summaryTokenCountMethod,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<bool> get preferSummary => $composableBuilder(
-      column: $table.preferSummary, builder: (column) => ColumnFilters(column));
+    column: $table.preferSummary,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get textContent => $composableBuilder(
-      column: $table.textContent, builder: (column) => ColumnFilters(column));
+    column: $table.textContent,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get filePath => $composableBuilder(
-      column: $table.filePath, builder: (column) => ColumnFilters(column));
+    column: $table.filePath,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get mimeType => $composableBuilder(
-      column: $table.mimeType, builder: (column) => ColumnFilters(column));
+    column: $table.mimeType,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get fileSize => $composableBuilder(
-      column: $table.fileSize, builder: (column) => ColumnFilters(column));
+    column: $table.fileSize,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get url => $composableBuilder(
-      column: $table.url, builder: (column) => ColumnFilters(column));
+    column: $table.url,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get transcript => $composableBuilder(
-      column: $table.transcript, builder: (column) => ColumnFilters(column));
+    column: $table.transcript,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get caption => $composableBuilder(
-      column: $table.caption, builder: (column) => ColumnFilters(column));
+    column: $table.caption,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get summary => $composableBuilder(
-      column: $table.summary, builder: (column) => ColumnFilters(column));
+    column: $table.summary,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   $$PromptsTableFilterComposer get promptId {
     final $$PromptsTableFilterComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.promptId,
-        referencedTable: $db.prompts,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$PromptsTableFilterComposer(
-              $db: $db,
-              $table: $db.prompts,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.promptId,
+      referencedTable: $db.prompts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PromptsTableFilterComposer(
+            $db: $db,
+            $table: $db.prompts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return composer;
   }
 }
@@ -3511,84 +4261,120 @@ class $$PromptBlocksTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<double> get sortOrder => $composableBuilder(
-      column: $table.sortOrder, builder: (column) => ColumnOrderings(column));
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get blockType => $composableBuilder(
-      column: $table.blockType, builder: (column) => ColumnOrderings(column));
+    column: $table.blockType,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get displayName => $composableBuilder(
-      column: $table.displayName, builder: (column) => ColumnOrderings(column));
+    column: $table.displayName,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get fullContentTokenCount => $composableBuilder(
-      column: $table.fullContentTokenCount,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.fullContentTokenCount,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get summaryTokenCount => $composableBuilder(
-      column: $table.summaryTokenCount,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.summaryTokenCount,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get fullContentTokenCountMethod => $composableBuilder(
-      column: $table.fullContentTokenCountMethod,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.fullContentTokenCountMethod,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get summaryTokenCountMethod => $composableBuilder(
-      column: $table.summaryTokenCountMethod,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.summaryTokenCountMethod,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<bool> get preferSummary => $composableBuilder(
-      column: $table.preferSummary,
-      builder: (column) => ColumnOrderings(column));
+    column: $table.preferSummary,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get textContent => $composableBuilder(
-      column: $table.textContent, builder: (column) => ColumnOrderings(column));
+    column: $table.textContent,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get filePath => $composableBuilder(
-      column: $table.filePath, builder: (column) => ColumnOrderings(column));
+    column: $table.filePath,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get mimeType => $composableBuilder(
-      column: $table.mimeType, builder: (column) => ColumnOrderings(column));
+    column: $table.mimeType,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get fileSize => $composableBuilder(
-      column: $table.fileSize, builder: (column) => ColumnOrderings(column));
+    column: $table.fileSize,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get url => $composableBuilder(
-      column: $table.url, builder: (column) => ColumnOrderings(column));
+    column: $table.url,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get transcript => $composableBuilder(
-      column: $table.transcript, builder: (column) => ColumnOrderings(column));
+    column: $table.transcript,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get caption => $composableBuilder(
-      column: $table.caption, builder: (column) => ColumnOrderings(column));
+    column: $table.caption,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get summary => $composableBuilder(
-      column: $table.summary, builder: (column) => ColumnOrderings(column));
+    column: $table.summary,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   $$PromptsTableOrderingComposer get promptId {
     final $$PromptsTableOrderingComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.promptId,
-        referencedTable: $db.prompts,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$PromptsTableOrderingComposer(
-              $db: $db,
-              $table: $db.prompts,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.promptId,
+      referencedTable: $db.prompts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PromptsTableOrderingComposer(
+            $db: $db,
+            $table: $db.prompts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return composer;
   }
 }
@@ -3612,25 +4398,39 @@ class $$PromptBlocksTableAnnotationComposer
       $composableBuilder(column: $table.blockType, builder: (column) => column);
 
   GeneratedColumn<String> get displayName => $composableBuilder(
-      column: $table.displayName, builder: (column) => column);
+    column: $table.displayName,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get fullContentTokenCount => $composableBuilder(
-      column: $table.fullContentTokenCount, builder: (column) => column);
+    column: $table.fullContentTokenCount,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get summaryTokenCount => $composableBuilder(
-      column: $table.summaryTokenCount, builder: (column) => column);
+    column: $table.summaryTokenCount,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get fullContentTokenCountMethod => $composableBuilder(
-      column: $table.fullContentTokenCountMethod, builder: (column) => column);
+    column: $table.fullContentTokenCountMethod,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get summaryTokenCountMethod => $composableBuilder(
-      column: $table.summaryTokenCountMethod, builder: (column) => column);
+    column: $table.summaryTokenCountMethod,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<bool> get preferSummary => $composableBuilder(
-      column: $table.preferSummary, builder: (column) => column);
+    column: $table.preferSummary,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get textContent => $composableBuilder(
-      column: $table.textContent, builder: (column) => column);
+    column: $table.textContent,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get filePath =>
       $composableBuilder(column: $table.filePath, builder: (column) => column);
@@ -3645,7 +4445,9 @@ class $$PromptBlocksTableAnnotationComposer
       $composableBuilder(column: $table.url, builder: (column) => column);
 
   GeneratedColumn<String> get transcript => $composableBuilder(
-      column: $table.transcript, builder: (column) => column);
+    column: $table.transcript,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get caption =>
       $composableBuilder(column: $table.caption, builder: (column) => column);
@@ -3661,167 +4463,187 @@ class $$PromptBlocksTableAnnotationComposer
 
   $$PromptsTableAnnotationComposer get promptId {
     final $$PromptsTableAnnotationComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.promptId,
-        referencedTable: $db.prompts,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$PromptsTableAnnotationComposer(
-              $db: $db,
-              $table: $db.prompts,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.promptId,
+      referencedTable: $db.prompts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PromptsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.prompts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return composer;
   }
 }
 
-class $$PromptBlocksTableTableManager extends RootTableManager<
-    _$Database,
-    $PromptBlocksTable,
-    PromptBlock,
-    $$PromptBlocksTableFilterComposer,
-    $$PromptBlocksTableOrderingComposer,
-    $$PromptBlocksTableAnnotationComposer,
-    $$PromptBlocksTableCreateCompanionBuilder,
-    $$PromptBlocksTableUpdateCompanionBuilder,
-    (PromptBlock, $$PromptBlocksTableReferences),
-    PromptBlock,
-    PrefetchHooks Function({bool promptId})> {
+class $$PromptBlocksTableTableManager
+    extends
+        RootTableManager<
+          _$Database,
+          $PromptBlocksTable,
+          PromptBlock,
+          $$PromptBlocksTableFilterComposer,
+          $$PromptBlocksTableOrderingComposer,
+          $$PromptBlocksTableAnnotationComposer,
+          $$PromptBlocksTableCreateCompanionBuilder,
+          $$PromptBlocksTableUpdateCompanionBuilder,
+          (PromptBlock, $$PromptBlocksTableReferences),
+          PromptBlock,
+          PrefetchHooks Function({bool promptId})
+        > {
   $$PromptBlocksTableTableManager(_$Database db, $PromptBlocksTable table)
-      : super(TableManagerState(
+    : super(
+        TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$PromptBlocksTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$PromptBlocksTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$PromptBlocksTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<int> promptId = const Value.absent(),
-            Value<double> sortOrder = const Value.absent(),
-            Value<String> blockType = const Value.absent(),
-            Value<String> displayName = const Value.absent(),
-            Value<int?> fullContentTokenCount = const Value.absent(),
-            Value<int?> summaryTokenCount = const Value.absent(),
-            Value<String?> fullContentTokenCountMethod = const Value.absent(),
-            Value<String?> summaryTokenCountMethod = const Value.absent(),
-            Value<bool> preferSummary = const Value.absent(),
-            Value<String?> textContent = const Value.absent(),
-            Value<String?> filePath = const Value.absent(),
-            Value<String?> mimeType = const Value.absent(),
-            Value<int?> fileSize = const Value.absent(),
-            Value<String?> url = const Value.absent(),
-            Value<String?> transcript = const Value.absent(),
-            Value<String?> caption = const Value.absent(),
-            Value<String?> summary = const Value.absent(),
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime?> updatedAt = const Value.absent(),
-          }) =>
-              PromptBlocksCompanion(
-            id: id,
-            promptId: promptId,
-            sortOrder: sortOrder,
-            blockType: blockType,
-            displayName: displayName,
-            fullContentTokenCount: fullContentTokenCount,
-            summaryTokenCount: summaryTokenCount,
-            fullContentTokenCountMethod: fullContentTokenCountMethod,
-            summaryTokenCountMethod: summaryTokenCountMethod,
-            preferSummary: preferSummary,
-            textContent: textContent,
-            filePath: filePath,
-            mimeType: mimeType,
-            fileSize: fileSize,
-            url: url,
-            transcript: transcript,
-            caption: caption,
-            summary: summary,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required int promptId,
-            Value<double> sortOrder = const Value.absent(),
-            required String blockType,
-            Value<String> displayName = const Value.absent(),
-            Value<int?> fullContentTokenCount = const Value.absent(),
-            Value<int?> summaryTokenCount = const Value.absent(),
-            Value<String?> fullContentTokenCountMethod = const Value.absent(),
-            Value<String?> summaryTokenCountMethod = const Value.absent(),
-            Value<bool> preferSummary = const Value.absent(),
-            Value<String?> textContent = const Value.absent(),
-            Value<String?> filePath = const Value.absent(),
-            Value<String?> mimeType = const Value.absent(),
-            Value<int?> fileSize = const Value.absent(),
-            Value<String?> url = const Value.absent(),
-            Value<String?> transcript = const Value.absent(),
-            Value<String?> caption = const Value.absent(),
-            Value<String?> summary = const Value.absent(),
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime?> updatedAt = const Value.absent(),
-          }) =>
-              PromptBlocksCompanion.insert(
-            id: id,
-            promptId: promptId,
-            sortOrder: sortOrder,
-            blockType: blockType,
-            displayName: displayName,
-            fullContentTokenCount: fullContentTokenCount,
-            summaryTokenCount: summaryTokenCount,
-            fullContentTokenCountMethod: fullContentTokenCountMethod,
-            summaryTokenCountMethod: summaryTokenCountMethod,
-            preferSummary: preferSummary,
-            textContent: textContent,
-            filePath: filePath,
-            mimeType: mimeType,
-            fileSize: fileSize,
-            url: url,
-            transcript: transcript,
-            caption: caption,
-            summary: summary,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-          ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (
-                    e.readTable(table),
-                    $$PromptBlocksTableReferences(db, table, e)
-                  ))
-              .toList(),
+          createFilteringComposer:
+              () => $$PromptBlocksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$PromptBlocksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () =>
+                  $$PromptBlocksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> promptId = const Value.absent(),
+                Value<double> sortOrder = const Value.absent(),
+                Value<String> blockType = const Value.absent(),
+                Value<String> displayName = const Value.absent(),
+                Value<int?> fullContentTokenCount = const Value.absent(),
+                Value<int?> summaryTokenCount = const Value.absent(),
+                Value<String?> fullContentTokenCountMethod =
+                    const Value.absent(),
+                Value<String?> summaryTokenCountMethod = const Value.absent(),
+                Value<bool> preferSummary = const Value.absent(),
+                Value<String?> textContent = const Value.absent(),
+                Value<String?> filePath = const Value.absent(),
+                Value<String?> mimeType = const Value.absent(),
+                Value<int?> fileSize = const Value.absent(),
+                Value<String?> url = const Value.absent(),
+                Value<String?> transcript = const Value.absent(),
+                Value<String?> caption = const Value.absent(),
+                Value<String?> summary = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+              }) => PromptBlocksCompanion(
+                id: id,
+                promptId: promptId,
+                sortOrder: sortOrder,
+                blockType: blockType,
+                displayName: displayName,
+                fullContentTokenCount: fullContentTokenCount,
+                summaryTokenCount: summaryTokenCount,
+                fullContentTokenCountMethod: fullContentTokenCountMethod,
+                summaryTokenCountMethod: summaryTokenCountMethod,
+                preferSummary: preferSummary,
+                textContent: textContent,
+                filePath: filePath,
+                mimeType: mimeType,
+                fileSize: fileSize,
+                url: url,
+                transcript: transcript,
+                caption: caption,
+                summary: summary,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int promptId,
+                Value<double> sortOrder = const Value.absent(),
+                required String blockType,
+                Value<String> displayName = const Value.absent(),
+                Value<int?> fullContentTokenCount = const Value.absent(),
+                Value<int?> summaryTokenCount = const Value.absent(),
+                Value<String?> fullContentTokenCountMethod =
+                    const Value.absent(),
+                Value<String?> summaryTokenCountMethod = const Value.absent(),
+                Value<bool> preferSummary = const Value.absent(),
+                Value<String?> textContent = const Value.absent(),
+                Value<String?> filePath = const Value.absent(),
+                Value<String?> mimeType = const Value.absent(),
+                Value<int?> fileSize = const Value.absent(),
+                Value<String?> url = const Value.absent(),
+                Value<String?> transcript = const Value.absent(),
+                Value<String?> caption = const Value.absent(),
+                Value<String?> summary = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+              }) => PromptBlocksCompanion.insert(
+                id: id,
+                promptId: promptId,
+                sortOrder: sortOrder,
+                blockType: blockType,
+                displayName: displayName,
+                fullContentTokenCount: fullContentTokenCount,
+                summaryTokenCount: summaryTokenCount,
+                fullContentTokenCountMethod: fullContentTokenCountMethod,
+                summaryTokenCountMethod: summaryTokenCountMethod,
+                preferSummary: preferSummary,
+                textContent: textContent,
+                filePath: filePath,
+                mimeType: mimeType,
+                fileSize: fileSize,
+                url: url,
+                transcript: transcript,
+                caption: caption,
+                summary: summary,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          $$PromptBlocksTableReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
           prefetchHooksCallback: ({promptId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
               addJoins: <
-                  T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic>>(state) {
+                T extends TableManagerState<
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic
+                >
+              >(state) {
                 if (promptId) {
-                  state = state.withJoin(
-                    currentTable: table,
-                    currentColumn: table.promptId,
-                    referencedTable:
-                        $$PromptBlocksTableReferences._promptIdTable(db),
-                    referencedColumn:
-                        $$PromptBlocksTableReferences._promptIdTable(db).id,
-                  ) as T;
+                  state =
+                      state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.promptId,
+                            referencedTable: $$PromptBlocksTableReferences
+                                ._promptIdTable(db),
+                            referencedColumn:
+                                $$PromptBlocksTableReferences
+                                    ._promptIdTable(db)
+                                    .id,
+                          )
+                          as T;
                 }
 
                 return state;
@@ -3831,45 +4653,50 @@ class $$PromptBlocksTableTableManager extends RootTableManager<
               },
             );
           },
-        ));
+        ),
+      );
 }
 
-typedef $$PromptBlocksTableProcessedTableManager = ProcessedTableManager<
-    _$Database,
-    $PromptBlocksTable,
-    PromptBlock,
-    $$PromptBlocksTableFilterComposer,
-    $$PromptBlocksTableOrderingComposer,
-    $$PromptBlocksTableAnnotationComposer,
-    $$PromptBlocksTableCreateCompanionBuilder,
-    $$PromptBlocksTableUpdateCompanionBuilder,
-    (PromptBlock, $$PromptBlocksTableReferences),
-    PromptBlock,
-    PrefetchHooks Function({bool promptId})>;
-typedef $$SnippetsTableCreateCompanionBuilder = SnippetsCompanion Function({
-  Value<int> id,
-  Value<int?> projectId,
-  Value<String> title,
-  Value<String> content,
-  Value<String?> summary,
-  Value<String?> notes,
-  Value<String?> tags,
-  Value<DateTime> createdAt,
-  Value<DateTime?> updatedAt,
-  Value<DateTime?> lastUsedAt,
-});
-typedef $$SnippetsTableUpdateCompanionBuilder = SnippetsCompanion Function({
-  Value<int> id,
-  Value<int?> projectId,
-  Value<String> title,
-  Value<String> content,
-  Value<String?> summary,
-  Value<String?> notes,
-  Value<String?> tags,
-  Value<DateTime> createdAt,
-  Value<DateTime?> updatedAt,
-  Value<DateTime?> lastUsedAt,
-});
+typedef $$PromptBlocksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$Database,
+      $PromptBlocksTable,
+      PromptBlock,
+      $$PromptBlocksTableFilterComposer,
+      $$PromptBlocksTableOrderingComposer,
+      $$PromptBlocksTableAnnotationComposer,
+      $$PromptBlocksTableCreateCompanionBuilder,
+      $$PromptBlocksTableUpdateCompanionBuilder,
+      (PromptBlock, $$PromptBlocksTableReferences),
+      PromptBlock,
+      PrefetchHooks Function({bool promptId})
+    >;
+typedef $$SnippetsTableCreateCompanionBuilder =
+    SnippetsCompanion Function({
+      Value<int> id,
+      Value<int?> projectId,
+      Value<String> title,
+      Value<String> content,
+      Value<String?> summary,
+      Value<String?> notes,
+      Value<String?> tags,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+      Value<DateTime?> lastUsedAt,
+    });
+typedef $$SnippetsTableUpdateCompanionBuilder =
+    SnippetsCompanion Function({
+      Value<int> id,
+      Value<int?> projectId,
+      Value<String> title,
+      Value<String> content,
+      Value<String?> summary,
+      Value<String?> notes,
+      Value<String?> tags,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+      Value<DateTime?> lastUsedAt,
+    });
 
 final class $$SnippetsTableReferences
     extends BaseReferences<_$Database, $SnippetsTable, Snippet> {
@@ -3880,12 +4707,15 @@ final class $$SnippetsTableReferences
 
   $$ProjectsTableProcessedTableManager? get projectId {
     if ($_item.projectId == null) return null;
-    final manager = $$ProjectsTableTableManager($_db, $_db.projects)
-        .filter((f) => f.id($_item.projectId!));
+    final manager = $$ProjectsTableTableManager(
+      $_db,
+      $_db.projects,
+    ).filter((f) => f.id($_item.projectId!));
     final item = $_typedResult.readTableOrNull(_projectIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
-        manager.$state.copyWith(prefetchedData: [item]));
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -3899,49 +4729,70 @@ class $$SnippetsTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnFilters(column));
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get content => $composableBuilder(
-      column: $table.content, builder: (column) => ColumnFilters(column));
+    column: $table.content,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get summary => $composableBuilder(
-      column: $table.summary, builder: (column) => ColumnFilters(column));
+    column: $table.summary,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get notes => $composableBuilder(
-      column: $table.notes, builder: (column) => ColumnFilters(column));
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get tags => $composableBuilder(
-      column: $table.tags, builder: (column) => ColumnFilters(column));
+    column: $table.tags,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<DateTime> get lastUsedAt => $composableBuilder(
-      column: $table.lastUsedAt, builder: (column) => ColumnFilters(column));
+    column: $table.lastUsedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   $$ProjectsTableFilterComposer get projectId {
     final $$ProjectsTableFilterComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.projectId,
-        referencedTable: $db.projects,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$ProjectsTableFilterComposer(
-              $db: $db,
-              $table: $db.projects,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.projects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectsTableFilterComposer(
+            $db: $db,
+            $table: $db.projects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return composer;
   }
 }
@@ -3956,49 +4807,70 @@ class $$SnippetsTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnOrderings(column));
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get content => $composableBuilder(
-      column: $table.content, builder: (column) => ColumnOrderings(column));
+    column: $table.content,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get summary => $composableBuilder(
-      column: $table.summary, builder: (column) => ColumnOrderings(column));
+    column: $table.summary,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get notes => $composableBuilder(
-      column: $table.notes, builder: (column) => ColumnOrderings(column));
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get tags => $composableBuilder(
-      column: $table.tags, builder: (column) => ColumnOrderings(column));
+    column: $table.tags,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<DateTime> get lastUsedAt => $composableBuilder(
-      column: $table.lastUsedAt, builder: (column) => ColumnOrderings(column));
+    column: $table.lastUsedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   $$ProjectsTableOrderingComposer get projectId {
     final $$ProjectsTableOrderingComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.projectId,
-        referencedTable: $db.projects,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$ProjectsTableOrderingComposer(
-              $db: $db,
-              $table: $db.projects,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.projects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectsTableOrderingComposer(
+            $db: $db,
+            $table: $db.projects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return composer;
   }
 }
@@ -4037,129 +4909,150 @@ class $$SnippetsTableAnnotationComposer
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
   GeneratedColumn<DateTime> get lastUsedAt => $composableBuilder(
-      column: $table.lastUsedAt, builder: (column) => column);
+    column: $table.lastUsedAt,
+    builder: (column) => column,
+  );
 
   $$ProjectsTableAnnotationComposer get projectId {
     final $$ProjectsTableAnnotationComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.projectId,
-        referencedTable: $db.projects,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$ProjectsTableAnnotationComposer(
-              $db: $db,
-              $table: $db.projects,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.projects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProjectsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.projects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return composer;
   }
 }
 
-class $$SnippetsTableTableManager extends RootTableManager<
-    _$Database,
-    $SnippetsTable,
-    Snippet,
-    $$SnippetsTableFilterComposer,
-    $$SnippetsTableOrderingComposer,
-    $$SnippetsTableAnnotationComposer,
-    $$SnippetsTableCreateCompanionBuilder,
-    $$SnippetsTableUpdateCompanionBuilder,
-    (Snippet, $$SnippetsTableReferences),
-    Snippet,
-    PrefetchHooks Function({bool projectId})> {
+class $$SnippetsTableTableManager
+    extends
+        RootTableManager<
+          _$Database,
+          $SnippetsTable,
+          Snippet,
+          $$SnippetsTableFilterComposer,
+          $$SnippetsTableOrderingComposer,
+          $$SnippetsTableAnnotationComposer,
+          $$SnippetsTableCreateCompanionBuilder,
+          $$SnippetsTableUpdateCompanionBuilder,
+          (Snippet, $$SnippetsTableReferences),
+          Snippet,
+          PrefetchHooks Function({bool projectId})
+        > {
   $$SnippetsTableTableManager(_$Database db, $SnippetsTable table)
-      : super(TableManagerState(
+    : super(
+        TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$SnippetsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$SnippetsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$SnippetsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<int?> projectId = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> content = const Value.absent(),
-            Value<String?> summary = const Value.absent(),
-            Value<String?> notes = const Value.absent(),
-            Value<String?> tags = const Value.absent(),
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime?> updatedAt = const Value.absent(),
-            Value<DateTime?> lastUsedAt = const Value.absent(),
-          }) =>
-              SnippetsCompanion(
-            id: id,
-            projectId: projectId,
-            title: title,
-            content: content,
-            summary: summary,
-            notes: notes,
-            tags: tags,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-            lastUsedAt: lastUsedAt,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<int?> projectId = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> content = const Value.absent(),
-            Value<String?> summary = const Value.absent(),
-            Value<String?> notes = const Value.absent(),
-            Value<String?> tags = const Value.absent(),
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime?> updatedAt = const Value.absent(),
-            Value<DateTime?> lastUsedAt = const Value.absent(),
-          }) =>
-              SnippetsCompanion.insert(
-            id: id,
-            projectId: projectId,
-            title: title,
-            content: content,
-            summary: summary,
-            notes: notes,
-            tags: tags,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-            lastUsedAt: lastUsedAt,
-          ),
-          withReferenceMapper: (p0) => p0
-              .map((e) =>
-                  (e.readTable(table), $$SnippetsTableReferences(db, table, e)))
-              .toList(),
+          createFilteringComposer:
+              () => $$SnippetsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$SnippetsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$SnippetsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> projectId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> content = const Value.absent(),
+                Value<String?> summary = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<String?> tags = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<DateTime?> lastUsedAt = const Value.absent(),
+              }) => SnippetsCompanion(
+                id: id,
+                projectId: projectId,
+                title: title,
+                content: content,
+                summary: summary,
+                notes: notes,
+                tags: tags,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                lastUsedAt: lastUsedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> projectId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> content = const Value.absent(),
+                Value<String?> summary = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<String?> tags = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<DateTime?> lastUsedAt = const Value.absent(),
+              }) => SnippetsCompanion.insert(
+                id: id,
+                projectId: projectId,
+                title: title,
+                content: content,
+                summary: summary,
+                notes: notes,
+                tags: tags,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                lastUsedAt: lastUsedAt,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          $$SnippetsTableReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
           prefetchHooksCallback: ({projectId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
               addJoins: <
-                  T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic>>(state) {
+                T extends TableManagerState<
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic
+                >
+              >(state) {
                 if (projectId) {
-                  state = state.withJoin(
-                    currentTable: table,
-                    currentColumn: table.projectId,
-                    referencedTable:
-                        $$SnippetsTableReferences._projectIdTable(db),
-                    referencedColumn:
-                        $$SnippetsTableReferences._projectIdTable(db).id,
-                  ) as T;
+                  state =
+                      state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.projectId,
+                            referencedTable: $$SnippetsTableReferences
+                                ._projectIdTable(db),
+                            referencedColumn:
+                                $$SnippetsTableReferences
+                                    ._projectIdTable(db)
+                                    .id,
+                          )
+                          as T;
                 }
 
                 return state;
@@ -4169,21 +5062,24 @@ class $$SnippetsTableTableManager extends RootTableManager<
               },
             );
           },
-        ));
+        ),
+      );
 }
 
-typedef $$SnippetsTableProcessedTableManager = ProcessedTableManager<
-    _$Database,
-    $SnippetsTable,
-    Snippet,
-    $$SnippetsTableFilterComposer,
-    $$SnippetsTableOrderingComposer,
-    $$SnippetsTableAnnotationComposer,
-    $$SnippetsTableCreateCompanionBuilder,
-    $$SnippetsTableUpdateCompanionBuilder,
-    (Snippet, $$SnippetsTableReferences),
-    Snippet,
-    PrefetchHooks Function({bool projectId})>;
+typedef $$SnippetsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$Database,
+      $SnippetsTable,
+      Snippet,
+      $$SnippetsTableFilterComposer,
+      $$SnippetsTableOrderingComposer,
+      $$SnippetsTableAnnotationComposer,
+      $$SnippetsTableCreateCompanionBuilder,
+      $$SnippetsTableUpdateCompanionBuilder,
+      (Snippet, $$SnippetsTableReferences),
+      Snippet,
+      PrefetchHooks Function({bool projectId})
+    >;
 
 class $DatabaseManager {
   final _$Database _db;

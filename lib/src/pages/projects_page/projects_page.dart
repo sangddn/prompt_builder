@@ -11,13 +11,12 @@ import '../../core/core.dart';
 import '../../database/database.dart';
 import '../../router/router.dart';
 
-part 'states/prj_providers.dart';
-part 'states/projects_controller.dart';
-
-part 'components/prj_app_bar.dart';
 part 'components/prj_add_project_button.dart';
+part 'components/prj_app_bar.dart';
 part 'components/prj_project_list.dart';
 part 'components/prj_search_bar.dart';
+part 'states/prj_providers.dart';
+part 'states/projects_controller.dart';
 
 @RoutePage()
 class ProjectsPage extends StatelessWidget {
@@ -33,10 +32,7 @@ class ProjectsPage extends StatelessWidget {
             builder: (context) {
               return ShadContextMenuItem(
                 onPressed: () => context.controller.refresh(),
-                trailing: const ShadImage.square(
-                  LucideIcons.refreshCcw,
-                  size: 16.0,
-                ),
+                trailing: const Icon(LucideIcons.refreshCcw, size: 16.0),
                 child: const Text('Refresh'),
               );
             },

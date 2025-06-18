@@ -7,8 +7,8 @@ class _RPTagBar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (context.isLoading()) return const SizedBox.shrink();
     return StateProvider<IList<String>>(
-      createInitialValue: (context) =>
-          context.read<_OrganizedResources>().keys.toIList(),
+      createInitialValue:
+          (context) => context.read<_OrganizedResources>().keys.toIList(),
       child: ValueProvider<TextEditingController>(
         create: (_) => TextEditingController(),
         onNotified: (context, controller) {
@@ -23,11 +23,13 @@ class _RPTagBar extends StatelessWidget {
           notifier.value = filteredTags.toIList();
         },
         child: ProxyProvider<TextEditingController, List<String>>(
-          update: (_, controller, __) => controller.text
-              .toLowerCase()
-              .split(' ')
-              .where((element) => element.length >= 3)
-              .toList(),
+          update:
+              (_, controller, __) =>
+                  controller.text
+                      .toLowerCase()
+                      .split(' ')
+                      .where((element) => element.length >= 3)
+                      .toList(),
           child: Align(
             alignment: Alignment.bottomRight,
             child: Container(
@@ -102,14 +104,15 @@ class _Tags extends StatelessWidget {
     final tagCount = context.select((_TagsNotifier n) => n.value.length);
     return SuperSliverList.builder(
       itemCount: tagCount,
-      itemBuilder: (context, index) => Builder(
-        builder: (context) {
-          final tag = context.select(
-            (_TagsNotifier n) => n.value.elementAtOrNull(index),
-          );
-          return tag == null ? const SizedBox.shrink() : _Tag(tag);
-        },
-      ),
+      itemBuilder:
+          (context, index) => Builder(
+            builder: (context) {
+              final tag = context.select(
+                (_TagsNotifier n) => n.value.elementAtOrNull(index),
+              );
+              return tag == null ? const SizedBox.shrink() : _Tag(tag);
+            },
+          ),
     );
   }
 }
@@ -121,8 +124,9 @@ class _Tag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final count =
-        context.select((_OrganizedResources r) => r[tag]?.length ?? 0);
+    final count = context.select(
+      (_OrganizedResources r) => r[tag]?.length ?? 0,
+    );
     return Material(
       color: Colors.transparent,
       child: ListTile(

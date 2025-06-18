@@ -117,10 +117,7 @@ $rawBytes
     });
 
     test('throws on empty input', () async {
-      expect(
-        () async => parseEml(''),
-        throwsA(isA<EmlParserException>()),
-      );
+      expect(() async => parseEml(''), throwsA(isA<EmlParserException>()));
     });
   });
 

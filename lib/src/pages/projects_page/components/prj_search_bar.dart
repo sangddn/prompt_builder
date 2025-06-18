@@ -9,12 +9,9 @@ class _PRJSearchBar extends StatelessWidget {
       child: ShadInput(
         controller: context.read<ProjectQueryNotifier>(),
         placeholder: const Text('Search projects...'),
-        prefix: const Padding(
+        leading: const Padding(
           padding: k4APadding,
-          child: ShadImage.square(
-            LucideIcons.search,
-            size: 16.0,
-          ),
+          child: Icon(LucideIcons.search, size: 16.0),
         ),
       ),
     );

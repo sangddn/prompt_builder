@@ -4,9 +4,9 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../components.dart';
 
 Future<bool?> showRemoveBlockWarning(BuildContext context) => showPDialog<bool>(
-      context: context,
-      builder: (context) => const RemoveBlockWarning(),
-    );
+  context: context,
+  builder: (context) => const RemoveBlockWarning(),
+);
 
 class RemoveBlockWarning extends StatelessWidget {
   const RemoveBlockWarning({super.key});

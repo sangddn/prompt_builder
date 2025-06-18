@@ -24,11 +24,12 @@ class _BlockContextMenu extends StatelessWidget {
           const Divider(height: 8),
           CopyButton.builder(
             data: context.block.copyData,
-            builder: (_, __, copy) => _ContextMenuAction(
-              HugeIcons.strokeRoundedFileAttachment,
-              'Copy Raw Data',
-              copy,
-            ),
+            builder:
+                (_, __, copy) => _ContextMenuAction(
+                  HugeIcons.strokeRoundedFileAttachment,
+                  'Copy Raw Data',
+                  copy,
+                ),
           ),
         ],
         const _CopyAction(),
@@ -55,11 +56,12 @@ class _CopyAction extends StatelessWidget {
     }
     return CopyButton.builder(
       data: () => context.block.copyToPrompt(),
-      builder: (_, __, copy) => _ContextMenuAction(
-        HugeIcons.strokeRoundedCopy01,
-        'Copy Prompt Text',
-        copy,
-      ),
+      builder:
+          (_, __, copy) => _ContextMenuAction(
+            HugeIcons.strokeRoundedCopy01,
+            'Copy Prompt Text',
+            copy,
+          ),
     );
   }
 }
@@ -98,11 +100,9 @@ class _UrlAction extends StatelessWidget {
         const Divider(height: 8),
         CopyButton.builder(
           data: () => context.block.url!,
-          builder: (_, __, copy) => _ContextMenuAction(
-            LucideIcons.link,
-            'Copy URL',
-            copy,
-          ),
+          builder:
+              (_, __, copy) =>
+                  _ContextMenuAction(LucideIcons.link, 'Copy URL', copy),
         ),
         _ContextMenuAction(
           LucideIcons.arrowUpRight,
@@ -127,11 +127,12 @@ class _TranscriptAction extends StatelessWidget {
         const Divider(height: 8),
         CopyButton.builder(
           data: () => context.block.transcript!,
-          builder: (_, __, copy) => _ContextMenuAction(
-            LucideIcons.fileAudio2,
-            'Copy Transcript',
-            copy,
-          ),
+          builder:
+              (_, __, copy) => _ContextMenuAction(
+                LucideIcons.fileAudio2,
+                'Copy Transcript',
+                copy,
+              ),
         ),
         _ContextMenuAction(
           LucideIcons.save,
@@ -161,11 +162,12 @@ class _DescriptionAction extends StatelessWidget {
         const Divider(height: 8),
         CopyButton.builder(
           data: () => context.block.caption!,
-          builder: (_, __, copy) => _ContextMenuAction(
-            LucideIcons.fileImage,
-            'Copy Description',
-            copy,
-          ),
+          builder:
+              (_, __, copy) => _ContextMenuAction(
+                LucideIcons.fileImage,
+                'Copy Description',
+                copy,
+              ),
         ),
         _ContextMenuAction(
           LucideIcons.save,
@@ -195,11 +197,12 @@ class _SummaryAction extends StatelessWidget {
         const Divider(height: 8),
         CopyButton.builder(
           data: () => context.block.summary!,
-          builder: (_, __, copy) => _ContextMenuAction(
-            LucideIcons.fileText,
-            'Copy Summary',
-            copy,
-          ),
+          builder:
+              (_, __, copy) => _ContextMenuAction(
+                LucideIcons.fileText,
+                'Copy Summary',
+                copy,
+              ),
         ),
         _ContextMenuAction(
           LucideIcons.save,
@@ -259,8 +262,8 @@ class _ContextMenuAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ShadContextMenuItem(
-        onPressed: onTap,
-        trailing: Icon(icon, size: 16.0),
-        child: Text(label),
-      );
+    onPressed: onTap,
+    trailing: Icon(icon, size: 16.0),
+    child: Text(label),
+  );
 }

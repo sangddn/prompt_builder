@@ -5,8 +5,9 @@ class _WebBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final content =
-        context.selectBlock((b) => b.preferSummary ? b.summary : b.textContent);
+    final content = context.selectBlock(
+      (b) => b.preferSummary ? b.summary : b.textContent,
+    );
     final style = context.textTheme.p;
     final isExpanded = context.isExpanded();
     return Container(

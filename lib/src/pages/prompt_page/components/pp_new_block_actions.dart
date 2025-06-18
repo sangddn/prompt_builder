@@ -13,58 +13,61 @@ class _NewBlockActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final alwaysShow = index == -2;
     return HoverTapBuilder(
-      builder: (context, isHovered) => SizedBox(
-        height: alwaysShow ? 48.0 : 24.0,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            if (index >= 0)
-              const Divider(
-                height: .5,
-                thickness: .5,
-                indent: 16.0,
-                endIndent: 16.0,
-              ),
-            MultiProvider(
-              providers: [
-                Provider<int>.value(value: index),
-                ChangeNotifierProvider<ShadPopoverController>(
-                  create: (_) => ShadPopoverController(),
-                ),
-                ChangeNotifierProvider<_GeneratePromptController>(
-                  create: (_) => _GeneratePromptController(),
-                ),
-                ChangeNotifierProvider<VoiceInputController>(
-                  create: (_) => VoiceInputController(),
+      builder:
+          (context, isHovered) => SizedBox(
+            height: alwaysShow ? 48.0 : 24.0,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (index >= 0)
+                  const Divider(
+                    height: .5,
+                    thickness: .5,
+                    indent: 16.0,
+                    endIndent: 16.0,
+                  ),
+                MultiProvider(
+                  providers: [
+                    Provider<int>.value(value: index),
+                    ChangeNotifierProvider<ShadPopoverController>(
+                      create: (_) => ShadPopoverController(),
+                    ),
+                    ChangeNotifierProvider<_GeneratePromptController>(
+                      create: (_) => _GeneratePromptController(),
+                    ),
+                    ChangeNotifierProvider<VoiceInputController>(
+                      create: (_) => VoiceInputController(),
+                    ),
+                  ],
+                  builder: (context, child) {
+                    final shouldShow =
+                        alwaysShow ||
+                        isHovered ||
+                        (context.watch<ShadPopoverController?>()?.isOpen ??
+                            false) ||
+                        (context.watch<_GeneratePromptController?>()?.isOpen ??
+                            false) ||
+                        (context.watch<VoiceInputController?>()?.isOpen ??
+                            false);
+                    return StateAnimations.fade(
+                      duration: Effects.veryShortDuration,
+                      shouldShow ? child! : const SizedBox.shrink(),
+                    );
+                  },
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 6.0,
+                    children: [
+                      _AddTextButton(),
+                      _SnippetButton(),
+                      _GeneratePromptButton(),
+                      _VoiceInputButton(),
+                    ],
+                  ),
                 ),
               ],
-              builder: (context, child) {
-                final shouldShow = alwaysShow ||
-                    isHovered ||
-                    (context.watch<ShadPopoverController?>()?.isOpen ??
-                        false) ||
-                    (context.watch<_GeneratePromptController?>()?.isOpen ??
-                        false) ||
-                    (context.watch<VoiceInputController?>()?.isOpen ?? false);
-                return StateAnimations.fade(
-                  duration: Effects.veryShortDuration,
-                  shouldShow ? child! : const SizedBox.shrink(),
-                );
-              },
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 6.0,
-                children: [
-                  _AddTextButton(),
-                  _SnippetButton(),
-                  _GeneratePromptButton(),
-                  _VoiceInputButton(),
-                ],
-              ),
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }
@@ -80,8 +83,8 @@ extension _NewBlockExtension on BuildContext {
       index == -1
           ? 0
           : index == -2
-              ? promptBlocks.length
-              : index + 1,
+          ? promptBlocks.length
+          : index + 1,
       displayName: displayName,
       textContent: textContent,
       summary: summary,
@@ -95,16 +98,16 @@ class _AddTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => CButton(
-        tooltip: 'Add Text',
-        onTap: context._createTextBlock,
-        padding: k8H4VPadding,
-        color: PColors.opaqueLightGray.resolveFrom(context),
-        child: Icon(
-          LucideIcons.plus,
-          size: 16.0,
-          color: PColors.textGray.resolveFrom(context),
-        ),
-      );
+    tooltip: 'Add Text',
+    onTap: context._createTextBlock,
+    padding: k8H4VPadding,
+    color: PColors.opaqueLightGray.resolveFrom(context),
+    child: Icon(
+      LucideIcons.plus,
+      size: 16.0,
+      color: PColors.textGray.resolveFrom(context),
+    ),
+  );
 }
 
 /// A button that allows the user to add a snippet as a new text block.
@@ -117,44 +120,47 @@ class _SnippetButton extends StatelessWidget {
     final isOpen = controller.isOpen;
     return ShadPopover(
       controller: controller,
-      popover: (context) => SnippetPicker(
-        database: context.db,
-        projectId: context.prompt?.projectId,
-        onSelected: (snippet) async {
-          controller.hide();
-          final toaster = context.toaster;
-          try {
-            await context._createTextBlock(
-              snippet.title,
-              snippet.content,
-              snippet.summary,
-            );
-            toaster.show(const ShadToast(title: Text('Snippet added')));
-          } catch (e) {
-            debugPrint('Error updating block: $e');
-            toaster.show(
-              ShadToast.destructive(
-                title: const Text('Error adding snippet.'),
-                description: Text('Error: $e'),
-              ),
-            );
-          }
-        },
-      ),
+      popover:
+          (context) => SnippetPicker(
+            database: context.db,
+            projectId: context.prompt?.projectId,
+            onSelected: (snippet) async {
+              controller.hide();
+              final toaster = context.toaster;
+              try {
+                await context._createTextBlock(
+                  snippet.title,
+                  snippet.content,
+                  snippet.summary,
+                );
+                toaster.show(const ShadToast(title: Text('Snippet added')));
+              } catch (e) {
+                debugPrint('Error updating block: $e');
+                toaster.show(
+                  ShadToast.destructive(
+                    title: const Text('Error adding snippet.'),
+                    description: Text('Error: $e'),
+                  ),
+                );
+              }
+            },
+          ),
       padding: EdgeInsets.zero,
       child: CButton(
         tooltip: 'Add Snippet',
         onTap: controller.toggle,
         padding: k8H4VPadding,
-        color: isOpen
-            ? context.colorScheme.primary
-            : PColors.opaqueLightGray.resolveFrom(context),
+        color:
+            isOpen
+                ? context.colorScheme.primary
+                : PColors.opaqueLightGray.resolveFrom(context),
         child: Icon(
           HugeIcons.strokeRoundedQuoteDown,
           size: 16.0,
-          color: isOpen
-              ? context.colorScheme.primaryForeground
-              : PColors.textGray.resolveFrom(context),
+          color:
+              isOpen
+                  ? context.colorScheme.primaryForeground
+                  : PColors.textGray.resolveFrom(context),
         ),
       ),
     );
@@ -220,57 +226,60 @@ class _GeneratePromptButton extends StatelessWidget {
     );
     return ShadPopover(
       controller: controller,
-      popover: (context) => ValueProvider<TextEditingController>(
-        create: (_) => TextEditingController(),
-        builder: (context, footer) {
-          return SizedBox(
-            width: 300.0,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  autofocus: true,
-                  controller: context.read(),
-                  minLines: 3,
-                  maxLines: 10,
-                  style: context.textTheme.p,
-                  decoration: InputDecoration(
-                    hintText:
-                        'Describe the desired prompt, such as what you want the model to do.',
-                    hintStyle: context.textTheme.muted,
-                    border: InputBorder.none,
-                  ),
+      popover:
+          (context) => ValueProvider<TextEditingController>(
+            create: (_) => TextEditingController(),
+            builder: (context, footer) {
+              return SizedBox(
+                width: 300.0,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      autofocus: true,
+                      controller: context.read(),
+                      minLines: 3,
+                      maxLines: 10,
+                      style: context.textTheme.p,
+                      decoration: InputDecoration(
+                        hintText:
+                            'Describe the desired prompt, such as what you want the model to do.',
+                        hintStyle: context.textTheme.muted,
+                        border: InputBorder.none,
+                      ),
+                    ),
+                    const Gap(16.0),
+                    footer!,
+                  ],
                 ),
-                const Gap(16.0),
-                footer!,
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ShadButton.outline(
+                  onPressed: controller.hide,
+                  child: const Text('Cancel'),
+                ),
+                generateButton,
               ],
             ),
-          );
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ShadButton.outline(
-              onPressed: controller.hide,
-              child: const Text('Cancel'),
-            ),
-            generateButton,
-          ],
-        ),
-      ),
+          ),
       child: CButton(
         tooltip: 'Generate Prompt',
         onTap: controller.toggle,
         padding: k8H4VPadding,
-        color: isOpen
-            ? context.colorScheme.primary
-            : PColors.opaqueLightGray.resolveFrom(context),
+        color:
+            isOpen
+                ? context.colorScheme.primary
+                : PColors.opaqueLightGray.resolveFrom(context),
         child: Icon(
           HugeIcons.strokeRoundedMagicWand01,
           size: 16.0,
-          color: isOpen
-              ? context.colorScheme.primaryForeground
-              : PColors.textGray.resolveFrom(context),
+          color:
+              isOpen
+                  ? context.colorScheme.primaryForeground
+                  : PColors.textGray.resolveFrom(context),
         ),
       ),
     );

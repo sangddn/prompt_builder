@@ -41,9 +41,11 @@ extension _FileTreeItemContext on BuildContext {
   int countAllFilesContained() {
     final thisPath = item().path;
     return select(
-      ((IList<String>, IList<String>) paths) => paths.$1.where((p) {
-        return p.startsWith(thisPath) && path.extension(p).trim().isNotEmpty;
-      }).length,
+      ((IList<String>, IList<String>) paths) =>
+          paths.$1.where((p) {
+            return p.startsWith(thisPath) &&
+                path.extension(p).trim().isNotEmpty;
+          }).length,
     );
   }
 
@@ -66,23 +68,21 @@ class _ItemContent extends StatelessWidget {
       splashColor: Colors.transparent,
       shape: Superellipse.border8,
       // For directory, avoids chevron on the right
-      contentPadding:
-          EdgeInsets.only(left: 12.0, right: isDirectory ? 26.0 : 6.0),
+      contentPadding: EdgeInsets.only(
+        left: 12.0,
+        right: isDirectory ? 26.0 : 6.0,
+      ),
       leading: const _ItemIcon(),
       onTap: () {
         if (isDirectory) {
-          context
-              .read<FileTreeController?>()
-              ?.toggleExpansion(context.read<IndexedFileTree>());
+          context.read<FileTreeController?>()?.toggleExpansion(
+            context.read<IndexedFileTree>(),
+          );
         } else {
           peekFile(context, item.path);
         }
       },
-      title: Text(
-        item.name,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
+      title: Text(item.name, maxLines: 1, overflow: TextOverflow.ellipsis),
       dense: true,
       trailing: const _ItemTrailing(),
     );
@@ -102,11 +102,11 @@ class _ItemIcon extends StatelessWidget {
           ? isExpanded
               ? HugeIcons.strokeRoundedFolder03
               : isSelected
-                  ? HugeIcons.strokeRoundedFolderCheck
-                  : HugeIcons.strokeRoundedFolder01
+              ? HugeIcons.strokeRoundedFolderCheck
+              : HugeIcons.strokeRoundedFolder01
           : isSelected
-              ? HugeIcons.strokeRoundedFileVerified
-              : HugeIcons.strokeRoundedFile01,
+          ? HugeIcons.strokeRoundedFileVerified
+          : HugeIcons.strokeRoundedFile01,
       color: isSelected ? context.colorScheme.primary : null,
       size: 18.0,
     );
@@ -129,7 +129,7 @@ class _ItemTrailing extends StatelessWidget {
         child: Text('$count'),
       );
     }
-    return ShadImage.square(
+    return Icon(
       CupertinoIcons.checkmark_alt_circle,
       size: 20.0,
       color: context.colorScheme.accentForeground,
@@ -155,9 +155,10 @@ class _AddButton extends StatelessWidget {
         onClicked: context.selectOrDeselect,
         builder: (context, isHovered) {
           return Container(
-            color: isHovered
-                ? theme.resolveColor(color.tint(.7), color.tint(.1))
-                : color,
+            color:
+                isHovered
+                    ? theme.resolveColor(color.tint(.7), color.tint(.1))
+                    : color,
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
             child: DefaultTextStyle(
               style: context.textTheme.small,
@@ -166,7 +167,7 @@ class _AddButton extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  ShadImage.square(
+                  Icon(
                     isSelected ? CupertinoIcons.minus : CupertinoIcons.plus,
                     size: 12.0,
                   ),
@@ -191,9 +192,7 @@ class _AddButton extends StatelessWidget {
 }
 
 class _ItemContextMenu extends StatelessWidget {
-  const _ItemContextMenu({
-    required this.child,
-  });
+  const _ItemContextMenu({required this.child});
 
   final Widget child;
 
@@ -227,7 +226,7 @@ class _ItemContextMenu extends StatelessWidget {
             final selectionCount = context.watch<int>();
             return ShadContextMenuItem(
               onPressed: context.selectOrDeselect,
-              trailing: ShadImage.square(
+              trailing: Icon(
                 selectionCount == 0
                     ? HugeIcons.strokeRoundedAdd01
                     : HugeIcons.strokeRoundedRemove01,
@@ -244,18 +243,12 @@ class _ItemContextMenu extends StatelessWidget {
         if (!isDirectory)
           ShadContextMenuItem(
             onPressed: () => peekFile(context, path),
-            trailing: const ShadImage.square(
-              HugeIcons.strokeRoundedEye,
-              size: 16.0,
-            ),
+            trailing: const Icon(HugeIcons.strokeRoundedEye, size: 16.0),
             child: const Text('Peek'),
           ),
         ShadContextMenuItem(
           onPressed: () => _revealInFinder(context, path),
-          trailing: const ShadImage.square(
-            HugeIcons.strokeRoundedAppleFinder,
-            size: 16.0,
-          ),
+          trailing: const Icon(HugeIcons.strokeRoundedAppleFinder, size: 16.0),
           child: const Text('Reveal in Finder'),
         ),
       ],

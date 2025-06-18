@@ -22,15 +22,15 @@ import '../components.dart';
 Future<Value<Project>?> pickProject(
   BuildContext context, {
   int? currentProject,
-}) =>
-    showPDialog<Value<Project>?>(
-      context: context,
-      barrierColor: Colors.transparent,
-      builder: (_) => Provider<Database>.value(
+}) => showPDialog<Value<Project>?>(
+  context: context,
+  barrierColor: Colors.transparent,
+  builder:
+      (_) => Provider<Database>.value(
         value: context.db,
         child: ProjectPicker(currentProject: currentProject),
       ),
-    );
+);
 
 class ProjectPicker extends StatelessWidget {
   const ProjectPicker({this.currentProject, super.key});
@@ -56,8 +56,9 @@ class ProjectPicker extends StatelessWidget {
           ProxyProvider<TextEditingController, List<String>>(
             lazy: false,
             update: (context, controller, __) {
-              WidgetsBinding.instance
-                  .addPostFrameCallback((_) => context._search());
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) => context._search(),
+              );
               return controller.text
                   .toLowerCase()
                   .split(' ')
@@ -104,10 +105,7 @@ class ProjectPicker extends StatelessWidget {
                     ),
                   ),
                   SliverGap(8.0),
-                  SliverPadding(
-                    padding: k12HPadding,
-                    sliver: _ProjectList(),
-                  ),
+                  SliverPadding(padding: k12HPadding, sliver: _ProjectList()),
                   SliverGap(24.0),
                 ],
               ),
@@ -136,10 +134,7 @@ class _SearchBar extends StatelessWidget {
               final isLoading = context.isSearching();
               return GrayShimmer(
                 enableShimmer: isLoading,
-                child: const Icon(
-                  LucideIcons.folderSearch2,
-                  size: 20.0,
-                ),
+                child: const Icon(LucideIcons.folderSearch2, size: 20.0),
               );
             },
           ),
@@ -170,14 +165,16 @@ class _ProjectList extends StatelessWidget {
     final count = context.select((_ResultsNotifier n) => n.value.length);
     return SuperSliverList.builder(
       itemCount: count,
-      itemBuilder: (context, index) => Builder(
-        builder: (context) {
-          final result =
-              context.selectResults((n) => n.value.elementAtOrNull(index));
-          if (result == null) return const SizedBox.shrink();
-          return _ProjectResult(result);
-        },
-      ),
+      itemBuilder:
+          (context, index) => Builder(
+            builder: (context) {
+              final result = context.selectResults(
+                (n) => n.value.elementAtOrNull(index),
+              );
+              if (result == null) return const SizedBox.shrink();
+              return _ProjectResult(result);
+            },
+          ),
     );
   }
 }
@@ -196,13 +193,15 @@ class _ProjectResult extends StatelessWidget {
 
     return HoverBuilder(
       builder: (context, isHovered) {
-        void selectOrDeselect() => isCurrent
-            ? context.maybePop(const Value<Project>.absent())
-            : context.maybePop(Value(project));
+        void selectOrDeselect() =>
+            isCurrent
+                ? context.maybePop(const Value<Project>.absent())
+                : context.maybePop(Value(project));
         final text = isCurrent ? const Text('Remove') : const Text('Move');
-        final trailing = isHovered
-            ? ShadBadge(onPressed: selectOrDeselect, child: text)
-            : ShadBadge.secondary(onPressed: selectOrDeselect, child: text);
+        final trailing =
+            isHovered
+                ? ShadBadge(onPressed: selectOrDeselect, child: text)
+                : ShadBadge.secondary(onPressed: selectOrDeselect, child: text);
         return CButton(
           tooltip: null,
           onTap: selectOrDeselect,
@@ -253,10 +252,7 @@ class _ProjectResult extends StatelessWidget {
 typedef _Results = IList<Project>;
 typedef _ResultsNotifier = ValueNotifier<_Results>;
 
-enum _ProjectSearchState {
-  idle,
-  loading,
-}
+enum _ProjectSearchState { idle, loading }
 
 extension _ProjectSearchSectionExtension on BuildContext {
   ValueNotifier<_ProjectSearchState> get searchStateNotifier => read();

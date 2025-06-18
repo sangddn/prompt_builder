@@ -73,10 +73,7 @@ class Superellipse extends ShapeBorder {
   /// Creates a continuous cornered rectangle border.
   ///
   /// The [side] and [cornerRadius] arguments must not be null.
-  const Superellipse({
-    this.side = BorderSide.none,
-    this.cornerRadius = 0.0,
-  });
+  const Superellipse({this.side = BorderSide.none, this.cornerRadius = 0.0});
 
   static const border4 = Superellipse(cornerRadius: 4.0);
   static const border8 = Superellipse(cornerRadius: 8.0);
@@ -307,11 +304,12 @@ class Superellipse extends ShapeBorder {
     // As the edge length approaches 200, the limitedRadius approaches ~3 –- the
     // multiplier of the radius value where the resulting shape is concave (ie.
     // does not visually clip) at any dimension.
-    final double multiplier = ui.lerpDouble(
-      minimalEdgeLengthSideToCornerRadiusRatio,
-      minimalUnclippedSideToCornerRadiusRatio,
-      minSideLength / minRadiusEdgeLength,
-    )!;
+    final double multiplier =
+        ui.lerpDouble(
+          minimalEdgeLengthSideToCornerRadiusRatio,
+          minimalUnclippedSideToCornerRadiusRatio,
+          minSideLength / minRadiusEdgeLength,
+        )!;
     limitedRadius = math.min(radius, minSideLength / multiplier);
     return bezierRoundedRect();
   }
@@ -348,10 +346,7 @@ class Superellipse extends ShapeBorder {
 
   @override
   ShapeBorder scale(double t) {
-    return Superellipse(
-      side: side.scale(t),
-      cornerRadius: cornerRadius * t,
-    );
+    return Superellipse(side: side.scale(t), cornerRadius: cornerRadius * t);
   }
 
   @override
@@ -458,9 +453,7 @@ class SquircleStadiumBorder extends ShapeBorder {
   /// Creates a continuous stadium border.
   ///
   /// The [side], argument must not be null.
-  const SquircleStadiumBorder({
-    this.side = BorderSide.none,
-  });
+  const SquircleStadiumBorder({this.side = BorderSide.none});
 
   /// The style of this border.
   ///
@@ -481,8 +474,10 @@ class SquircleStadiumBorder extends ShapeBorder {
 
     // The side width that is capped by the smallest dimension of the rectangle.
     // It represents the side width value used to render the stroke.
-    final double actualSideWidth =
-        math.min(side.width, math.min(rectangle.width, rectangle.height) / 2.0);
+    final double actualSideWidth = math.min(
+      side.width,
+      math.min(rectangle.width, rectangle.height) / 2.0,
+    );
 
     // The ratio of the declared corner radius to the total affected pixels
     // along each axis to render the corner. For example if the declared radius
@@ -516,20 +511,22 @@ class SquircleStadiumBorder extends ShapeBorder {
     final double rectWidth = rectangle.width;
     final double rectHeight = rectangle.height;
     final bool widthLessThanHeight = rectWidth < rectHeight;
-    final double width = widthLessThanHeight
-        ? rectWidth.clamp(
-            0.0,
-            maxEdgeLengthAspectRatio * (rectHeight + actualSideWidth) -
-                actualSideWidth,
-          )
-        : rectWidth;
-    final double height = widthLessThanHeight
-        ? rectHeight
-        : rectHeight.clamp(
-            0.0,
-            maxEdgeLengthAspectRatio * (rectWidth + actualSideWidth) -
-                actualSideWidth,
-          );
+    final double width =
+        widthLessThanHeight
+            ? rectWidth.clamp(
+              0.0,
+              maxEdgeLengthAspectRatio * (rectHeight + actualSideWidth) -
+                  actualSideWidth,
+            )
+            : rectWidth;
+    final double height =
+        widthLessThanHeight
+            ? rectHeight
+            : rectHeight.clamp(
+              0.0,
+              maxEdgeLengthAspectRatio * (rectWidth + actualSideWidth) -
+                  actualSideWidth,
+            );
 
     final double centerX = rectangle.center.dx;
     final double centerY = rectangle.center.dy;
@@ -835,17 +832,13 @@ class SquircleStadiumBorder extends ShapeBorder {
 
   @override
   ShapeBorder scale(double t) {
-    return SquircleStadiumBorder(
-      side: side.scale(t),
-    );
+    return SquircleStadiumBorder(side: side.scale(t));
   }
 
   @override
   ShapeBorder? lerpFrom(ShapeBorder? a, double t) {
     if (a is SquircleStadiumBorder) {
-      return SquircleStadiumBorder(
-        side: BorderSide.lerp(a.side, side, t),
-      );
+      return SquircleStadiumBorder(side: BorderSide.lerp(a.side, side, t));
     }
     return super.lerpFrom(a, t);
   }
@@ -853,9 +846,7 @@ class SquircleStadiumBorder extends ShapeBorder {
   @override
   ShapeBorder? lerpTo(ShapeBorder? b, double t) {
     if (b is SquircleStadiumBorder) {
-      return SquircleStadiumBorder(
-        side: BorderSide.lerp(side, b.side, t),
-      );
+      return SquircleStadiumBorder(side: BorderSide.lerp(side, b.side, t));
     }
     return super.lerpTo(b, t);
   }

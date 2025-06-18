@@ -6,18 +6,16 @@ import '../../core/core.dart';
 import '../../services/services.dart';
 
 class EstimatedTokenCounter extends StatelessWidget {
-  const EstimatedTokenCounter({
-    this.countTokens,
-    this.watchContent,
-    super.key,
-  }) : assert(countTokens != null || watchContent != null);
+  const EstimatedTokenCounter({this.countTokens, this.watchContent, super.key})
+    : assert(countTokens != null || watchContent != null);
 
   final int Function(BuildContext context)? countTokens;
   final String Function(BuildContext context)? watchContent;
 
   @override
   Widget build(BuildContext context) {
-    final tokenCount = countTokens?.call(context) ??
+    final tokenCount =
+        countTokens?.call(context) ??
         OpenAI().estimateTokens(watchContent!.call(context)).$1;
     return Row(
       children: [

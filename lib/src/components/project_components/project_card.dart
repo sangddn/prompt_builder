@@ -22,9 +22,7 @@ class ProjectCard extends MultiProviderWidget {
   final Project project;
 
   @override
-  List<SingleChildWidget> get providers => [
-        Provider.value(value: project),
-      ];
+  List<SingleChildWidget> get providers => [Provider.value(value: project)];
 
   @override
   Widget buildChild(BuildContext context) {
@@ -56,15 +54,15 @@ class ProjectCard extends MultiProviderWidget {
           ),
         ),
         trailing: ShadButton.ghost(
-          icon: Icon(
+          onPressed: () => context.changeStarred(project, onStarred),
+          child: Icon(
             project.isStarred ? CupertinoIcons.star_fill : CupertinoIcons.star,
             size: 16,
-            color: project.isStarred
-                ? CupertinoColors.systemYellow.resolveFrom(context)
-                : null,
+            color:
+                project.isStarred
+                    ? CupertinoColors.systemYellow.resolveFrom(context)
+                    : null,
           ),
-          applyIconColorFilter: false,
-          onPressed: () => context.changeStarred(project, onStarred),
         ),
         // isThreeLine: project.notes.isNotEmpty,
         visualDensity: VisualDensity.comfortable,
@@ -78,11 +76,7 @@ class ProjectCard extends MultiProviderWidget {
 }
 
 class ProjectIcon extends StatelessWidget {
-  const ProjectIcon({
-    this.size = 18.0,
-    this.padding = k8APadding,
-    super.key,
-  });
+  const ProjectIcon({this.size = 18.0, this.padding = k8APadding, super.key});
 
   final double size;
   final EdgeInsetsGeometry padding;
@@ -91,11 +85,13 @@ class ProjectIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.theme;
     final project = context.watch<Project>();
-    final color = project.color?.let((it) => Color(it)) ??
+    final color =
+        project.color?.let((it) => Color(it)) ??
         theme.primaryButtonTheme.backgroundColor!;
-    final child = project.emoji != null
-        ? Text(project.emoji!, style: TextStyle(fontSize: size))
-        : ShadImage.square(LucideIcons.folder, size: size, color: color);
+    final child =
+        project.emoji != null
+            ? Text(project.emoji!, style: TextStyle(fontSize: size))
+            : Icon(LucideIcons.folder, size: size, color: color);
     return Container(
       decoration: BoxDecoration(
         color: color.replaceOpacity(0.1),
@@ -127,7 +123,7 @@ class _ContextMenu extends StatelessWidget {
       items: [
         ShadContextMenuItem(
           onPressed: () => context.changeStarred(project, onStarred),
-          trailing: ShadImage.square(
+          trailing: Icon(
             project.isStarred ? LucideIcons.starOff : LucideIcons.star,
             size: 16,
           ),
@@ -139,7 +135,7 @@ class _ContextMenu extends StatelessWidget {
             await context.db.deleteProject(project.id);
             onDelete?.call();
           },
-          trailing: const ShadImage.square(LucideIcons.trash, size: 16),
+          trailing: const Icon(LucideIcons.trash, size: 16),
           child: const Text('Delete'),
         ),
       ],

@@ -78,10 +78,7 @@ class _TokenCountState extends State<_TokenCount> {
                 'Estimated ${useSummary ? 'Summary' : 'Full Content'} Tokens',
                 style: textTheme.muted,
               ),
-              Text(
-                tokenCount.$2,
-                style: textTheme.muted,
-              ),
+              Text(tokenCount.$2, style: textTheme.muted),
             ],
           ),
         );

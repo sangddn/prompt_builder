@@ -32,10 +32,7 @@ void main() {
 
     test('countTokensFromData handles images', () async {
       final imageData = await getTestImage();
-      final count = await openai.countTokensFromData(
-        imageData,
-        'image/jpeg',
-      );
+      final count = await openai.countTokensFromData(imageData, 'image/jpeg');
       expect(count, greaterThan(0));
     });
 

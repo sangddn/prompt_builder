@@ -30,10 +30,7 @@ Future<void> peekBlock(BuildContext context, PromptBlock block) =>
     );
 
 class BlockContentViewer extends StatefulWidget {
-  const BlockContentViewer({
-    required this.block,
-    super.key,
-  });
+  const BlockContentViewer({required this.block, super.key});
 
   final PromptBlock block;
 
@@ -98,10 +95,7 @@ class _BlockContentViewerState extends State<BlockContentViewer> {
     }
     final text = block.textContent;
     if (text != null) {
-      return _BCVText(
-        title: block.displayName,
-        text: text,
-      );
+      return _BCVText(title: block.displayName, text: text);
     }
     return const SizedBox.shrink();
   }

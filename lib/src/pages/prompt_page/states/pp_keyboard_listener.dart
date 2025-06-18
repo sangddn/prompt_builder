@@ -81,11 +81,17 @@ class _KeyboardListener extends StatelessWidget {
 // Just a marker class to indicate that the prompt has been copied.
 final class _PromptCopiedEvent {}
 
-const _cmdShiftC =
-    SingleActivator(LogicalKeyboardKey.keyC, meta: true, shift: true);
+const _cmdShiftC = SingleActivator(
+  LogicalKeyboardKey.keyC,
+  meta: true,
+  shift: true,
+);
 const _cmdE = SingleActivator(LogicalKeyboardKey.keyE, meta: true);
 const _cmdP = SingleActivator(LogicalKeyboardKey.keyP, meta: true);
 const _cmdF = SingleActivator(LogicalKeyboardKey.keyF, meta: true);
 const _cmdO = SingleActivator(LogicalKeyboardKey.keyO, meta: true);
-const _cmdShiftV =
-    SingleActivator(LogicalKeyboardKey.keyV, meta: true, shift: true);
+const _cmdShiftV = SingleActivator(
+  LogicalKeyboardKey.keyV,
+  meta: true,
+  shift: true,
+);

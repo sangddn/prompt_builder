@@ -18,14 +18,10 @@ class _ImageBlock extends StatelessWidget {
           if (path != null)
             ClipPath(
               clipper: const ShapeBorderClipper(shape: Superellipse.border8),
-              child: Image.file(
-                File(path),
-                height: height,
-                width: height,
-              ),
+              child: Image.file(File(path), height: height, width: height),
             )
           else
-            ShadImage.square(url!, size: height),
+            Image.network(url!, height: height, width: height),
           const Gap(8.0),
           Expanded(
             child: Container(

@@ -13,27 +13,29 @@ class LLMProviderSettings extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Gap(32.0),
-          Padding(
-            padding: k4HPadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('LLM Providers', style: context.textTheme.h4),
-                const Gap(4.0),
-                Text(
-                  'Set up API keys to use LLM providers for summarizing large files, web pages, and YouTube transcripts before using them in prompts. Some providers also support audio transcription (OpenAI Whisper, Gemini), image captioning, and prompt generation. You can use Prompt Builder without configuring these services.',
-                  style: context.textTheme.muted,
+        children:
+            [
+              const Gap(32.0),
+              Padding(
+                padding: k4HPadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('LLM Providers', style: context.textTheme.h4),
+                    const Gap(4.0),
+                    Text(
+                      'Set up API keys to use LLM providers for summarizing large files, web pages, and YouTube transcripts before using them in prompts. Some providers also support audio transcription (OpenAI Whisper, Gemini), image captioning, and prompt generation. You can use Prompt Builder without configuring these services.',
+                      style: context.textTheme.muted,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          const Gap(16.0),
-          ...kAllLLMProviders
-              .map((provider) => ProviderInfo(provider: provider)),
-          const Gap(8.0),
-        ].toList(),
+              ),
+              const Gap(16.0),
+              ...kAllLLMProviders.map(
+                (provider) => ProviderInfo(provider: provider),
+              ),
+              const Gap(8.0),
+            ].toList(),
       ),
     );
   }
@@ -61,19 +63,13 @@ class ProviderInfo<T extends ProviderWithApiKey> extends StatelessWidget {
             ShadButton.ghost(
               onPressed: () => launchUrlString(provider.docsUrl),
               size: ShadButtonSize.sm,
-              icon: const ShadImage.square(
-                HugeIcons.strokeRoundedDoc01,
-                size: 16,
-              ),
+              leading: const Icon(HugeIcons.strokeRoundedDoc01, size: 16),
               child: const Text('Docs'),
             ),
             ShadButton.ghost(
               onPressed: () => launchUrlString(provider.consoleUrl),
               size: ShadButtonSize.sm,
-              icon: const ShadImage.square(
-                HugeIcons.strokeRoundedCode,
-                size: 16,
-              ),
+              leading: const Icon(HugeIcons.strokeRoundedCode, size: 16),
               child: const Text('Console'),
             ),
           ],
@@ -111,12 +107,12 @@ class _ProviderApiKeyFieldState extends State<ProviderApiKeyField> {
       children: [
         ShadInput(
           initialValue: _initialKey,
-          prefix: ProviderLogo(provider: widget.provider, size: 14.0),
-          suffix: CButton(
+          leading: ProviderLogo(provider: widget.provider, size: 14.0),
+          trailing: CButton(
             tooltip: _showApiKey ? 'Hide' : 'Show',
             padding: k4APadding,
             onTap: () => setState(() => _showApiKey = !_showApiKey),
-            child: ShadImage.square(
+            child: Icon(
               _showApiKey ? CupertinoIcons.eye : CupertinoIcons.eye_slash,
               size: 14,
             ),

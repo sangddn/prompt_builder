@@ -9,9 +9,10 @@ class ProviderLogo<T extends ProviderWithApiKey> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    return ShadImage.square(
+    return Image.asset(
       theme.resolveBrightness(provider.logoPath, provider.darkLogoPath),
-      size: size,
+      height: size,
+      width: size,
     );
   }
 }

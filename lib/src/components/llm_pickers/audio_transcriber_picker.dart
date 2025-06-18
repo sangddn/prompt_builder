@@ -7,9 +7,9 @@ class AudioTranscriberPicker extends StatelessWidget {
     required this.onChange,
     super.key,
   }) : assert(
-          ((initialProvider == null) == (initialModel == null)),
-          'initialProvider and initialModel must be both null or both non-null',
-        );
+         ((initialProvider == null) == (initialModel == null)),
+         'initialProvider and initialModel must be both null or both non-null',
+       );
 
   final LLMProvider? initialProvider;
   final String? initialModel;

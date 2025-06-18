@@ -10,19 +10,14 @@ import '../../components/components.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';
 
-part 'states/snpp_providers.dart';
-
 part 'components/snpp_app_bar.dart';
-part 'components/snpp_right_sidebar.dart';
 part 'components/snpp_content.dart';
+part 'components/snpp_right_sidebar.dart';
+part 'states/snpp_providers.dart';
 
 @RoutePage()
 class SnippetPage extends StatelessWidget {
-  const SnippetPage({
-    this.onSaved,
-    required this.id,
-    super.key,
-  });
+  const SnippetPage({this.onSaved, required this.id, super.key});
 
   final VoidCallback? onSaved;
   final int id;
@@ -43,12 +38,14 @@ class SnippetPage extends StatelessWidget {
                 dividerSize: 16.0,
                 children: [
                   ShadResizablePanel(
+                    id: 'content',
                     defaultSize: .8,
                     minSize: .4,
                     maxSize: .8,
                     child: _SNPPContent(),
                   ),
                   ShadResizablePanel(
+                    id: 'sidebar',
                     defaultSize: .2,
                     minSize: .2,
                     maxSize: .6,

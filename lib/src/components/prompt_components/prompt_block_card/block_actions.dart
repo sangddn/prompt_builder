@@ -12,24 +12,20 @@ class _BlockInfoBar extends StatelessWidget {
       children: [
         const _BlockMovingActions(),
         const Gap(8.0),
-        _ToolBarAction(
-          LucideIcons.minus,
-          null,
-          () async {
-            final block = context.block;
-            final db = context.db;
-            // Only show warning if block has generated content
-            final isConfirmed = block.summary == null &&
-                    block.transcript == null &&
-                    block.caption == null
-                ? true
-                : await showRemoveBlockWarning(context);
-            if (isConfirmed ?? false) {
-              await db.deleteBlock(block.id);
-            }
-          },
-          'Remove',
-        ),
+        _ToolBarAction(LucideIcons.minus, null, () async {
+          final block = context.block;
+          final db = context.db;
+          // Only show warning if block has generated content
+          final isConfirmed =
+              block.summary == null &&
+                      block.transcript == null &&
+                      block.caption == null
+                  ? true
+                  : await showRemoveBlockWarning(context);
+          if (isConfirmed ?? false) {
+            await db.deleteBlock(block.id);
+          }
+        }, 'Remove'),
       ],
     );
   }
@@ -77,36 +73,36 @@ class _LLMActionState extends AnimatedState<_LLMAction> {
     if (!isHovered && !_loading) return const SizedBox.shrink();
     return context.selectBlock((b) => useCase.supports(b))
         ? Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: _ToolBarAction(
-              useCase.icon,
-              useCase.actionLabel,
-              () async {
-                final toaster = context.toaster;
-                try {
-                  setState(() => _loading = true);
-                  final db = context.db;
-                  final block = context.block;
-                  await useCase.apply(db, block);
-                  if (useCase is SummarizeContentUseCase) {
-                    await db.updateBlock(block.id, preferSummary: true);
-                  }
-                } catch (e) {
-                  debugPrint('Error using LLM: $e');
-                  toaster.show(
-                    ShadToast.destructive(
-                      title: const Text('Error using LLM.'),
-                      description: Text('$e'),
-                    ),
-                  );
-                } finally {
-                  maybeSetState(() => _loading = false);
+          padding: const EdgeInsets.only(left: 8.0),
+          child: _ToolBarAction(
+            useCase.icon,
+            useCase.actionLabel,
+            () async {
+              final toaster = context.toaster;
+              try {
+                setState(() => _loading = true);
+                final db = context.db;
+                final block = context.block;
+                await useCase.apply(db, block);
+                if (useCase is SummarizeContentUseCase) {
+                  await db.updateBlock(block.id, preferSummary: true);
                 }
-              },
-              useCase.name,
-              _loading,
-            ),
-          )
+              } catch (e) {
+                debugPrint('Error using LLM: $e');
+                toaster.show(
+                  ShadToast.destructive(
+                    title: const Text('Error using LLM.'),
+                    description: Text('$e'),
+                  ),
+                );
+              } finally {
+                maybeSetState(() => _loading = false);
+              }
+            },
+            useCase.name,
+            _loading,
+          ),
+        )
         : const SizedBox.shrink();
   }
 }
@@ -155,7 +151,7 @@ class _UseSummary extends StatelessWidget {
     final hasSummary = context.selectBlock((b) => b.summary != null);
     if (!hasSummary) return const SizedBox.shrink();
     final preferSummary = context.selectBlock((b) => b.preferSummary);
-    final side = BorderSide(color: PColors.darkGray.resolveFrom(context));
+    final side = ShadBorderSide(color: PColors.darkGray.resolveFrom(context));
     return ShadCheckbox(
       value: preferSummary,
       decoration: ShadDecoration(

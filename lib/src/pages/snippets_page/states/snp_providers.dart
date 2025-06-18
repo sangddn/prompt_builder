@@ -7,31 +7,32 @@ class _SNPProviders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MultiProvider(
-        providers: [
-          ChangeNotifierProvider<SnippetSearchQueryNotifier>(
-            create: (_) => SnippetSearchQueryNotifier(),
-          ),
-          ChangeNotifierProvider<SnippetSortByNotifier>(
-            create: (_) => ValueNotifier((SnippetSortBy.createdAt, false)),
-          ),
-          ChangeNotifierProvider<TagFilterNotifier>(
-            create: (_) => ValueNotifier(null),
-          ),
-          ChangeNotifierProvider<ProjectIdNotifier>(
-            create: (context) => _createProjectIdNotifier(context.db),
-          ),
-          Provider<SnippetListController>(
-            create: (context) => SnippetListController(
+    providers: [
+      ChangeNotifierProvider<SnippetSearchQueryNotifier>(
+        create: (_) => SnippetSearchQueryNotifier(),
+      ),
+      ChangeNotifierProvider<SnippetSortByNotifier>(
+        create: (_) => ValueNotifier((SnippetSortBy.createdAt, false)),
+      ),
+      ChangeNotifierProvider<TagFilterNotifier>(
+        create: (_) => ValueNotifier(null),
+      ),
+      ChangeNotifierProvider<ProjectIdNotifier>(
+        create: (context) => _createProjectIdNotifier(context.db),
+      ),
+      Provider<SnippetListController>(
+        create:
+            (context) => SnippetListController(
               db: context.db,
               sortByNotifier: context.read(),
               searchQueryNotifier: context.read(),
               filterTagNotifier: context.read(),
               projectIdNotifier: context.read(),
             ),
-          ),
-        ],
-        child: child,
-      );
+      ),
+    ],
+    child: child,
+  );
 }
 
 const _kHasProject = 'snippets_page_has_project';

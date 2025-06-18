@@ -43,7 +43,7 @@ class _PRPSnippetGridTitle extends StatelessWidget {
                     return ShadButton.ghost(
                       onPressed: context.toggleSnippetGrid,
                       size: ShadButtonSize.sm,
-                      icon: Transform.rotate(
+                      child: Transform.rotate(
                         angle: isExpanded ? math.pi : 0.0,
                         child: const Icon(LucideIcons.chevronDown, size: 16.0),
                       ),
@@ -65,7 +65,7 @@ class _PRPSnippetGridTitle extends StatelessWidget {
               );
             },
             size: ShadButtonSize.sm,
-            icon: const Icon(LucideIcons.plus, size: 16.0),
+            child: const Icon(LucideIcons.plus, size: 16.0),
           ),
         ],
       ),

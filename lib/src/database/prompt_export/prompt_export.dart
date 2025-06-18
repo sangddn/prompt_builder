@@ -28,9 +28,10 @@ class PromptExport {
       title: json['title'] as String? ?? '',
       notes: json['notes'] as String? ?? '',
       tags: json['tags'] as String? ?? '',
-      blocks: (json['blocks'] as List<dynamic>? ?? [])
-          .map((e) => PromptBlockExport.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      blocks:
+          (json['blocks'] as List<dynamic>? ?? [])
+              .map((e) => PromptBlockExport.fromJson(e as Map<String, dynamic>))
+              .toList(),
     );
   }
   final String title;
@@ -41,11 +42,11 @@ class PromptExport {
   List<String> get tagList => PromptTagsExtension.tagStringToList(tags);
 
   Map<String, dynamic> toJson() => {
-        'title': title,
-        'notes': notes,
-        'tags': tags,
-        'blocks': blocks.map((b) => b.toJson()).toList(),
-      };
+    'title': title,
+    'notes': notes,
+    'tags': tags,
+    'blocks': blocks.map((b) => b.toJson()).toList(),
+  };
 }
 
 @immutable
@@ -104,15 +105,15 @@ class PromptBlockExport {
   final bool preferSummary;
 
   Map<String, dynamic> toJson() => {
-        'blockType': blockType,
-        'displayName': displayName,
-        'sortOrder': sortOrder,
-        'textContent': textContent,
-        'filePath': filePath,
-        'url': url,
-        'transcript': transcript,
-        'caption': caption,
-        'summary': summary,
-        'preferSummary': preferSummary,
-      };
+    'blockType': blockType,
+    'displayName': displayName,
+    'sortOrder': sortOrder,
+    'textContent': textContent,
+    'filePath': filePath,
+    'url': url,
+    'transcript': transcript,
+    'caption': caption,
+    'summary': summary,
+    'preferSummary': preferSummary,
+  };
 }

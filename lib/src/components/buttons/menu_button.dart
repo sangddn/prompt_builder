@@ -48,9 +48,10 @@ class _MenuButtonState extends State<MenuButton> {
     final menuButtonTheme = PMenuButtonTheme.of(context);
     final destructiveColor = CupertinoColors.systemRed.resolveFrom(context);
 
-    final Color backgroundColor = _isPressing || _isHovering
-        ? Colors.transparent
-        : widget.isSelected
+    final Color backgroundColor =
+        _isPressing || _isHovering
+            ? Colors.transparent
+            : widget.isSelected
             ? menuButtonTheme.selectedBackgroundColor ??
                 PColors.gray.resolveFrom(context)
             : menuButtonTheme.backgroundColor ?? Colors.transparent;
@@ -58,42 +59,48 @@ class _MenuButtonState extends State<MenuButton> {
     final ShapeBorder shape =
         widget.shape ?? menuButtonTheme.shape ?? Superellipse.border12;
 
-    final Color iconColor = widget.isSelected || _isHovering
-        ? menuButtonTheme.selectedIconColor ??
-            (widget.isDestructive
-                ? destructiveColor
-                : theme.colorScheme.foreground)
-        : menuButtonTheme.iconColor ??
-            (widget.isDestructive
-                ? destructiveColor
-                : PColors.textGray.resolveFrom(context));
+    final Color iconColor =
+        widget.isSelected || _isHovering
+            ? menuButtonTheme.selectedIconColor ??
+                (widget.isDestructive
+                    ? destructiveColor
+                    : theme.colorScheme.foreground)
+            : menuButtonTheme.iconColor ??
+                (widget.isDestructive
+                    ? destructiveColor
+                    : PColors.textGray.resolveFrom(context));
 
-    final TextStyle titleStyle = widget.isSelected || _isHovering
-        ? menuButtonTheme.selectedTextStyle ??
-            theme.textTheme.p.copyWith(
-              color: widget.isDestructive
-                  ? destructiveColor
-                  : theme.colorScheme.foreground,
-            )
-        : menuButtonTheme.titleStyle ??
-            theme.textTheme.p.copyWith(
-              color: PColors.textGray.resolveFrom(context),
-              fontWeight: FontWeight.w500,
-            );
+    final TextStyle titleStyle =
+        widget.isSelected || _isHovering
+            ? menuButtonTheme.selectedTextStyle ??
+                theme.textTheme.p.copyWith(
+                  color:
+                      widget.isDestructive
+                          ? destructiveColor
+                          : theme.colorScheme.foreground,
+                )
+            : menuButtonTheme.titleStyle ??
+                theme.textTheme.p.copyWith(
+                  color: PColors.textGray.resolveFrom(context),
+                  fontWeight: FontWeight.w500,
+                );
 
-    final TextStyle subtitleStyle = widget.isSelected || _isHovering
-        ? menuButtonTheme.selectedSubtitleStyle ??
-            theme.textTheme.small.copyWith(
-              color: widget.isDestructive
-                  ? destructiveColor
-                  : theme.colorScheme.foreground.withOpacityFactor(0.8),
-            )
-        : menuButtonTheme.subtitleStyle ??
-            theme.textTheme.small.copyWith(
-              color: widget.isDestructive
-                  ? destructiveColor
-                  : PColors.darkGray.resolveFrom(context),
-            );
+    final TextStyle subtitleStyle =
+        widget.isSelected || _isHovering
+            ? menuButtonTheme.selectedSubtitleStyle ??
+                theme.textTheme.small.copyWith(
+                  color:
+                      widget.isDestructive
+                          ? destructiveColor
+                          : theme.colorScheme.foreground.withOpacityFactor(0.8),
+                )
+            : menuButtonTheme.subtitleStyle ??
+                theme.textTheme.small.copyWith(
+                  color:
+                      widget.isDestructive
+                          ? destructiveColor
+                          : PColors.darkGray.resolveFrom(context),
+                );
 
     final EdgeInsetsGeometry padding =
         widget.padding ?? menuButtonTheme.padding ?? k16H4VPadding;
@@ -104,31 +111,25 @@ class _MenuButtonState extends State<MenuButton> {
     );
 
     Widget wrapAnimTheme(Widget child) => AnimatedDefaultTextStyle(
-          duration: Effects.veryShortDuration,
-          style: iconTheme,
-          child: Builder(
-            builder: (context) {
-              final TextStyle style = DefaultTextStyle.of(context).style;
-              final Color iconColor = style.color!;
-              final double iconSize = style.fontSize!;
-              return IconTheme(
-                data: IconThemeData(
-                  color: iconColor,
-                  size: iconSize,
-                ),
-                child: child,
-              );
-            },
-          ),
-        );
+      duration: Effects.veryShortDuration,
+      style: iconTheme,
+      child: Builder(
+        builder: (context) {
+          final TextStyle style = DefaultTextStyle.of(context).style;
+          final Color iconColor = style.color!;
+          final double iconSize = style.fontSize!;
+          return IconTheme(
+            data: IconThemeData(color: iconColor, size: iconSize),
+            child: child,
+          );
+        },
+      ),
+    );
 
     return AnimatedContainer(
       duration: Effects.veryShortDuration,
       curve: Easing.emphasizedDecelerate,
-      decoration: ShapeDecoration(
-        shape: shape,
-        color: backgroundColor,
-      ),
+      decoration: ShapeDecoration(shape: shape, color: backgroundColor),
       child: AnimatedOpacity(
         duration: Effects.veryShortDuration,
         opacity: widget.onPressed == null ? 0.5 : 1.0,
@@ -140,11 +141,12 @@ class _MenuButtonState extends State<MenuButton> {
             shape: shape,
             clipBehavior: Clip.antiAlias,
             child: InkResponse(
-              onTap: widget.onPressed == null
-                  ? null
-                  : () {
-                      widget.onPressed?.call();
-                    },
+              onTap:
+                  widget.onPressed == null
+                      ? null
+                      : () {
+                        widget.onPressed?.call();
+                      },
               onHover: (isHovering) {
                 setState(() => _isHovering = isHovering);
               },
@@ -211,11 +213,7 @@ class _MenuButtonState extends State<MenuButton> {
 }
 
 class PMenuButtonTheme extends InheritedWidget {
-  const PMenuButtonTheme({
-    required this.data,
-    required super.child,
-    super.key,
-  });
+  const PMenuButtonTheme({required this.data, required super.child, super.key});
 
   final PMenuButtonThemeData data;
 

@@ -29,24 +29,25 @@ class _BCVWebViewState extends State<BCVWebView> {
   }
 
   void _initWebView() {
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) {
-            setState(() {
-              _isLoading = true;
-              _currentUrl = url;
-            });
-          },
-          onPageFinished: (String url) {
-            setState(() {
-              _isLoading = false;
-            });
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(widget.url));
+    _controller =
+        WebViewController()
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onPageStarted: (String url) {
+                setState(() {
+                  _isLoading = true;
+                  _currentUrl = url;
+                });
+              },
+              onPageFinished: (String url) {
+                setState(() {
+                  _isLoading = false;
+                });
+              },
+            ),
+          )
+          ..loadRequest(Uri.parse(widget.url));
   }
 
   @override
@@ -66,33 +67,24 @@ class _BCVWebViewState extends State<BCVWebView> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ShadButton.ghost(
-                icon: const ShadImage.square(
-                  LucideIcons.refreshCcw,
-                  size: 16,
-                ),
                 onPressed: () => _controller.reload(),
+                child: const Icon(LucideIcons.refreshCcw, size: 16),
               ),
               ShadButton.ghost(
-                icon: const ShadImage.square(
-                  LucideIcons.arrowLeft,
-                  size: 16,
-                ),
                 onPressed: () async {
                   if (await _controller.canGoBack()) {
                     await _controller.goBack();
                   }
                 },
+                child: const Icon(LucideIcons.arrowLeft, size: 16),
               ),
               ShadButton.ghost(
-                icon: const ShadImage.square(
-                  LucideIcons.arrowRight,
-                  size: 16,
-                ),
                 onPressed: () async {
                   if (await _controller.canGoForward()) {
                     await _controller.goForward();
                   }
                 },
+                child: const Icon(LucideIcons.arrowRight, size: 16),
               ),
             ],
           ),
@@ -129,12 +121,13 @@ class _BCVWebViewState extends State<BCVWebView> {
                 ),
                 TranslationSwitcher.top(
                   layoutBuilder: alignedLayoutBuilder(Alignment.centerRight),
-                  child: _isLoading
-                      ? const Padding(
-                          padding: k8HPadding,
-                          child: CircularProgressIndicator.adaptive(),
-                        )
-                      : null,
+                  child:
+                      _isLoading
+                          ? const Padding(
+                            padding: k8HPadding,
+                            child: CircularProgressIndicator.adaptive(),
+                          )
+                          : null,
                 ),
               ],
             ),

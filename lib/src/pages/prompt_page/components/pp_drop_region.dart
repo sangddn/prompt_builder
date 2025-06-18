@@ -56,17 +56,22 @@ class _PPDropRegionState extends State<_PPDropRegion> {
               left: 16.0,
               child: Builder(
                 builder: (context) {
-                  final text = _state.isReceived
-                      ? 'Added!'
-                      : _state.isReceiving
+                  final text =
+                      _state.isReceived
+                          ? 'Added!'
+                          : _state.isReceiving
                           ? 'Adding...'
                           : 'Drop anything';
                   return AnimatedContainer(
                     duration: Effects.shortDuration,
                     curve: Curves.easeInOut,
-                    color: (_state.isInviting
-                        ? theme.resolveColor(Colors.white38, Colors.black38)
-                        : theme.resolveColor(Colors.white54, Colors.black54)),
+                    color:
+                        (_state.isInviting
+                            ? theme.resolveColor(Colors.white38, Colors.black38)
+                            : theme.resolveColor(
+                              Colors.white54,
+                              Colors.black54,
+                            )),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -98,8 +103,7 @@ enum _ProcessingState {
   inviting,
   readyToReceive,
   receiving,
-  received,
-  ;
+  received;
 
   bool get isIdle => this == _ProcessingState.idle;
   bool get isInviting => this == _ProcessingState.inviting;

@@ -29,10 +29,7 @@ import 'package:prompt_builder/src/pages/snippets_page/snippets_page.dart'
 /// [_i1.AppShellPage]
 class AppShellRoute extends _i10.PageRouteInfo<void> {
   const AppShellRoute({List<_i10.PageRouteInfo>? children})
-      : super(
-          AppShellRoute.name,
-          initialChildren: children,
-        );
+    : super(AppShellRoute.name, initialChildren: children);
 
   static const String name = 'AppShellRoute';
 
@@ -48,10 +45,7 @@ class AppShellRoute extends _i10.PageRouteInfo<void> {
 /// [_i2.LibraryPage]
 class LibraryRoute extends _i10.PageRouteInfo<void> {
   const LibraryRoute({List<_i10.PageRouteInfo>? children})
-      : super(
-          LibraryRoute.name,
-          initialChildren: children,
-        );
+    : super(LibraryRoute.name, initialChildren: children);
 
   static const String name = 'LibraryRoute';
 
@@ -67,10 +61,7 @@ class LibraryRoute extends _i10.PageRouteInfo<void> {
 /// [_i1.MainTabsPage]
 class MainTabsRoute extends _i10.PageRouteInfo<void> {
   const MainTabsRoute({List<_i10.PageRouteInfo>? children})
-      : super(
-          MainTabsRoute.name,
-          initialChildren: children,
-        );
+    : super(MainTabsRoute.name, initialChildren: children);
 
   static const String name = 'MainTabsRoute';
 
@@ -90,13 +81,10 @@ class ProjectRoute extends _i10.PageRouteInfo<ProjectRouteArgs> {
     _i11.Key? key,
     List<_i10.PageRouteInfo>? children,
   }) : super(
-          ProjectRoute.name,
-          args: ProjectRouteArgs(
-            id: id,
-            key: key,
-          ),
-          initialChildren: children,
-        );
+         ProjectRoute.name,
+         args: ProjectRouteArgs(id: id, key: key),
+         initialChildren: children,
+       );
 
   static const String name = 'ProjectRoute';
 
@@ -104,19 +92,13 @@ class ProjectRoute extends _i10.PageRouteInfo<ProjectRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<ProjectRouteArgs>();
-      return _i3.ProjectPage(
-        id: args.id,
-        key: args.key,
-      );
+      return _i3.ProjectPage(id: args.id, key: args.key);
     },
   );
 }
 
 class ProjectRouteArgs {
-  const ProjectRouteArgs({
-    required this.id,
-    this.key,
-  });
+  const ProjectRouteArgs({required this.id, this.key});
 
   final int id;
 
@@ -132,10 +114,7 @@ class ProjectRouteArgs {
 /// [_i4.ProjectsPage]
 class ProjectsRoute extends _i10.PageRouteInfo<void> {
   const ProjectsRoute({List<_i10.PageRouteInfo>? children})
-      : super(
-          ProjectsRoute.name,
-          initialChildren: children,
-        );
+    : super(ProjectsRoute.name, initialChildren: children);
 
   static const String name = 'ProjectsRoute';
 
@@ -155,13 +134,10 @@ class PromptRoute extends _i10.PageRouteInfo<PromptRouteArgs> {
     _i12.Key? key,
     List<_i10.PageRouteInfo>? children,
   }) : super(
-          PromptRoute.name,
-          args: PromptRouteArgs(
-            id: id,
-            key: key,
-          ),
-          initialChildren: children,
-        );
+         PromptRoute.name,
+         args: PromptRouteArgs(id: id, key: key),
+         initialChildren: children,
+       );
 
   static const String name = 'PromptRoute';
 
@@ -169,19 +145,13 @@ class PromptRoute extends _i10.PageRouteInfo<PromptRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<PromptRouteArgs>();
-      return _i5.PromptPage(
-        id: args.id,
-        key: args.key,
-      );
+      return _i5.PromptPage(id: args.id, key: args.key);
     },
   );
 }
 
 class PromptRouteArgs {
-  const PromptRouteArgs({
-    required this.id,
-    this.key,
-  });
+  const PromptRouteArgs({required this.id, this.key});
 
   final int id;
 
@@ -197,10 +167,7 @@ class PromptRouteArgs {
 /// [_i6.ResourcesPage]
 class ResourcesRoute extends _i10.PageRouteInfo<void> {
   const ResourcesRoute({List<_i10.PageRouteInfo>? children})
-      : super(
-          ResourcesRoute.name,
-          initialChildren: children,
-        );
+    : super(ResourcesRoute.name, initialChildren: children);
 
   static const String name = 'ResourcesRoute';
 
@@ -216,10 +183,7 @@ class ResourcesRoute extends _i10.PageRouteInfo<void> {
 /// [_i7.SettingsPage]
 class SettingsRoute extends _i10.PageRouteInfo<void> {
   const SettingsRoute({List<_i10.PageRouteInfo>? children})
-      : super(
-          SettingsRoute.name,
-          initialChildren: children,
-        );
+    : super(SettingsRoute.name, initialChildren: children);
 
   static const String name = 'SettingsRoute';
 
@@ -240,14 +204,10 @@ class SnippetRoute extends _i10.PageRouteInfo<SnippetRouteArgs> {
     _i11.Key? key,
     List<_i10.PageRouteInfo>? children,
   }) : super(
-          SnippetRoute.name,
-          args: SnippetRouteArgs(
-            onSaved: onSaved,
-            id: id,
-            key: key,
-          ),
-          initialChildren: children,
-        );
+         SnippetRoute.name,
+         args: SnippetRouteArgs(onSaved: onSaved, id: id, key: key),
+         initialChildren: children,
+       );
 
   static const String name = 'SnippetRoute';
 
@@ -255,21 +215,13 @@ class SnippetRoute extends _i10.PageRouteInfo<SnippetRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<SnippetRouteArgs>();
-      return _i8.SnippetPage(
-        onSaved: args.onSaved,
-        id: args.id,
-        key: args.key,
-      );
+      return _i8.SnippetPage(onSaved: args.onSaved, id: args.id, key: args.key);
     },
   );
 }
 
 class SnippetRouteArgs {
-  const SnippetRouteArgs({
-    this.onSaved,
-    required this.id,
-    this.key,
-  });
+  const SnippetRouteArgs({this.onSaved, required this.id, this.key});
 
   final _i11.VoidCallback? onSaved;
 
@@ -287,10 +239,7 @@ class SnippetRouteArgs {
 /// [_i9.SnippetsPage]
 class SnippetsRoute extends _i10.PageRouteInfo<void> {
   const SnippetsRoute({List<_i10.PageRouteInfo>? children})
-      : super(
-          SnippetsRoute.name,
-          initialChildren: children,
-        );
+    : super(SnippetsRoute.name, initialChildren: children);
 
   static const String name = 'SnippetsRoute';
 

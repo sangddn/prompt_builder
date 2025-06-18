@@ -52,19 +52,19 @@ class PromptBlockCard extends MultiProviderWidget {
 
   @override
   List<SingleChildWidget> get providers => [
-        Provider<Prompt?>.value(value: prompt),
-        Provider<Database>.value(value: database),
-        Provider<PromptBlock>.value(value: block),
-        ValueProvider<ValueNotifier<BlockWidgetState>>(
-          create: (_) => ValueNotifier(BlockWidgetState.collapsed),
-        ),
-        ValueProvider<ValueNotifier<_BlockHoverState>>(
-          create: (_) => ValueNotifier(_BlockHoverState.none),
-        ),
-        Provider<(VoidCallback?, VoidCallback?)>.value(
-          value: (onMovedUp, onMovedDown),
-        ),
-      ];
+    Provider<Prompt?>.value(value: prompt),
+    Provider<Database>.value(value: database),
+    Provider<PromptBlock>.value(value: block),
+    ValueProvider<ValueNotifier<BlockWidgetState>>(
+      create: (_) => ValueNotifier(BlockWidgetState.collapsed),
+    ),
+    ValueProvider<ValueNotifier<_BlockHoverState>>(
+      create: (_) => ValueNotifier(_BlockHoverState.none),
+    ),
+    Provider<(VoidCallback?, VoidCallback?)>.value(
+      value: (onMovedUp, onMovedDown),
+    ),
+  ];
 
   @override
   Widget buildChild(BuildContext context) {
@@ -86,13 +86,7 @@ class PromptBlockCard extends MultiProviderWidget {
               ),
               Gap(8.0),
               _BlockContentRouter(),
-              Row(
-                children: [
-                  _TokenCount(),
-                  Spacer(),
-                  _BlockToolBar(),
-                ],
-              ),
+              Row(children: [_TokenCount(), Spacer(), _BlockToolBar()]),
             ],
           ),
         ),

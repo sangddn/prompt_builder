@@ -3,8 +3,7 @@ part of 'file_tree.dart';
 enum _ItemHoverState {
   none,
   hover,
-  longHover,
-  ;
+  longHover;
 
   bool get isSimpleHover => this == _ItemHoverState.hover;
   bool get isLongHover => this == _ItemHoverState.longHover;

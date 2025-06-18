@@ -13,15 +13,15 @@ class _SnippetProviders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => FutureProvider<Snippet?>(
-        initialData: null,
-        create: (context) => context.db.getSnippet(id),
-        builder: (context, child) {
-          final snippet = context.watchSnippet();
-          if (snippet == null) return child!;
-          return _MoreProviders(context.db, id, onSaved, child: child!);
-        },
-        child: child,
-      );
+    initialData: null,
+    create: (context) => context.db.getSnippet(id),
+    builder: (context, child) {
+      final snippet = context.watchSnippet();
+      if (snippet == null) return child!;
+      return _MoreProviders(context.db, id, onSaved, child: child!);
+    },
+    child: child,
+  );
 }
 
 class _MoreProviders extends MultiProviderWidget {
@@ -34,46 +34,45 @@ class _MoreProviders extends MultiProviderWidget {
 
   @override
   List<SingleChildWidget> get providers => [
-        ValueProvider<_TitleController>(
-          create: (context) => _TitleController(text: context.snippet!.title),
-          onDisposed: (context, controller) {
-            final title = controller?.text.trim();
-            if (title == null) return;
-            db.updateSnippet(id, title: title);
-          },
-        ),
-        ValueProvider<_ContentController>(
-          create: (context) =>
-              _ContentController(text: context.snippet!.content),
-          onDisposed: (context, controller) {
-            final text = controller?.text.trim();
-            if (text == null) return;
-            db.updateSnippet(id, content: text);
-          },
-        ),
-        ProxyProvider<_ContentController, IMap<String, String>>(
-          create: (context) => IMap(context.snippet!.variables),
-          update: (_, controller, __) {
-            return IMap(SnippetExtension.parseVariables(controller.text));
-          },
-        ),
-        ValueProvider<_NotesController>(
-          create: (context) => _NotesController(text: context.snippet!.notes),
-          onDisposed: (context, controller) {
-            final notes = controller?.text.trim();
-            if (notes == null) return;
-            db.updateSnippet(id, notes: notes);
-          },
-        ),
-        ValueProvider<_TagsNotifier>(
-          create: (context) => _TagsNotifier(IList(context.snippet!.tagsList)),
-          onDisposed: (context, notifier) {
-            final tags = notifier?.value;
-            if (tags == null) return;
-            db.updateSnippet(id, tags: tags.unlockView);
-          },
-        ),
-      ];
+    ValueProvider<_TitleController>(
+      create: (context) => _TitleController(text: context.snippet!.title),
+      onDisposed: (context, controller) {
+        final title = controller?.text.trim();
+        if (title == null) return;
+        db.updateSnippet(id, title: title);
+      },
+    ),
+    ValueProvider<_ContentController>(
+      create: (context) => _ContentController(text: context.snippet!.content),
+      onDisposed: (context, controller) {
+        final text = controller?.text.trim();
+        if (text == null) return;
+        db.updateSnippet(id, content: text);
+      },
+    ),
+    ProxyProvider<_ContentController, IMap<String, String>>(
+      create: (context) => IMap(context.snippet!.variables),
+      update: (_, controller, __) {
+        return IMap(SnippetExtension.parseVariables(controller.text));
+      },
+    ),
+    ValueProvider<_NotesController>(
+      create: (context) => _NotesController(text: context.snippet!.notes),
+      onDisposed: (context, controller) {
+        final notes = controller?.text.trim();
+        if (notes == null) return;
+        db.updateSnippet(id, notes: notes);
+      },
+    ),
+    ValueProvider<_TagsNotifier>(
+      create: (context) => _TagsNotifier(IList(context.snippet!.tagsList)),
+      onDisposed: (context, notifier) {
+        final tags = notifier?.value;
+        if (tags == null) return;
+        db.updateSnippet(id, tags: tags.unlockView);
+      },
+    ),
+  ];
 
   @override
   Widget buildChild(BuildContext context) => child;

@@ -95,9 +95,9 @@ final class OpenAI extends LLMProvider {
               {
                 'type': 'image_url',
                 'image_url': {'url': 'data:$mimeType;base64,$base64Image'},
-              }
+              },
             ],
-          }
+          },
         ],
         'max_tokens': 300,
       }),
@@ -196,9 +196,9 @@ final class OpenAI extends LLMProvider {
     String? model,
   ]) async {
     final apiKey = getApiKey();
-    final prompt =
-        (summarizationPrompt ?? ModelPreferences.getSummarizationPrompt())
-            .replaceAll('{{CONTENT}}', content);
+    final prompt = (summarizationPrompt ??
+            ModelPreferences.getSummarizationPrompt())
+        .replaceAll('{{CONTENT}}', content);
 
     final response = await http.post(
       Uri.parse('https://api.openai.com/v1/chat/completions'),

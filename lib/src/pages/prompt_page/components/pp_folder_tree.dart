@@ -40,9 +40,10 @@ class _SelectFolderButton extends StatelessWidget {
     final style = context.textTheme.muted;
     final folderPath = context.watchFolderPath();
     final noneSelected = folderPath == null;
-    final lightGray =
-        (noneSelected ? PColors.lightGray : PColors.opaqueLightGray)
-            .resolveFrom(context);
+    final lightGray = (noneSelected
+            ? PColors.lightGray
+            : PColors.opaqueLightGray)
+        .resolveFrom(context);
     return Material(
       color: Colors.transparent,
       shape: Superellipse.border8,
@@ -74,19 +75,20 @@ class _SelectFolderButton extends StatelessWidget {
                           Flexible(
                             child: TranslationSwitcher.top(
                               duration: Effects.veryShortDuration,
-                              child: noneSelected
-                                  ? Text(
-                                      'Open Folder…',
-                                      style: style,
-                                      key: const ValueKey(1),
-                                    )
-                                  : Text(
-                                      path.basename(folderPath),
-                                      overflow: TextOverflow.ellipsis,
-                                      style: style,
-                                      key: ValueKey(folderPath),
-                                      maxLines: 1,
-                                    ),
+                              child:
+                                  noneSelected
+                                      ? Text(
+                                        'Open Folder…',
+                                        style: style,
+                                        key: const ValueKey(1),
+                                      )
+                                      : Text(
+                                        path.basename(folderPath),
+                                        overflow: TextOverflow.ellipsis,
+                                        style: style,
+                                        key: ValueKey(folderPath),
+                                        maxLines: 1,
+                                      ),
                             ),
                           ),
                         ],
@@ -95,17 +97,18 @@ class _SelectFolderButton extends StatelessWidget {
                         layoutBuilder: alignedLayoutBuilder(
                           AlignmentDirectional.centerEnd,
                         ),
-                        child: noneSelected
-                            ? Text.rich(
-                                keyboardShortcutSpan(
-                                  context,
-                                  true,
-                                  false,
-                                  'O',
-                                  PColors.darkGray.resolveFrom(context),
-                                ),
-                              )
-                            : null,
+                        child:
+                            noneSelected
+                                ? Text.rich(
+                                  keyboardShortcutSpan(
+                                    context,
+                                    true,
+                                    false,
+                                    'O',
+                                    PColors.darkGray.resolveFrom(context),
+                                  ),
+                                )
+                                : null,
                       ),
                     ],
                   ),
@@ -206,41 +209,41 @@ class _FileTreeContextMenu extends StatelessWidget {
           preferences;
     }
 
-    const check = ShadImage.square(LucideIcons.check, size: 16);
+    const check = Icon(LucideIcons.check, size: 16);
 
     return ShadContextMenuRegion(
       constraints: const BoxConstraints(minWidth: 200.0),
       items: [
         ShadContextMenuItem(
-          trailing: const ShadImage.square(
-            LucideIcons.chevronRight,
-            size: 16,
-          ),
+          trailing: const Icon(LucideIcons.chevronRight, size: 16),
           items: [
             ...FileTreeSortOption.values.map(
               (option) => ShadContextMenuItem(
                 trailing: option == sortOption ? check : null,
-                onPressed: () => update(
-                  sortPreferences.copyWith(sortOption: option),
-                ),
+                onPressed:
+                    () => update(sortPreferences.copyWith(sortOption: option)),
                 child: Text(option.label),
               ),
             ),
             const Divider(height: 8),
             ShadContextMenuItem(
               trailing: sortPreferences.ascending ? check : null,
-              onPressed: () => update(
-                sortPreferences.copyWith(ascending: !sortPreferences.ascending),
-              ),
+              onPressed:
+                  () => update(
+                    sortPreferences.copyWith(
+                      ascending: !sortPreferences.ascending,
+                    ),
+                  ),
               child: const Text('Ascending'),
             ),
             ShadContextMenuItem(
               trailing: sortPreferences.foldersFirst ? check : null,
-              onPressed: () => update(
-                sortPreferences.copyWith(
-                  foldersFirst: !sortPreferences.foldersFirst,
-                ),
-              ),
+              onPressed:
+                  () => update(
+                    sortPreferences.copyWith(
+                      foldersFirst: !sortPreferences.foldersFirst,
+                    ),
+                  ),
               child: const Text('Folders First'),
             ),
           ],
@@ -248,8 +251,9 @@ class _FileTreeContextMenu extends StatelessWidget {
         ),
         ShadContextMenuItem(
           onPressed: () async {
-            final selectedPaths =
-                await FilePicker.platform.pickFiles(allowMultiple: true);
+            final selectedPaths = await FilePicker.platform.pickFiles(
+              allowMultiple: true,
+            );
             if (!context.mounted) return;
             if (selectedPaths != null) {
               for (final path in selectedPaths.paths) {
@@ -263,7 +267,7 @@ class _FileTreeContextMenu extends StatelessWidget {
               }
             }
           },
-          trailing: const ShadImage.square(LucideIcons.filePlus, size: 16),
+          trailing: const Icon(LucideIcons.filePlus, size: 16),
           child: const Text('Add Other Files…'),
         ),
       ],

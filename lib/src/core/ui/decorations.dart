@@ -62,31 +62,27 @@ List<BoxShadow> focusedShadows({
   BlurStyle style = BlurStyle.normal,
   Offset offsetDelta = Offset.zero,
   double offsetFactor = 1.0,
-}) =>
-    List.generate(
-      6,
-      (index) {
-        final factor = pow(2, index - 2).toDouble() * elevation;
-        final blur = switch (index) {
-          0 || 1 => index.toDouble(),
-          _ => 3 * factor,
-        };
-        final yOffset = blur;
-        final spread = switch (index) {
-          0 => 1.0,
-          1 => -0.5,
-          _ => -1.5 * factor,
-        };
+}) => List.generate(6, (index) {
+  final factor = pow(2, index - 2).toDouble() * elevation;
+  final blur = switch (index) {
+    0 || 1 => index.toDouble(),
+    _ => 3 * factor,
+  };
+  final yOffset = blur;
+  final spread = switch (index) {
+    0 => 1.0,
+    1 => -0.5,
+    _ => -1.5 * factor,
+  };
 
-        return BoxShadow(
-          color: baseColor.replaceOpacity(opacity),
-          blurRadius: blur,
-          offset: Offset(0, yOffset) * offsetFactor + offsetDelta,
-          spreadRadius: spread,
-          blurStyle: style,
-        );
-      },
-    );
+  return BoxShadow(
+    color: baseColor.replaceOpacity(opacity),
+    blurRadius: blur,
+    offset: Offset(0, yOffset) * offsetFactor + offsetDelta,
+    spreadRadius: spread,
+    blurStyle: style,
+  );
+});
 
 List<BoxShadow> mediumShadows({
   double elevation = 1.0,
@@ -98,25 +94,22 @@ List<BoxShadow> mediumShadows({
 }) =>
     elevation <= 0.0
         ? []
-        : List.generate(
-            6,
-            (index) {
-              final blur =
-                  index == 0 ? 0.0 : pow(2, index - 1).toDouble() * elevation;
-              final yOffset = blur;
-              final spread = switch (index) {
-                0 => 1.0,
-                _ => 0.0,
-              };
-              return BoxShadow(
-                color: baseColor.replaceOpacity(opacity),
-                blurRadius: blur,
-                offset: Offset(0, yOffset) * offsetFactor + offsetDelta,
-                spreadRadius: spread,
-                blurStyle: style,
-              );
-            },
+        : List.generate(6, (index) {
+          final blur =
+              index == 0 ? 0.0 : pow(2, index - 1).toDouble() * elevation;
+          final yOffset = blur;
+          final spread = switch (index) {
+            0 => 1.0,
+            _ => 0.0,
+          };
+          return BoxShadow(
+            color: baseColor.replaceOpacity(opacity),
+            blurRadius: blur,
+            offset: Offset(0, yOffset) * offsetFactor + offsetDelta,
+            spreadRadius: spread,
+            blurStyle: style,
           );
+        });
 
 List<BoxShadow> broadShadows(
   BuildContext context, {
@@ -128,7 +121,8 @@ List<BoxShadow> broadShadows(
     return [];
   }
   final theme = ShadTheme.of(context);
-  final Color color = baseColor ??
+  final Color color =
+      baseColor ??
       theme.resolveColor(
         PColors.gray.color,
         const Color.fromARGB(255, 27, 27, 27),
@@ -146,9 +140,8 @@ Decoration broadShadowsCard(
   BuildContext context, {
   double cornerRadius = 12.0,
   BorderSide side = BorderSide.none,
-}) =>
-    ShapeDecoration(
-      shape: Superellipse(cornerRadius: cornerRadius, side: side),
-      color: context.theme.colorScheme.card,
-      shadows: broadShadows(context),
-    );
+}) => ShapeDecoration(
+  shape: Superellipse(cornerRadius: cornerRadius, side: side),
+  color: context.theme.colorScheme.card,
+  shadows: broadShadows(context),
+);

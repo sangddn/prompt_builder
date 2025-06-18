@@ -42,9 +42,13 @@ final class Gemini extends LLMProvider {
         throw Exception(error);
       }
 
-      return _cachedGeminiModelNames ??= (data['models'] as List)
-          .map((model) => (model['name'] as String).replaceFirst('models/', ''))
-          .toList();
+      return _cachedGeminiModelNames ??=
+          (data['models'] as List)
+              .map(
+                (model) =>
+                    (model['name'] as String).replaceFirst('models/', ''),
+              )
+              .toList();
     } on Exception catch (e) {
       debugPrint(
         'Failed to list Gemini models: $e. Using default models list.',
@@ -58,8 +62,10 @@ final class Gemini extends LLMProvider {
     final apiKey = getApiKey();
 
     final response = await http.post(
-      Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/'
-          '${model ?? defaultModel}:countTokens?key=$apiKey'),
+      Uri.parse(
+        'https://generativelanguage.googleapis.com/v1beta/models/'
+        '${model ?? defaultModel}:countTokens?key=$apiKey',
+      ),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
@@ -68,7 +74,7 @@ final class Gemini extends LLMProvider {
             'parts': [
               {'text': text},
             ],
-          }
+          },
         ],
       }),
     );
@@ -83,7 +89,7 @@ final class Gemini extends LLMProvider {
 
     return (
       data['totalTokens'] as int,
-      'Gemini API • ${model ?? defaultModel}'
+      'Gemini API • ${model ?? defaultModel}',
     );
   }
 
@@ -94,13 +100,15 @@ final class Gemini extends LLMProvider {
     String? model,
   ]) async {
     final apiKey = getApiKey();
-    final prompt =
-        (summarizationPrompt ?? ModelPreferences.getSummarizationPrompt())
-            .replaceAll('{{CONTENT}}', content);
+    final prompt = (summarizationPrompt ??
+            ModelPreferences.getSummarizationPrompt())
+        .replaceAll('{{CONTENT}}', content);
 
     final response = await http.post(
-      Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/'
-          '${model ?? defaultModel}:generateContent?key=$apiKey'),
+      Uri.parse(
+        'https://generativelanguage.googleapis.com/v1beta/models/'
+        '${model ?? defaultModel}:generateContent?key=$apiKey',
+      ),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
@@ -108,7 +116,7 @@ final class Gemini extends LLMProvider {
             'parts': [
               {'text': prompt},
             ],
-          }
+          },
         ],
       }),
     );
@@ -136,8 +144,10 @@ final class Gemini extends LLMProvider {
     final base64Image = base64Encode(image);
 
     final response = await http.post(
-      Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/'
-          '${model ?? defaultModel}:generateContent?key=$apiKey'),
+      Uri.parse(
+        'https://generativelanguage.googleapis.com/v1beta/models/'
+        '${model ?? defaultModel}:generateContent?key=$apiKey',
+      ),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
@@ -146,13 +156,10 @@ final class Gemini extends LLMProvider {
             'parts': [
               {'text': prompt},
               {
-                'inline_data': {
-                  'mime_type': mimeType,
-                  'data': base64Image,
-                },
-              }
+                'inline_data': {'mime_type': mimeType, 'data': base64Image},
+              },
             ],
-          }
+          },
         ],
       }),
     );
@@ -179,8 +186,10 @@ final class Gemini extends LLMProvider {
         .replaceAll('{{INSTRUCTIONS}}', instructions);
 
     final response = await http.post(
-      Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/'
-          '${model ?? defaultModel}:generateContent?key=$apiKey'),
+      Uri.parse(
+        'https://generativelanguage.googleapis.com/v1beta/models/'
+        '${model ?? defaultModel}:generateContent?key=$apiKey',
+      ),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
@@ -189,7 +198,7 @@ final class Gemini extends LLMProvider {
             'parts': [
               {'text': prompt},
             ],
-          }
+          },
         ],
       }),
     );
@@ -217,8 +226,10 @@ final class Gemini extends LLMProvider {
     final base64Audio = base64Encode(audio);
 
     final response = await http.post(
-      Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/'
-          '${model ?? defaultModel}:generateContent?key=$apiKey'),
+      Uri.parse(
+        'https://generativelanguage.googleapis.com/v1beta/models/'
+        '${model ?? defaultModel}:generateContent?key=$apiKey',
+      ),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
@@ -230,13 +241,10 @@ final class Gemini extends LLMProvider {
                     'Transcribe the following audio. If possible, such as when you recognize some context around the audio, provide that contextual information. Do not include any other text in your response.',
               },
               {
-                'inline_data': {
-                  'mime_type': mimeType,
-                  'data': base64Audio,
-                },
+                'inline_data': {'mime_type': mimeType, 'data': base64Audio},
               },
             ],
-          }
+          },
         ],
       }),
     );
@@ -268,8 +276,10 @@ final class Gemini extends LLMProvider {
     final base64Data = base64Encode(data);
 
     final response = await http.post(
-      Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/'
-          '${model ?? defaultModel}:countTokens?key=$apiKey'),
+      Uri.parse(
+        'https://generativelanguage.googleapis.com/v1beta/models/'
+        '${model ?? defaultModel}:countTokens?key=$apiKey',
+      ),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'contents': [
@@ -277,13 +287,10 @@ final class Gemini extends LLMProvider {
             'role': 'user',
             'parts': [
               {
-                'inline_data': {
-                  'mime_type': mimeType,
-                  'data': base64Data,
-                },
+                'inline_data': {'mime_type': mimeType, 'data': base64Data},
               },
             ],
-          }
+          },
         ],
       }),
     );

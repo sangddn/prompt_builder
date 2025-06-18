@@ -17,14 +17,11 @@ typedef _SnippetSearchNotifier = ValueNotifier<_SnippetSearchResults>;
 /// Type signature of the search results.
 typedef _SnippetSearchResults = IList<Snippet>;
 
-enum _SnippetSearchState {
-  idle,
-  searching,
-}
+enum _SnippetSearchState { idle, searching }
 
 final class _SnippetSearchScopeNotifier extends ValueNotifier<(bool, bool)> {
   _SnippetSearchScopeNotifier(int? projectId)
-      : super((projectId != null, projectId != null));
+    : super((projectId != null, projectId != null));
 
   bool get hasProject => value.$1;
   bool get searchProjectOnly => value.$2;
@@ -51,14 +48,15 @@ class SnippetPicker extends StatelessWidget {
       final scopeNotifier = context.read<_SnippetSearchScopeNotifier>();
       final notifier = context.read<_SnippetSearchNotifier>();
       stateNotifier.value = _SnippetSearchState.searching;
-      final results = (await database.querySnippets(
-        searchQuery: text,
-        limit: 20,
-        projectId: scopeNotifier.searchProjectOnly
-            ? Value(projectId)
-            : const Value.absent(),
-      ))
-          .toIList();
+      final results =
+          (await database.querySnippets(
+            searchQuery: text,
+            limit: 20,
+            projectId:
+                scopeNotifier.searchProjectOnly
+                    ? Value(projectId)
+                    : const Value.absent(),
+          )).toIList();
       if (!context.mounted) return;
       stateNotifier.value = _SnippetSearchState.idle;
       if (text == controller?.text) {
@@ -94,15 +92,18 @@ class SnippetPicker extends StatelessWidget {
               onNotified: _onTextChanged,
             ),
           ],
-          builder: (context, child) =>
-              ProxyProvider<TextEditingController, List<String>>(
-            update: (_, controller, __) => controller.text
-                .toLowerCase()
-                .split(' ')
-                .where((element) => element.length >= 3)
-                .toList(),
-            child: child,
-          ),
+          builder:
+              (context, child) =>
+                  ProxyProvider<TextEditingController, List<String>>(
+                    update:
+                        (_, controller, __) =>
+                            controller.text
+                                .toLowerCase()
+                                .split(' ')
+                                .where((element) => element.length >= 3)
+                                .toList(),
+                    child: child,
+                  ),
           child: SizedBox(
             width: 400.0,
             child: ConstrainedBox(
@@ -119,10 +120,7 @@ class SnippetPicker extends StatelessWidget {
                     ),
                   ),
                   SliverGap(8.0),
-                  SliverPadding(
-                    padding: k12HPadding,
-                    sliver: _ResultList(),
-                  ),
+                  SliverPadding(padding: k12HPadding, sliver: _ResultList()),
                   SliverGap(24.0),
                 ],
               ),
@@ -153,14 +151,12 @@ class _SearchField extends StatelessWidget {
             padding: const EdgeInsets.only(left: 8.0),
             child: Builder(
               builder: (context) {
-                final isLoading = context.watch<_SnippetSearchState>() ==
+                final isLoading =
+                    context.watch<_SnippetSearchState>() ==
                     _SnippetSearchState.searching;
                 return GrayShimmer(
                   enableShimmer: isLoading,
-                  child: const Icon(
-                    LucideIcons.search,
-                    size: 20.0,
-                  ),
+                  child: const Icon(LucideIcons.search, size: 20.0),
                 );
               },
             ),
@@ -195,10 +191,7 @@ class _ScopeToggler extends StatelessWidget {
         notifier.value = (notifier.hasProject, value);
       },
       proportionalWidth: true,
-      children: const {
-        true: Text('Project'),
-        false: Text('All'),
-      },
+      children: const {true: Text('Project'), false: Text('All')},
     );
   }
 }
@@ -210,14 +203,15 @@ class _ResultList extends StatelessWidget {
   Widget build(BuildContext context) {
     final results = context.watch<_SnippetSearchNotifier>().value;
     return SuperSliverList.list(
-      children: results
-          .indexedExpand(
-            (i, info) => [
-              _SnippetSearchResult(info),
-              if (i < results.length - 1) const Gap(6.0),
-            ],
-          )
-          .toList(),
+      children:
+          results
+              .indexedExpand(
+                (i, info) => [
+                  _SnippetSearchResult(info),
+                  if (i < results.length - 1) const Gap(6.0),
+                ],
+              )
+              .toList(),
     );
   }
 }
@@ -231,7 +225,8 @@ class _SnippetSearchResult extends StatelessWidget {
   Widget build(BuildContext context) {
     final highlights = context.watch<List<String>>();
     final title = snippet.title;
-    final showProjectName = snippet.projectId != null &&
+    final showProjectName =
+        snippet.projectId != null &&
         !context.watch<_SnippetSearchScopeNotifier>().searchProjectOnly;
 
     return HoverTapBuilder(
@@ -241,9 +236,13 @@ class _SnippetSearchResult extends StatelessWidget {
           context.read<Database>().recordSnippetUsage(snippet.id);
         }
 
-        final trailing = isHovered
-            ? ShadBadge(onPressed: select, child: const Text('Add'))
-            : ShadBadge.secondary(onPressed: select, child: const Text('Add'));
+        final trailing =
+            isHovered
+                ? ShadBadge(onPressed: select, child: const Text('Add'))
+                : ShadBadge.secondary(
+                  onPressed: select,
+                  child: const Text('Add'),
+                );
         return CButton(
           tooltip: null,
           onTap: select,

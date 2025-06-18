@@ -33,36 +33,35 @@ class _PPUnsupportedBlockSection extends StatelessWidget {
               ),
               SuperSliverList.list(
                 children: [
-                  ...unsupportedBlocks.map(
-                    (b) {
-                      final filePath = b.filePath;
-                      return CopyButton.builder(
-                        data: b.copyToPromptOrData,
-                        builder: (context, _, copy) => ListTile(
-                          dense: true,
-                          onTap: copy,
-                          shape: Superellipse.border8,
-                          splashColor: Colors.transparent,
-                          title: Text(
-                            filePath?.let(path.basename) ?? b.displayName,
-                            style: textTheme.list,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                  ...unsupportedBlocks.map((b) {
+                    final filePath = b.filePath;
+                    return CopyButton.builder(
+                      data: b.copyToPromptOrData,
+                      builder:
+                          (context, _, copy) => ListTile(
+                            dense: true,
+                            onTap: copy,
+                            shape: Superellipse.border8,
+                            splashColor: Colors.transparent,
+                            title: Text(
+                              filePath?.let(path.basename) ?? b.displayName,
+                              style: textTheme.list,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: Text(
+                              filePath ?? b.url ?? '',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.muted,
+                            ),
+                            trailing: const Icon(
+                              HugeIcons.strokeRoundedCopy01,
+                              size: 16.0,
+                            ),
                           ),
-                          subtitle: Text(
-                            filePath ?? b.url ?? '',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: textTheme.muted,
-                          ),
-                          trailing: const Icon(
-                            HugeIcons.strokeRoundedCopy01,
-                            size: 16.0,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                    );
+                  }),
                 ],
               ),
             ],

@@ -22,26 +22,24 @@ class GrayShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget transition(Widget child, Animation<double> animation) {
-      return FadeTransition(
-        opacity: animation,
-        child: child,
-      );
+      return FadeTransition(opacity: animation, child: child);
     }
 
     final theme = context.theme;
 
-    final child = !enableShimmer
-        ? this.child
-        : shimmer.Shimmer.fromColors(
-            baseColor: theme
-                .resolveColor(Colors.grey.shade700, Colors.grey.shade400)
-                .replaceOpacity(baseOpacity),
-            highlightColor: theme
-                .resolveColor(Colors.grey.shade500, Colors.grey.shade200)
-                .replaceOpacity(highlightOpacity),
-            period: Duration(milliseconds: milliseconds),
-            child: this.child,
-          );
+    final child =
+        !enableShimmer
+            ? this.child
+            : shimmer.Shimmer.fromColors(
+              baseColor: theme
+                  .resolveColor(Colors.grey.shade700, Colors.grey.shade400)
+                  .replaceOpacity(baseOpacity),
+              highlightColor: theme
+                  .resolveColor(Colors.grey.shade500, Colors.grey.shade200)
+                  .replaceOpacity(highlightOpacity),
+              period: Duration(milliseconds: milliseconds),
+              child: this.child,
+            );
 
     return AnimatedSwitcher(
       duration: Effects.shortDuration,
@@ -57,9 +55,7 @@ class ContainerShimmer extends StatelessWidget {
     this.width = double.infinity,
     this.enableShimmer = true,
     this.milliseconds = 1000,
-    this.margin = const EdgeInsets.symmetric(
-      vertical: 8.0,
-    ),
+    this.margin = const EdgeInsets.symmetric(vertical: 8.0),
     this.radius = 20.0,
     this.shape,
     super.key,
@@ -86,14 +82,15 @@ class ContainerShimmer extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           shape: shape ?? BoxShape.rectangle,
-          borderRadius: shape == BoxShape.circle
-              ? null
-              : BorderRadius.only(
-                  topLeft: Radius.circular(radius),
-                  topRight: Radius.circular(radius),
-                  bottomLeft: Radius.circular(radius),
-                  bottomRight: Radius.circular(radius),
-                ),
+          borderRadius:
+              shape == BoxShape.circle
+                  ? null
+                  : BorderRadius.only(
+                    topLeft: Radius.circular(radius),
+                    topRight: Radius.circular(radius),
+                    bottomLeft: Radius.circular(radius),
+                    bottomRight: Radius.circular(radius),
+                  ),
         ),
       ),
     );

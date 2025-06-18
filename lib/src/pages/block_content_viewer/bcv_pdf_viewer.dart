@@ -65,10 +65,7 @@ class __BCVPdfViewerState extends State<_BCVPdfViewer> {
         children: [
           const Gap(8.0),
           Expanded(
-            child: SfPdfViewer.file(
-              File(_path),
-              controller: _controller,
-            ),
+            child: SfPdfViewer.file(File(_path), controller: _controller),
           ),
           const Gap(8.0),
           StatefulBuilder(
@@ -76,9 +73,10 @@ class __BCVPdfViewerState extends State<_BCVPdfViewer> {
               return ShadButton.outline(
                 onPressed: () => _saveDocumentAndDispose(context, setState),
                 child: TranslationSwitcher.top(
-                  child: _isSaving
-                      ? const GrayShimmer(child: Text('Saving…'))
-                      : _isSaved
+                  child:
+                      _isSaving
+                          ? const GrayShimmer(child: Text('Saving…'))
+                          : _isSaved
                           ? const Text('Saved!', key: ValueKey(1))
                           : const Text('Save', key: ValueKey(2)),
                 ),

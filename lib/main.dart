@@ -32,10 +32,9 @@ Future<void> main(List<String> args) async {
   final startFiles = await _getStartFiles(args);
   runApp(
     App(
-      builder: (context, child) => LibraryObserver(
-        startFiles: startFiles,
-        child: child!,
-      ),
+      builder:
+          (context, child) =>
+              LibraryObserver(startFiles: startFiles, child: child!),
     ),
   );
 }
@@ -43,8 +42,9 @@ Future<void> main(List<String> args) async {
 Future<List<String>> _getStartFiles(List<String> args) async {
   if (args.isNotEmpty) return args;
   if (Platform.isMacOS) {
-    final files = await kMethodChannel.invokeMethod('getPromptFilesAtStartUp')
-        as List<dynamic>?;
+    final files =
+        await kMethodChannel.invokeMethod('getPromptFilesAtStartUp')
+            as List<dynamic>?;
     if (files != null) return files.cast<String>();
   }
   return [];

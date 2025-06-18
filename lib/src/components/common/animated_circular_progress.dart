@@ -32,24 +32,30 @@ class _AnimatedCircularProgressState
 
   @override
   void forEachTween(TweenVisitor<dynamic> visitor) {
-    _size = visitor(
-      _size,
-      widget.size,
-      (dynamic value) => Tween<double>(begin: value as double),
-    ) as Tween<double>?;
+    _size =
+        visitor(
+              _size,
+              widget.size,
+              (dynamic value) => Tween<double>(begin: value as double),
+            )
+            as Tween<double>?;
 
-    _percentage = visitor(
-      _percentage,
-      widget.percentage,
-      (dynamic value) => Tween<double>(begin: value as double),
-    ) as Tween<double>?;
+    _percentage =
+        visitor(
+              _percentage,
+              widget.percentage,
+              (dynamic value) => Tween<double>(begin: value as double),
+            )
+            as Tween<double>?;
 
-    _color = visitor(
-      _color,
-      widget.color ?? const Color(0x00000000),
-      (dynamic value) =>
-          ColorTween(begin: value as Color? ?? const Color(0x00000000)),
-    ) as ColorTween?;
+    _color =
+        visitor(
+              _color,
+              widget.color ?? const Color(0x00000000),
+              (dynamic value) =>
+                  ColorTween(begin: value as Color? ?? const Color(0x00000000)),
+            )
+            as ColorTween?;
   }
 
   @override
@@ -80,15 +86,17 @@ class PieChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // Paint for the circle
-    final paint = Paint()
-      ..color = color.replaceOpacity(0.5)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = outerCircleStrokeWidth;
+    final paint =
+        Paint()
+          ..color = color.replaceOpacity(0.5)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = outerCircleStrokeWidth;
 
     // Paint for the slice
-    final slicePaint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
+    final slicePaint =
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.fill;
 
     // Calculate the radius
     final radius = size.width / 2;

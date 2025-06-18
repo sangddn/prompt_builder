@@ -21,11 +21,7 @@ part 'openai.dart';
 part 'model_preferences.dart';
 part 'llm_use_cases.dart';
 
-final kAllLLMProviders = [
-  OpenAI(),
-  Anthropic(),
-  Gemini(),
-];
+final kAllLLMProviders = [OpenAI(), Anthropic(), Gemini()];
 
 /// Base class for LLM (Large Language Model) providers.
 ///
@@ -204,8 +200,7 @@ mixin ProviderWithApiKey {
 
   Stream<bool> isSetUp() async* {
     yield hasSetUp();
-    yield* Database()
-        .stringRef
+    yield* Database().stringRef
         .watch(key: apiKeyKey)
         .map((e) => e.value != null);
   }

@@ -21,8 +21,8 @@ class _PRPProviders extends MultiProviderWidget {
   ];
 
   @override
-  Widget buildChild(BuildContext context) => _MoreProviders(id: id, child: child);
-    
+  Widget buildChild(BuildContext context) =>
+      _MoreProviders(id: id, child: child);
 }
 
 class _MoreProviders extends MultiProviderWidget {

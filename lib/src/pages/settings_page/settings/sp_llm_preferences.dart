@@ -13,19 +13,20 @@ class LLMPreferencesSettings extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Gap(32.0),
-          Padding(
-            padding: k4HPadding,
-            child: Text('Model Preferences', style: context.textTheme.h4),
-          ),
-          const Gap(16.0),
-          for (final useCase in kAllLLMUseCases) ...[
-            _LLMUseCase(useCase: useCase),
-            const Gap(24.0),
-          ],
-          const Gap(8.0),
-        ].toList(),
+        children:
+            [
+              const Gap(32.0),
+              Padding(
+                padding: k4HPadding,
+                child: Text('Model Preferences', style: context.textTheme.h4),
+              ),
+              const Gap(16.0),
+              for (final useCase in kAllLLMUseCases) ...[
+                _LLMUseCase(useCase: useCase),
+                const Gap(24.0),
+              ],
+              const Gap(8.0),
+            ].toList(),
       ),
     );
   }
@@ -128,8 +129,9 @@ class _LLMUseCasePromptField extends StatelessWidget {
         try {
           useCase.setPrompt(value);
         } catch (e) {
-          context.toaster
-              .show(ShadToast.destructive(title: Text(e.toString())));
+          context.toaster.show(
+            ShadToast.destructive(title: Text(e.toString())),
+          );
         }
       },
     );

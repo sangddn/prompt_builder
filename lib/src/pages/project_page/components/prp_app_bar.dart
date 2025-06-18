@@ -5,17 +5,14 @@ class _PRPAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SliverList.list(
-        children: const [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: _Icon(),
-          ),
-          Gap(24.0),
-          _ProjectTitle(),
-          Gap(24.0),
-          _ProjectNotes(),
-        ],
-      );
+    children: const [
+      Align(alignment: Alignment.centerLeft, child: _Icon()),
+      Gap(24.0),
+      _ProjectTitle(),
+      Gap(24.0),
+      _ProjectNotes(),
+    ],
+  );
 }
 
 class _Icon extends StatelessWidget {
@@ -37,9 +34,7 @@ class _ProjectTitle extends StatelessWidget {
     final style = context.textTheme.h2;
     final project = context.watch<Project?>();
     if (project?.title == null) {
-      return GrayShimmer(
-        child: Text('Loading…', style: style),
-      );
+      return GrayShimmer(child: Text('Loading…', style: style));
     }
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 400.0),
@@ -47,8 +42,9 @@ class _ProjectTitle extends StatelessWidget {
         controller: context.read<_TitleController>(),
         decoration: InputDecoration.collapsed(
           hintText: 'Untitled',
-          hintStyle:
-              style.copyWith(color: PColors.darkGray.resolveFrom(context)),
+          hintStyle: style.copyWith(
+            color: PColors.darkGray.resolveFrom(context),
+          ),
         ),
         style: style,
       ),
@@ -70,8 +66,9 @@ class _ProjectNotes extends StatelessWidget {
           controller: context.read<_NotesController?>(),
           decoration: InputDecoration(
             hintText: 'Notes',
-            hintStyle:
-                style.copyWith(color: PColors.textGray.resolveFrom(context)),
+            hintStyle: style.copyWith(
+              color: PColors.textGray.resolveFrom(context),
+            ),
             border: InputBorder.none,
           ),
           minLines: 3,

@@ -1,16 +1,19 @@
 part of '../prompt_page.dart';
 
 Future<void> _showPathSearchDialog(BuildContext context) => showPDialog<void>(
-      context: context,
-      barrierColor: Colors.transparent,
-      builder: (_) => MultiProvider(
+  context: context,
+  barrierColor: Colors.transparent,
+  builder:
+      (_) => MultiProvider(
         providers: [
           Provider<_PathSearchCallback>.value(value: context.read()),
           Provider<int Function(String)>.value(
-            value: (p) => context
-                .read<_SelectedFilePaths>()
-                .where((e) => e.startsWith(p))
-                .length,
+            value:
+                (p) =>
+                    context
+                        .read<_SelectedFilePaths>()
+                        .where((e) => e.startsWith(p))
+                        .length,
           ),
         ],
         child: NotificationListener<NodeSelectionNotification>(
@@ -22,7 +25,7 @@ Future<void> _showPathSearchDialog(BuildContext context) => showPDialog<void>(
           child: const _PPPathSearchDialog(),
         ),
       ),
-    );
+);
 
 class _PPPathSearchDialog extends StatelessWidget {
   const _PPPathSearchDialog();
@@ -41,9 +44,10 @@ class _PPPathSearchDialog extends StatelessWidget {
                   context.read<ValueNotifier<_PathSearchState>>();
               final notifier = context.read<_PathSearchNotifier>();
               stateNotifier.value = _PathSearchState.searching;
-              final results = (await context.read<_PathSearchCallback>()(text))
-                  .take(20)
-                  .toIList();
+              final results =
+                  (await context.read<_PathSearchCallback>()(
+                    text,
+                  )).take(20).toIList();
               if (!context.mounted) return;
               stateNotifier.value = _PathSearchState.idle;
               // By the time the search results are ready, the text may have changed.
@@ -53,15 +57,18 @@ class _PPPathSearchDialog extends StatelessWidget {
               }
             }
           },
-          builder: (context, child) =>
-              ProxyProvider<TextEditingController, List<String>>(
-            update: (_, controller, __) => controller.text
-                .toLowerCase()
-                .split(' ')
-                .where((element) => element.length >= 3)
-                .toList(),
-            child: child,
-          ),
+          builder:
+              (context, child) =>
+                  ProxyProvider<TextEditingController, List<String>>(
+                    update:
+                        (_, controller, _) =>
+                            controller.text
+                                .toLowerCase()
+                                .split(' ')
+                                .where((element) => element.length >= 3)
+                                .toList(),
+                    child: child,
+                  ),
           child: Align(
             alignment: const Alignment(0.0, -0.4),
             child: Container(
@@ -126,7 +133,8 @@ class _FileSearchField extends StatelessWidget {
           padding: const EdgeInsets.only(left: 8.0),
           child: Builder(
             builder: (context) {
-              final isLoading = context.watch<_PathSearchState>() ==
+              final isLoading =
+                  context.watch<_PathSearchState>() ==
                   _PathSearchState.searching;
               return GrayShimmer(
                 enableShimmer: isLoading,
@@ -157,13 +165,15 @@ class _FileSearchResultList extends StatelessWidget {
     final count = context.select((_PathSearchNotifier n) => n.value.length);
     return SuperSliverList.builder(
       itemCount: count,
-      itemBuilder: (context, index) => Builder(
-        builder: (context) {
-          final info =
-              context.select((_PathSearchNotifier n) => n.value[index]);
-          return _PathSearchResultTile(info, key: ValueKey(info.$1));
-        },
-      ),
+      itemBuilder:
+          (context, index) => Builder(
+            builder: (context) {
+              final info = context.select(
+                (_PathSearchNotifier n) => n.value[index],
+              );
+              return _PathSearchResultTile(info, key: ValueKey(info.$1));
+            },
+          ),
     );
   }
 }
@@ -182,11 +192,14 @@ class _PathSearchResultTile extends StatelessWidget {
       builder: (context, isHovered) {
         final trailing = StatefulBuilder(
           builder: (context, setState) {
-            final selectionCount =
-                context.read<int Function(String)>()(fullPath);
+            final selectionCount = context.read<int Function(String)>()(
+              fullPath,
+            );
             Future<void> addOrRemove() async {
-              NodeSelectionNotification(fullPath, selectionCount == 0)
-                  .dispatch(context);
+              NodeSelectionNotification(
+                fullPath,
+                selectionCount == 0,
+              ).dispatch(context);
               setState(() {});
             }
 
@@ -200,22 +213,14 @@ class _PathSearchResultTile extends StatelessWidget {
                 );
               }
               return ShadBadge.secondary(
-                child: Text(
-                  isDirectory ? '$selectionCount added' : 'Added',
-                ),
+                child: Text(isDirectory ? '$selectionCount added' : 'Added'),
               );
             }
             final text = Text(isDirectory ? 'Add all' : 'Add');
             if (isHovered) {
-              return ShadBadge(
-                onPressed: addOrRemove,
-                child: text,
-              );
+              return ShadBadge(onPressed: addOrRemove, child: text);
             }
-            return ShadBadge.secondary(
-              onPressed: addOrRemove,
-              child: text,
-            );
+            return ShadBadge.secondary(onPressed: addOrRemove, child: text);
           },
         );
 
@@ -225,15 +230,12 @@ class _PathSearchResultTile extends StatelessWidget {
             if (!isDirectory)
               ShadContextMenuItem(
                 onPressed: () => peekFile(context, fullPath),
-                trailing: const ShadImage.square(
-                  HugeIcons.strokeRoundedEye,
-                  size: 16.0,
-                ),
+                trailing: const Icon(HugeIcons.strokeRoundedEye, size: 16.0),
                 child: const Text('Peek'),
               ),
             ShadContextMenuItem(
               onPressed: () => revealInFinder(fullPath),
-              trailing: const ShadImage.square(
+              trailing: const Icon(
                 HugeIcons.strokeRoundedAppleFinder,
                 size: 16.0,
               ),
@@ -241,7 +243,7 @@ class _PathSearchResultTile extends StatelessWidget {
             ),
           ],
           child: ListTile(
-            leading: ShadImage.square(
+            leading: Icon(
               isDirectory
                   ? HugeIcons.strokeRoundedFolder01
                   : HugeIcons.strokeRoundedFile01,
@@ -258,9 +260,11 @@ class _PathSearchResultTile extends StatelessWidget {
               caseSensitive: false,
             ),
             splashColor: Colors.transparent,
-            onTap: () => isDirectory
-                ? revealInFinder(fullPath)
-                : peekFile(context, fullPath),
+            onTap:
+                () =>
+                    isDirectory
+                        ? revealInFinder(fullPath)
+                        : peekFile(context, fullPath),
             trailing: trailing,
           ),
         );
@@ -272,7 +276,4 @@ class _PathSearchResultTile extends StatelessWidget {
 /// Type signature of the notifier that holds the search results.
 typedef _PathSearchNotifier = ValueNotifier<_PathSearchResults>;
 
-enum _PathSearchState {
-  idle,
-  searching,
-}
+enum _PathSearchState { idle, searching }

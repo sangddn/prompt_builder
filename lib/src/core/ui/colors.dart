@@ -13,24 +13,29 @@ class PColors {
   static final _grayDarkModeHighContrast = Colors.white.replaceOpacity(0.15);
 
   static final _lightGrayLightMode = Colors.black.replaceOpacity(0.025);
-  static final _lightGrayLightModeHighContrast =
-      Colors.black.replaceOpacity(0.035);
+  static final _lightGrayLightModeHighContrast = Colors.black.replaceOpacity(
+    0.035,
+  );
   static final _lightGrayDarkMode = Colors.white.replaceOpacity(0.08);
-  static final _lightGrayDarkModeHighContrast =
-      Colors.white.replaceOpacity(0.12);
+  static final _lightGrayDarkModeHighContrast = Colors.white.replaceOpacity(
+    0.12,
+  );
 
   static const _darkGrayLightMode = Colors.black26;
   static const _darkGrayLightModeHighContrast = Colors.black38;
   static const _darkGrayDarkMode = Colors.white30;
-  static final _darkGrayDarkModeHighContrast =
-      Colors.white.replaceOpacity(0.45);
+  static final _darkGrayDarkModeHighContrast = Colors.white.replaceOpacity(
+    0.45,
+  );
 
   static const _textGrayLightMode = Colors.black54;
-  static final _textGrayLightModeHighContrast =
-      Colors.black.replaceOpacity(0.64);
+  static final _textGrayLightModeHighContrast = Colors.black.replaceOpacity(
+    0.64,
+  );
   static const _textGrayDarkMode = Colors.white54;
-  static final _textGrayDarkModeHighContrast =
-      Colors.white.replaceOpacity(0.75);
+  static final _textGrayDarkModeHighContrast = Colors.white.replaceOpacity(
+    0.75,
+  );
 
   static final lightGray = CupertinoDynamicColor.withBrightnessAndContrast(
     color: _lightGrayLightMode,
@@ -40,11 +45,11 @@ class PColors {
   );
   static final opaqueLightGray =
       CupertinoDynamicColor.withBrightnessAndContrast(
-    color: Colors.grey.tint(.875),
-    darkColor: Colors.grey.shade(.85),
-    highContrastColor: Colors.grey.tint(.8),
-    darkHighContrastColor: Colors.grey.shade(.7),
-  );
+        color: Colors.grey.tint(.875),
+        darkColor: Colors.grey.shade(.85),
+        highContrastColor: Colors.grey.tint(.8),
+        darkHighContrastColor: Colors.grey.shade(.7),
+      );
   static final gray = CupertinoDynamicColor.withBrightnessAndContrast(
     color: _grayLightMode,
     darkColor: _grayDarkMode,
@@ -91,12 +96,7 @@ extension ColorUtilsExtension on Color {
   }
 
   Color replaceOpacity(double opacity) {
-    return withValues(
-      alpha: opacity,
-      red: r,
-      green: g,
-      blue: b,
-    );
+    return withValues(alpha: opacity, red: r, green: g, blue: b);
   }
 
   Color invert() {
@@ -118,12 +118,7 @@ extension ColorTintsShades on Color {
   /// Internal method to create a Color from RGB values.
   static Color _fromRgb(double r, double g, double b, [double opacity = 1.0]) {
     // return Color.from(red: r, green: g, blue: b, alpha: opacity);
-    return Color.from(
-      alpha: opacity,
-      red: r,
-      green: g,
-      blue: b,
-    );
+    return Color.from(alpha: opacity, red: r, green: g, blue: b);
   }
 
   /// Internal method to create a tint of the Color.
@@ -205,9 +200,10 @@ extension ThemeColorUtils on CupertinoDynamicColor {
     bool isHighContrast = false,
   }) {
     final modifiedTheme = theme.copyWith(
-      brightness: theme.brightness == Brightness.light
-          ? Brightness.dark
-          : Brightness.light,
+      brightness:
+          theme.brightness == Brightness.light
+              ? Brightness.dark
+              : Brightness.light,
     );
     return resolveWithTheme(modifiedTheme, isHighContrast: isHighContrast);
   }
@@ -227,12 +223,7 @@ abstract final class ColorUtils {
     final hue = random.nextDouble() * 360;
     const saturation = 0.9;
     const lightness = 0.45;
-    return HSLColor.fromAHSL(
-      1.0,
-      hue,
-      saturation,
-      lightness,
-    ).toColor();
+    return HSLColor.fromAHSL(1.0, hue, saturation, lightness).toColor();
   }
 
   static Color getBrightColorFromHexString(String hexString) {
@@ -240,11 +231,6 @@ abstract final class ColorUtils {
     final hue = random.nextDouble() * 360;
     const saturation = 0.9;
     const lightness = 0.7;
-    return HSLColor.fromAHSL(
-      1.0,
-      hue,
-      saturation,
-      lightness,
-    ).toColor();
+    return HSLColor.fromAHSL(1.0, hue, saturation, lightness).toColor();
   }
 }

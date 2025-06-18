@@ -29,10 +29,14 @@ String htmlToMarkdown(String htmlContent) {
   _convertNode(body, markdownBuffer, 0);
 
   // Cleanup multiple newlines and spaces:
-  final markdown = markdownBuffer
-      .toString()
-      .replaceAll(RegExp(r'\n{3,}'), '\n\n') // Collapse 3+ newlines into two
-      .trim();
+  final markdown =
+      markdownBuffer
+          .toString()
+          .replaceAll(
+            RegExp(r'\n{3,}'),
+            '\n\n',
+          ) // Collapse 3+ newlines into two
+          .trim();
 
   return markdown;
 }

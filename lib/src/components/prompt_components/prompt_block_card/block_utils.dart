@@ -1,14 +1,8 @@
 part of 'prompt_block_card.dart';
 
-enum BlockWidgetState {
-  collapsed,
-  expanded,
-}
+enum BlockWidgetState { collapsed, expanded }
 
-enum _BlockHoverState {
-  none,
-  hover,
-}
+enum _BlockHoverState { none, hover }
 
 extension _BaseBlockExtension on BuildContext {
   PromptBlock get block => read();
@@ -24,10 +18,11 @@ extension _BaseBlockExtension on BuildContext {
   bool isExpanded() =>
       watch<ValueNotifier<BlockWidgetState>>().value ==
       BlockWidgetState.expanded;
-  void toggleExpansion() => expansionNotifier.value =
-      expansionNotifier.value == BlockWidgetState.expanded
-          ? BlockWidgetState.collapsed
-          : BlockWidgetState.expanded;
+  void toggleExpansion() =>
+      expansionNotifier.value =
+          expansionNotifier.value == BlockWidgetState.expanded
+              ? BlockWidgetState.collapsed
+              : BlockWidgetState.expanded;
 }
 
 extension BlockInfomation on PromptBlock {
@@ -35,33 +30,32 @@ extension BlockInfomation on PromptBlock {
       filePath != null ? path.relative(filePath!, from: dir) : null;
 
   String getDefaultDisplayName(Prompt? prompt) => switch (type) {
-        BlockType.text => 'Instructions',
-        BlockType.image ||
-        BlockType.video ||
-        BlockType.audio ||
-        BlockType.localFile =>
-          getRelativePath(prompt?.folderPath) ?? 'Local File',
-        BlockType.youtube => 'YouTube ${url!}',
-        BlockType.webUrl => 'Webpage ${url!}',
-        BlockType.unsupported =>
-          getRelativePath(prompt?.folderPath) ?? 'Unsupported',
-      };
+    BlockType.text => 'Instructions',
+    BlockType.image ||
+    BlockType.video ||
+    BlockType.audio ||
+    BlockType.localFile => getRelativePath(prompt?.folderPath) ?? 'Local File',
+    BlockType.youtube => 'YouTube ${url!}',
+    BlockType.webUrl => 'Webpage ${url!}',
+    BlockType.unsupported =>
+      getRelativePath(prompt?.folderPath) ?? 'Unsupported',
+  };
 }
 
 extension LLMUseCaseInfo on LLMUseCase {
   IconData get icon => switch (this) {
-        SummarizeContentUseCase() => HugeIcons.strokeRoundedSummation01,
-        DescribeImagesUseCase() => HugeIcons.strokeRoundedAiImage,
-        GeneratePromptUseCase() => HugeIcons.strokeRoundedMagicWand01,
-        TranscribeAudioUseCase() => HugeIcons.strokeRoundedAiVideo,
-      };
+    SummarizeContentUseCase() => HugeIcons.strokeRoundedSummation01,
+    DescribeImagesUseCase() => HugeIcons.strokeRoundedAiImage,
+    GeneratePromptUseCase() => HugeIcons.strokeRoundedMagicWand01,
+    TranscribeAudioUseCase() => HugeIcons.strokeRoundedAiVideo,
+  };
 
   String get actionLabel => switch (this) {
-        SummarizeContentUseCase() => 'Summarize',
-        DescribeImagesUseCase() => 'Describe',
-        GeneratePromptUseCase() => 'Generate Prompt',
-        TranscribeAudioUseCase() => 'Transcribe',
-      };
+    SummarizeContentUseCase() => 'Summarize',
+    DescribeImagesUseCase() => 'Describe',
+    GeneratePromptUseCase() => 'Generate Prompt',
+    TranscribeAudioUseCase() => 'Transcribe',
+  };
 }
 
 // -----------------------------------------------------------------------------

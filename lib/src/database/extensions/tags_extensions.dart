@@ -4,13 +4,12 @@ import '../database.dart';
 
 enum TagType {
   prompt,
-  snippet,
-  ;
+  snippet;
 
   String get tableName => switch (this) {
-        prompt => 'prompts',
-        snippet => 'snippets',
-      };
+    prompt => 'prompts',
+    snippet => 'snippets',
+  };
 }
 
 /// Extension methods for tag-related database operations
@@ -60,10 +59,8 @@ extension TagsExtension on Database {
       ],
       readsFrom: {if (type == TagType.prompt) prompts else snippets},
     ).map(
-      (row) => TagCount(
-        tag: row.read<String>('tag'),
-        count: row.read<int>('count'),
-      ),
+      (row) =>
+          TagCount(tag: row.read<String>('tag'), count: row.read<int>('count')),
     );
   }
 
@@ -201,10 +198,7 @@ extension TagsExtension on Database {
 /// Represents a tag and its usage count in the database
 @immutable
 class TagCount {
-  const TagCount({
-    required this.tag,
-    required this.count,
-  });
+  const TagCount({required this.tag, required this.count});
 
   final String tag;
   final int count;

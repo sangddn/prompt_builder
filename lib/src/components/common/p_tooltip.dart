@@ -13,9 +13,9 @@ class PTooltip extends StatefulWidget {
     this.toolTipKey,
     super.key,
   }) : assert(
-          !(message != null && richMessage != null),
-          'Only one of message or richMessage can be provided',
-        );
+         !(message != null && richMessage != null),
+         'Only one of message or richMessage can be provided',
+       );
 
   final TooltipTriggerMode triggerMode;
   final String? message;
@@ -34,10 +34,7 @@ class _PTooltipState extends State<PTooltip> {
   @override
   Widget build(BuildContext context) {
     if (widget.message == null && widget.richMessage == null) {
-      return KeyedSubtree(
-        key: _key,
-        child: widget.child,
-      );
+      return KeyedSubtree(key: _key, child: widget.child);
     }
     return KeyedSubtree(
       key: _key,
@@ -60,11 +57,12 @@ class _PTooltipState extends State<PTooltip> {
           ],
         ),
         padding: k16H12VPadding,
-        textStyle: widget.richMessage != null
-            ? null
-            : context.theme.textTheme.small.copyWith(
-                color: context.colorScheme.mutedForeground,
-              ),
+        textStyle:
+            widget.richMessage != null
+                ? null
+                : context.theme.textTheme.small.copyWith(
+                  color: context.colorScheme.mutedForeground,
+                ),
         child: widget.child,
       ),
     );

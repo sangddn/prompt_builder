@@ -5,11 +5,7 @@ import '../../core/core.dart';
 import '../components.dart';
 
 class AnimateOnHover extends StatefulWidget {
-  const AnimateOnHover({
-    required this.effects,
-    required this.child,
-    super.key,
-  });
+  const AnimateOnHover({required this.effects, required this.child, super.key});
 
   final List<Effect<dynamic>> effects;
   final Widget child;
@@ -113,12 +109,7 @@ class ShimmerOnHover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimateOnHover(
-      effects: [
-        ShimmerEffect(
-          duration: duration,
-          curve: curve,
-        ),
-      ],
+      effects: [ShimmerEffect(duration: duration, curve: curve)],
       child: child,
     );
   }
@@ -145,16 +136,15 @@ class _JumpingCardState extends State<JumpingCard> {
   Widget build(BuildContext context) {
     return DisambiguatedHoverTapBuilder(
       onTap: widget.onTap,
-      builder: (context, isHovering, isPressing) => widget.child
-          .animate(
-            target: isHovering && !isPressing ? 1.0 : 0.0,
-          )
-          .slideY(
-            duration: Effects.veryShortDuration,
-            curve: Curves.easeInOut,
-            begin: 0.0,
-            end: widget.jumpScale,
-          ),
+      builder:
+          (context, isHovering, isPressing) => widget.child
+              .animate(target: isHovering && !isPressing ? 1.0 : 0.0)
+              .slideY(
+                duration: Effects.veryShortDuration,
+                curve: Curves.easeInOut,
+                begin: 0.0,
+                end: widget.jumpScale,
+              ),
     );
   }
 }

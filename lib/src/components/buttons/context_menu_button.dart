@@ -13,8 +13,7 @@ enum FeedbackOverlayPosition {
   start,
   end,
   above,
-  below,
-  ;
+  below;
 
   bool get isAbove => this == FeedbackOverlayPosition.above;
   bool get isStart => this == FeedbackOverlayPosition.start;
@@ -32,10 +31,7 @@ enum FeedbackOverlayPosition {
 }
 
 final class ActiveContextMenu {
-  const ActiveContextMenu({
-    required this.show,
-    required this.hide,
-  });
+  const ActiveContextMenu({required this.show, required this.hide});
 
   final VoidCallback show;
   final VoidCallback hide;
@@ -55,7 +51,8 @@ class ContextMenuButton extends StatefulWidget {
   final FeedbackOverlayPosition Function(
     bool isInTopHalfOfScreen,
     bool isInStartHalfOfScreen,
-  )? overlayPosition;
+  )?
+  overlayPosition;
 
   /// The list of items to show in the context menu.
   ///
@@ -89,9 +86,7 @@ class _ContextMenuButtonState extends State<ContextMenuButton>
   }
 
   void _hide() {
-    _animationController.reverse().then(
-          (value) => _overlayController.hide(),
-        );
+    _animationController.reverse().then((value) => _overlayController.hide());
   }
 
   @override
@@ -120,17 +115,17 @@ class _ContextMenuButtonState extends State<ContextMenuButton>
       controller: _overlayController,
       overlayChildBuilder: (overlayContext) {
         final button = context.findRenderObject()! as RenderBox;
-        final overlay = Navigator.of(context)
-            .overlay!
-            .context
-            .findRenderObject()! as RenderBox;
+        final overlay =
+            Navigator.of(context).overlay!.context.findRenderObject()!
+                as RenderBox;
 
         late final Size childSize = button.size;
 
         late final Offset childPosition;
         final childPositionInRoot = button.localToGlobal(Offset.zero);
-        final childPositionInOverlay =
-            overlay.globalToLocal(childPositionInRoot);
+        final childPositionInOverlay = overlay.globalToLocal(
+          childPositionInRoot,
+        );
         childPosition = childPositionInOverlay;
 
         final overlayContextSize = overlay.size;
@@ -160,59 +155,58 @@ class _ContextMenuButtonState extends State<ContextMenuButton>
           value: ActiveContextMenu(show: _show, hide: _hide),
           child: Stack(
             children: [
-              Positioned.fill(
-                child: GestureDetector(onTap: _hide),
-              ),
+              Positioned.fill(child: GestureDetector(onTap: _hide)),
               Positioned.directional(
-                top: shouldShowAbove
-                    ? null
-                    : childPosition.dy +
-                        (shouldBeVerticallyCentered
-                            ? 0.0
-                            : (childSize.height + 8.0)),
-                bottom: shouldShowAbove
-                    ? height -
-                        childPosition.dy +
-                        (shouldBeVerticallyCentered ? 0.0 : 8.0)
-                    : null,
-                start: shouldShowStart
-                    ? null
-                    : childPosition.dx +
-                        (shouldBeHorizontallyCentered
-                            ? 0.0
-                            : (childSize.width + 8.0)),
-                end: shouldShowStart
-                    ? width -
-                        (childPosition.dx +
+                top:
+                    shouldShowAbove
+                        ? null
+                        : childPosition.dy +
+                            (shouldBeVerticallyCentered
+                                ? 0.0
+                                : (childSize.height + 8.0)),
+                bottom:
+                    shouldShowAbove
+                        ? height -
+                            childPosition.dy +
+                            (shouldBeVerticallyCentered ? 0.0 : 8.0)
+                        : null,
+                start:
+                    shouldShowStart
+                        ? null
+                        : childPosition.dx +
                             (shouldBeHorizontallyCentered
-                                ? childSize.width / 2
-                                : -8.0))
-                    : null,
+                                ? 0.0
+                                : (childSize.width + 8.0)),
+                end:
+                    shouldShowStart
+                        ? width -
+                            (childPosition.dx +
+                                (shouldBeHorizontallyCentered
+                                    ? childSize.width / 2
+                                    : -8.0))
+                        : null,
                 textDirection: direction,
                 child: Container(
-                  decoration: ShapeDecoration(
-                    color: overlayContext.colorScheme.card,
-                    shape: Superellipse(
-                      cornerRadius: 12.0,
-                      side: BorderSide(
-                        color: PColors.gray.resolveFrom(context),
-                        width: .75,
+                      decoration: ShapeDecoration(
+                        color: overlayContext.colorScheme.card,
+                        shape: Superellipse(
+                          cornerRadius: 12.0,
+                          side: BorderSide(
+                            color: PColors.gray.resolveFrom(context),
+                            width: .75,
+                          ),
+                        ),
+                        shadows: broadShadows(context),
                       ),
-                    ),
-                    shadows: broadShadows(context),
-                  ),
-                  padding: const EdgeInsets.all(4.0),
-                  child: Material(
-                    color: Colors.transparent,
-                    shape: Superellipse.border12,
-                    clipBehavior: Clip.antiAlias,
-                    child: menu,
-                  ),
-                )
-                    .animate(
-                      autoPlay: false,
-                      controller: _animationController,
+                      padding: const EdgeInsets.all(4.0),
+                      child: Material(
+                        color: Colors.transparent,
+                        shape: Superellipse.border12,
+                        clipBehavior: Clip.antiAlias,
+                        child: menu,
+                      ),
                     )
+                    .animate(autoPlay: false, controller: _animationController)
                     .fadeIn(
                       duration: Effects.veryShortDuration,
                       curve: Easing.emphasizedDecelerate,
@@ -222,21 +216,22 @@ class _ContextMenuButtonState extends State<ContextMenuButton>
                       curve: Easing.emphasizedDecelerate,
                       begin: 0.0,
                       end: 1.0,
-                      alignment: leftToRight
-                          ? shouldShowAbove
-                              ? shouldShowStart
-                                  ? Alignment.bottomRight
-                                  : Alignment.bottomLeft
-                              : shouldShowStart
+                      alignment:
+                          leftToRight
+                              ? shouldShowAbove
+                                  ? shouldShowStart
+                                      ? Alignment.bottomRight
+                                      : Alignment.bottomLeft
+                                  : shouldShowStart
                                   ? Alignment.topRight
                                   : Alignment.topLeft
-                          : shouldShowAbove
+                              : shouldShowAbove
                               ? shouldShowStart
                                   ? Alignment.bottomLeft
                                   : Alignment.bottomRight
                               : shouldShowStart
-                                  ? Alignment.topLeft
-                                  : Alignment.topRight,
+                              ? Alignment.topLeft
+                              : Alignment.topRight,
                     ),
               ),
             ],
@@ -248,10 +243,7 @@ class _ContextMenuButtonState extends State<ContextMenuButton>
         builder: (context, child) {
           return Opacity(
             opacity: (1.0 - _animationController.value).clamp(0.2, 1.0),
-            child: widget.builder(
-              context,
-              _show,
-            ),
+            child: widget.builder(context, _show),
           );
         },
       ),

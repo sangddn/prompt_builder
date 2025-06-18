@@ -16,10 +16,7 @@ class _PPAppBar extends StatelessWidget {
             alignment: AlignmentDirectional.centerEnd,
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: [
-                _ProjectButton(),
-                _ExportButton(),
-              ],
+              children: [_ProjectButton(), _ExportButton()],
             ),
           ),
         ],
@@ -36,9 +33,7 @@ class _PromptTitle extends StatelessWidget {
     final style = context.textTheme.muted;
     final title = context.selectPrompt((p) => p?.title);
     if (title == null) {
-      return GrayShimmer(
-        child: Text('Loading…', style: style),
-      );
+      return GrayShimmer(child: Text('Loading…', style: style));
     }
 
     final id = context.selectPrompt((p) => p?.id);
@@ -64,8 +59,9 @@ class _PromptTitle extends StatelessWidget {
             controller: context.read(),
             decoration: InputDecoration.collapsed(
               hintText: 'Untitled',
-              hintStyle:
-                  style.copyWith(color: PColors.darkGray.resolveFrom(context)),
+              hintStyle: style.copyWith(
+                color: PColors.darkGray.resolveFrom(context),
+              ),
             ),
             style: style,
             textAlign: TextAlign.center,
@@ -129,15 +125,17 @@ class _ProjectButton extends StatelessWidget {
         child: Row(
           children: [
             ZoomSwitcher.zoomIn(
-              child: projectId == null
-                  ? const Icon(LucideIcons.folderInput, size: 16.0)
-                  : const Icon(LucideIcons.folderOpen, size: 16.0),
+              child:
+                  projectId == null
+                      ? const Icon(LucideIcons.folderInput, size: 16.0)
+                      : const Icon(LucideIcons.folderOpen, size: 16.0),
             ),
             const Gap(4.0),
             TranslationSwitcher.top(
-              child: projectId == null
-                  ? Text('Project', style: context.textTheme.muted)
-                  : ProjectName(projectId, key: ValueKey(projectId)),
+              child:
+                  projectId == null
+                      ? Text('Project', style: context.textTheme.muted)
+                      : ProjectName(projectId, key: ValueKey(projectId)),
             ),
           ],
         ),

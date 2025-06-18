@@ -2,11 +2,11 @@ part of 'file_tree.dart';
 
 /// Peek a local file in a sheet to the right.
 Future<void> peekFile(BuildContext context, String filePath) => showShadSheet(
-      side: ShadSheetSide.right,
-      barrierColor: Colors.transparent,
-      context: context,
-      builder: (context) => BCVLocal(filePath: filePath),
-    );
+  side: ShadSheetSide.right,
+  barrierColor: Colors.transparent,
+  context: context,
+  builder: (context) => BCVLocal(filePath: filePath),
+);
 
 typedef OnItemSelectedCallback = Future<void> Function(bool);
 
@@ -22,15 +22,14 @@ enum FileTreeSortOption {
   dateModified,
 
   /// Sort by file size
-  size,
-  ;
+  size;
 
   String get label => switch (this) {
-        name => 'Name',
-        dateCreated => 'Creation Date',
-        dateModified => 'Modified Date',
-        size => 'Size',
-      };
+    name => 'Name',
+    dateCreated => 'Creation Date',
+    dateModified => 'Modified Date',
+    size => 'Size',
+  };
 }
 
 /// Preferences for sorting the file tree
@@ -65,12 +64,11 @@ class FileTreeSortPreferences {
     FileTreeSortOption? sortOption,
     bool? foldersFirst,
     bool? ascending,
-  }) =>
-      FileTreeSortPreferences(
-        sortOption: sortOption ?? this.sortOption,
-        foldersFirst: foldersFirst ?? this.foldersFirst,
-        ascending: ascending ?? this.ascending,
-      );
+  }) => FileTreeSortPreferences(
+    sortOption: sortOption ?? this.sortOption,
+    foldersFirst: foldersFirst ?? this.foldersFirst,
+    ascending: ascending ?? this.ascending,
+  );
 }
 
 /// Represents an item in the file tree
@@ -128,14 +126,14 @@ class FileTreeItem {
 
   @override
   int get hashCode => Object.hash(
-        name,
-        path,
-        isDirectory,
-        extension,
-        dateCreated,
-        dateModified,
-        size,
-      );
+    name,
+    path,
+    isDirectory,
+    extension,
+    dateCreated,
+    dateModified,
+    size,
+  );
 
   FileTreeItem copyWith({
     String? name,
@@ -147,18 +145,17 @@ class FileTreeItem {
     int? size,
     int? numFilesRecursive,
     int? numDirectFiles,
-  }) =>
-      FileTreeItem(
-        name: name ?? this.name,
-        path: path ?? this.path,
-        isDirectory: isDirectory ?? this.isDirectory,
-        extension: extension ?? this.extension,
-        dateCreated: dateCreated ?? this.dateCreated,
-        dateModified: dateModified ?? this.dateModified,
-        size: size ?? this.size,
-        numFilesRecursive: numFilesRecursive ?? this.numFilesRecursive,
-        numDirectFiles: numDirectFiles ?? this.numDirectFiles,
-      );
+  }) => FileTreeItem(
+    name: name ?? this.name,
+    path: path ?? this.path,
+    isDirectory: isDirectory ?? this.isDirectory,
+    extension: extension ?? this.extension,
+    dateCreated: dateCreated ?? this.dateCreated,
+    dateModified: dateModified ?? this.dateModified,
+    size: size ?? this.size,
+    numFilesRecursive: numFilesRecursive ?? this.numFilesRecursive,
+    numDirectFiles: numDirectFiles ?? this.numDirectFiles,
+  );
 }
 
 /// Type alias for a tree node containing file information
@@ -269,8 +266,9 @@ class _BuildFileTreeParams {
 
     if (isDirectory) {
       try {
-        final subEntities = Directory(absolutePath).listSync()
-          ..sort((a, b) => _compareEntities(a, b, params.sortPreferences));
+        final subEntities =
+            Directory(absolutePath).listSync()
+              ..sort((a, b) => _compareEntities(a, b, params.sortPreferences));
         for (final subEntity in subEntities) {
           addFileSystemEntity(node, subEntity);
 
@@ -280,7 +278,8 @@ class _BuildFileTreeParams {
             totalFiles++;
           } else {
             // Add files from subdirectories to total
-            final subDirFiles = (node.children.lastOrNull as IndexedFileTree?)
+            final subDirFiles =
+                (node.children.lastOrNull as IndexedFileTree?)
                     ?.data
                     ?.numFilesRecursive ??
                 0;
@@ -310,8 +309,9 @@ class _BuildFileTreeParams {
   }
 
   final dir = Directory(dirPath);
-  final entities = dir.listSync()
-    ..sort((a, b) => _compareEntities(a, b, params.sortPreferences));
+  final entities =
+      dir.listSync()
+        ..sort((a, b) => _compareEntities(a, b, params.sortPreferences));
   for (final entity in entities) {
     addFileSystemEntity(root, entity);
   }
@@ -339,10 +339,7 @@ int _compareEntities(
   switch (prefs.sortOption) {
     case FileTreeSortOption.name:
       return multiplier *
-          _compareNaturalOrder(
-            path.basename(a.path),
-            path.basename(b.path),
-          );
+          _compareNaturalOrder(path.basename(a.path), path.basename(b.path));
     case FileTreeSortOption.dateCreated:
       return multiplier * aStat.changed.compareTo(bStat.changed);
     case FileTreeSortOption.dateModified:
@@ -441,9 +438,10 @@ void _handleModifyEvent(IndexedFileTree root, FileSystemModifyEvent event) {
   final item = node.data!;
 
   try {
-    final stat = event.isDirectory
-        ? Directory(event.path).statSync()
-        : File(event.path).statSync();
+    final stat =
+        event.isDirectory
+            ? Directory(event.path).statSync()
+            : File(event.path).statSync();
 
     // Update node metadata while preserving children
     node.data = FileTreeItem(
@@ -580,7 +578,8 @@ void _deincrementFileCountForDir(
   directory.data = item.copyWith(
     numFilesRecursive:
         (item.numFilesRecursive ?? 0) + (shouldIncrement ? 1 : -1),
-    numDirectFiles: (item.numDirectFiles ?? 0) +
+    numDirectFiles:
+        (item.numDirectFiles ?? 0) +
         (shouldIncrement ? (isDirect ? 1 : 0) : -(isDirect ? 1 : 0)),
   );
 

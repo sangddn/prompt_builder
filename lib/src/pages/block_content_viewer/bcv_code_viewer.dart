@@ -27,11 +27,7 @@ class _BCVCodeViewer extends StatelessWidget {
 /// An improved version of `flutter_highlight`'s `HighlightView` widget that
 /// allows for selecting text and caching the parsed nodes and spans.
 class HighlightView extends StatelessWidget {
-  const HighlightView(
-    this.input, {
-    required this.syntaxHighlighter,
-    super.key,
-  });
+  const HighlightView(this.input, {required this.syntaxHighlighter, super.key});
 
   final String input;
   final ThemedSyntaxHighlighter syntaxHighlighter;
@@ -45,10 +41,7 @@ class HighlightView extends StatelessWidget {
         color: syntaxHighlighter.theme['root']?.backgroundColor,
       ),
       padding: k12H8VPadding,
-      child: SelectableText.rich(
-        span,
-        style: context.textTheme.p,
-      ),
+      child: SelectableText.rich(span, style: context.textTheme.p),
     );
   }
 }

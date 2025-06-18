@@ -27,10 +27,7 @@ final class Brave extends SearchProvider {
           'safesearch': 'off',
         },
       ),
-      headers: {
-        'Accept': 'application/json',
-        'X-Subscription-Token': apiKey,
-      },
+      headers: {'Accept': 'application/json', 'X-Subscription-Token': apiKey},
     );
 
     if (response.statusCode != 200) {

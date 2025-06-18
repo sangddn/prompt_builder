@@ -33,10 +33,7 @@ void main() {
 
     test('countTokensFromData handles images', () async {
       final imageData = await getTestImage();
-      final count = await gemini.countTokensFromData(
-        imageData,
-        'image/jpeg',
-      );
+      final count = await gemini.countTokensFromData(imageData, 'image/jpeg');
       expect(count, equals(258));
     });
 

@@ -5,10 +5,7 @@ import 'package:super_sliver_list/super_sliver_list.dart';
 
 import '../../core/core.dart';
 
-enum _LayoutType {
-  sliverList,
-  sliverGrid,
-}
+enum _LayoutType { sliverList, sliverGrid }
 
 typedef InfinityItemBuilder<T> = Widget Function(BuildContext, int, T);
 
@@ -35,11 +32,11 @@ class InfinityAndBeyond<T> extends StatefulWidget {
     required this.itemBuilder,
     required this.controller,
     super.key,
-  })  : _layoutType = _LayoutType.sliverList,
-        _childAspectRatio = null,
-        _maxCrossAxisExtent = null,
-        _mainAxisSpacing = null,
-        _crossAxisSpacing = null;
+  }) : _layoutType = _LayoutType.sliverList,
+       _childAspectRatio = null,
+       _maxCrossAxisExtent = null,
+       _mainAxisSpacing = null,
+       _crossAxisSpacing = null;
 
   const InfinityAndBeyond.grid({
     this.itemPadding = const EdgeInsets.all(8.0),
@@ -53,17 +50,17 @@ class InfinityAndBeyond<T> extends StatefulWidget {
     required this.itemBuilder,
     required this.controller,
     super.key,
-  })  : _layoutType = _LayoutType.sliverGrid,
-        padding = EdgeInsets.zero,
-        _childAspectRatio = childAspectRatio,
-        _maxCrossAxisExtent = maxCrossAxisExtent,
-        _mainAxisSpacing = mainAxisSpacing,
-        _crossAxisSpacing = crossAxisSpacing,
-        shrinkWrap = false,
-        separatorBuilder = null,
-        extentEstimation = null,
-        listController = null,
-        extentPrecalculationPolicy = null;
+  }) : _layoutType = _LayoutType.sliverGrid,
+       padding = EdgeInsets.zero,
+       _childAspectRatio = childAspectRatio,
+       _maxCrossAxisExtent = maxCrossAxisExtent,
+       _mainAxisSpacing = mainAxisSpacing,
+       _crossAxisSpacing = crossAxisSpacing,
+       shrinkWrap = false,
+       separatorBuilder = null,
+       extentEstimation = null,
+       listController = null,
+       extentPrecalculationPolicy = null;
 
   final _LayoutType _layoutType;
   final EdgeInsetsGeometry itemPadding, padding;
@@ -105,10 +102,11 @@ class _InfinityAndBeyondState<T> extends State<InfinityAndBeyond<T>> {
     final itemPadding = widget.itemPadding;
     final builderDelegate = PagedChildBuilderDelegate<T>(
       animateTransitions: true,
-      itemBuilder: (context, item, index) => Padding(
-        padding: itemPadding,
-        child: widget.itemBuilder(context, index, item),
-      ),
+      itemBuilder:
+          (context, item, index) => Padding(
+            padding: itemPadding,
+            child: widget.itemBuilder(context, index, item),
+          ),
       firstPageErrorIndicatorBuilder: widget.buildError,
       newPageErrorIndicatorBuilder: widget.buildError,
       newPageProgressIndicatorBuilder: _buildProgress,
@@ -164,16 +162,15 @@ class _InfinityAndBeyondState<T> extends State<InfinityAndBeyond<T>> {
   }
 
   Widget _buildProgress(BuildContext context) => Align(
-        alignment: Alignment.topCenter,
-        child: widget.progressBuilder?.call(context) ??
-            const SizedBox(
-              width: 80.0,
-              height: 200.0,
-              child: Center(
-                child: CircularProgressIndicator.adaptive(),
-              ),
-            ),
-      );
+    alignment: Alignment.topCenter,
+    child:
+        widget.progressBuilder?.call(context) ??
+        const SizedBox(
+          width: 80.0,
+          height: 200.0,
+          child: Center(child: CircularProgressIndicator.adaptive()),
+        ),
+  );
 
   Widget _buildNoMore(BuildContext context) => const SizedBox.shrink();
 }
@@ -188,33 +185,30 @@ const _defaultEmptyWidget = Text('Nothing here yet.');
 const _defaultErrorWidget = Text('Failed to load the requested data.');
 
 Widget _defaultBuildEmpty(BuildContext context) => Align(
-      alignment: Alignment.topCenter,
-      child: Container(
-        decoration: broadShadowsCard(context),
-        padding: k16H8VPadding,
-        margin: k16H8VPadding,
-        child: _defaultEmptyWidget,
-      ),
-    );
+  alignment: Alignment.topCenter,
+  child: Container(
+    decoration: broadShadowsCard(context),
+    padding: k16H8VPadding,
+    margin: k16H8VPadding,
+    child: _defaultEmptyWidget,
+  ),
+);
 
 Widget _defaultBuildError(BuildContext context) => Align(
-      alignment: Alignment.topCenter,
-      child: Container(
-        decoration: broadShadowsCard(context),
-        padding: k16H8VPadding,
-        margin: k16H8VPadding,
-        child: const Row(
-          children: [
-            Icon(
-              HugeIcons.strokeRoundedWifiError01,
-              size: 20.0,
-            ),
-            Gap(16.0),
-            Expanded(child: _defaultErrorWidget),
-          ],
-        ),
-      ),
-    );
+  alignment: Alignment.topCenter,
+  child: Container(
+    decoration: broadShadowsCard(context),
+    padding: k16H8VPadding,
+    margin: k16H8VPadding,
+    child: const Row(
+      children: [
+        Icon(HugeIcons.strokeRoundedWifiError01, size: 20.0),
+        Gap(16.0),
+        Expanded(child: _defaultErrorWidget),
+      ],
+    ),
+  ),
+);
 
 // -----------------------------------------------------------------------------
 // EFFICIENT PAGED LAYOUTS
@@ -300,48 +294,36 @@ class EfficientPagedSliverList<PageKeyType, ItemType> extends StatelessWidget {
         layoutProtocol: PagedLayoutProtocol.sliver,
         pagingController: pagingController,
         builderDelegate: builderDelegate,
-        completedListingBuilder: (
-          context,
-          itemBuilder,
-          itemCount,
-          noMoreItemsIndicatorBuilder,
-        ) =>
-            _buildSliverList(
-          itemBuilder,
-          itemCount,
-          statusIndicatorBuilder: noMoreItemsIndicatorBuilder,
-          extentEstimation: extentEstimation,
-          listController: listController,
-          extentPrecalculationPolicy: extentPrecalculationPolicy,
-        ),
-        loadingListingBuilder: (
-          context,
-          itemBuilder,
-          itemCount,
-          progressIndicatorBuilder,
-        ) =>
-            _buildSliverList(
-          itemBuilder,
-          itemCount,
-          statusIndicatorBuilder: progressIndicatorBuilder,
-          extentEstimation: extentEstimation,
-          listController: listController,
-          extentPrecalculationPolicy: extentPrecalculationPolicy,
-        ),
-        errorListingBuilder: (
-          context,
-          itemBuilder,
-          itemCount,
-          errorIndicatorBuilder,
-        ) =>
-            _buildSliverList(
-          itemBuilder,
-          itemCount,
-          statusIndicatorBuilder: errorIndicatorBuilder,
-          extentEstimation: extentEstimation,
-          listController: listController,
-          extentPrecalculationPolicy: extentPrecalculationPolicy,
-        ),
+        completedListingBuilder:
+            (context, itemBuilder, itemCount, noMoreItemsIndicatorBuilder) =>
+                _buildSliverList(
+                  itemBuilder,
+                  itemCount,
+                  statusIndicatorBuilder: noMoreItemsIndicatorBuilder,
+                  extentEstimation: extentEstimation,
+                  listController: listController,
+                  extentPrecalculationPolicy: extentPrecalculationPolicy,
+                ),
+        loadingListingBuilder:
+            (context, itemBuilder, itemCount, progressIndicatorBuilder) =>
+                _buildSliverList(
+                  itemBuilder,
+                  itemCount,
+                  statusIndicatorBuilder: progressIndicatorBuilder,
+                  extentEstimation: extentEstimation,
+                  listController: listController,
+                  extentPrecalculationPolicy: extentPrecalculationPolicy,
+                ),
+        errorListingBuilder:
+            (context, itemBuilder, itemCount, errorIndicatorBuilder) =>
+                _buildSliverList(
+                  itemBuilder,
+                  itemCount,
+                  statusIndicatorBuilder: errorIndicatorBuilder,
+                  extentEstimation: extentEstimation,
+                  listController: listController,
+                  extentPrecalculationPolicy: extentPrecalculationPolicy,
+                ),
         shrinkWrapFirstPageIndicators: shrinkWrapFirstPageIndicators,
       );
 
@@ -356,36 +338,37 @@ class EfficientPagedSliverList<PageKeyType, ItemType> extends StatelessWidget {
     final separatorBuilder = _separatorBuilder;
     final effectiveItemCount =
         statusIndicatorBuilder == null ? itemCount : itemCount + 1;
-    final effectiveItemBuilder = statusIndicatorBuilder == null
-        ? itemBuilder
-        : (BuildContext context, int index) {
-            if (index == itemCount) {
-              return statusIndicatorBuilder(context);
-            }
-            return itemBuilder(context, index);
-          };
+    final effectiveItemBuilder =
+        statusIndicatorBuilder == null
+            ? itemBuilder
+            : (BuildContext context, int index) {
+              if (index == itemCount) {
+                return statusIndicatorBuilder(context);
+              }
+              return itemBuilder(context, index);
+            };
 
     return separatorBuilder != null
         ? SuperSliverList.separated(
-            extentEstimation: extentEstimation,
-            extentPrecalculationPolicy: extentPrecalculationPolicy,
-            listController: listController,
-            itemBuilder: effectiveItemBuilder,
-            separatorBuilder: separatorBuilder,
-            itemCount: effectiveItemCount,
-            addAutomaticKeepAlives: addAutomaticKeepAlives,
-            addRepaintBoundaries: addRepaintBoundaries,
-            addSemanticIndexes: addSemanticIndexes,
-          )
+          extentEstimation: extentEstimation,
+          extentPrecalculationPolicy: extentPrecalculationPolicy,
+          listController: listController,
+          itemBuilder: effectiveItemBuilder,
+          separatorBuilder: separatorBuilder,
+          itemCount: effectiveItemCount,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+          addSemanticIndexes: addSemanticIndexes,
+        )
         : SuperSliverList.builder(
-            extentEstimation: extentEstimation,
-            extentPrecalculationPolicy: extentPrecalculationPolicy,
-            listController: listController,
-            itemBuilder: effectiveItemBuilder,
-            itemCount: effectiveItemCount,
-            addAutomaticKeepAlives: addAutomaticKeepAlives,
-            addRepaintBoundaries: addRepaintBoundaries,
-            addSemanticIndexes: addSemanticIndexes,
-          );
+          extentEstimation: extentEstimation,
+          extentPrecalculationPolicy: extentPrecalculationPolicy,
+          listController: listController,
+          itemBuilder: effectiveItemBuilder,
+          itemCount: effectiveItemCount,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+          addSemanticIndexes: addSemanticIndexes,
+        );
   }
 }

@@ -61,8 +61,8 @@ class _LongHoverButtonState extends State<LongHoverButton> {
 
   @override
   Widget build(BuildContext context) => MouseRegion(
-        onHover: _handleHoverStart,
-        onExit: _handleHoverEnd,
-        child: widget.child,
-      );
+    onHover: _handleHoverStart,
+    onExit: _handleHoverEnd,
+    child: widget.child,
+  );
 }

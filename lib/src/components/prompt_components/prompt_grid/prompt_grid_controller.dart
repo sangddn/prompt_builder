@@ -88,8 +88,9 @@ final class PromptGridController implements InfinityController<Prompt> {
     if (!context.mounted) return;
     final index = c.itemList?.indexWhere((p) => p.id == promptId);
     if (index == null || index == -1) return;
-    c.itemList = List.of(c.itemList ?? [])
-      ..removeAt(index)
-      ..insert(index, newPrompt);
+    c.itemList =
+        List.of(c.itemList ?? [])
+          ..removeAt(index)
+          ..insert(index, newPrompt);
   }
 }

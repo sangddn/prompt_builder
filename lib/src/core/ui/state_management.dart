@@ -184,7 +184,7 @@ class CombinedValueBuilder3<V1, V2, V3, T, R, P> extends StatefulWidget {
   final ValueListenable<V3> v3;
   final (T, R, P) Function(V1 value1, V2 value2, V3 value3) combine;
   final Widget Function(BuildContext context, T value1, R value2, P value3)
-      builder;
+  builder;
 
   @override
   State<CombinedValueBuilder3<V1, V2, V3, T, R, P>> createState() =>
@@ -193,8 +193,11 @@ class CombinedValueBuilder3<V1, V2, V3, T, R, P> extends StatefulWidget {
 
 class _CombinedValueBuilder3State<V1, V2, V3, T, R, P>
     extends State<CombinedValueBuilder3<V1, V2, V3, T, R, P>> {
-  late (T, R, P) _vals =
-      widget.combine(widget.v1.value, widget.v2.value, widget.v3.value);
+  late (T, R, P) _vals = widget.combine(
+    widget.v1.value,
+    widget.v2.value,
+    widget.v3.value,
+  );
 
   @override
   void initState() {
@@ -224,8 +227,11 @@ class _CombinedValueBuilder3State<V1, V2, V3, T, R, P>
   }
 
   void _onValueChanged() {
-    final newVals =
-        widget.combine(widget.v1.value, widget.v2.value, widget.v3.value);
+    final newVals = widget.combine(
+      widget.v1.value,
+      widget.v2.value,
+      widget.v3.value,
+    );
     if (newVals != _vals) {
       setState(() {
         _vals = newVals;
@@ -281,7 +287,7 @@ class ValueBuilder2<T, R> extends StatelessWidget {
   final ValueListenable<T> v1;
   final ValueListenable<R> v2;
   final Widget Function(BuildContext context, T value1, R value2, Widget? child)
-      builder;
+  builder;
   final Widget? child;
 
   @override
@@ -313,15 +319,17 @@ class ValueBuilder3<T, R, P> extends StatelessWidget {
     R value2,
     P value3,
     Widget? child,
-  ) builder;
+  )
+  builder;
   final Widget? child;
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: Listenable.merge([v1, v2, v3]),
-      builder: (context, child) =>
-          builder(context, v1.value, v2.value, v3.value, child),
+      builder:
+          (context, child) =>
+              builder(context, v1.value, v2.value, v3.value, child),
       child: child,
     );
   }
@@ -349,15 +357,17 @@ class ValueBuilder4<T, R, P, Q> extends StatelessWidget {
     P value3,
     Q value4,
     Widget? child,
-  ) builder;
+  )
+  builder;
   final Widget? child;
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: Listenable.merge([v1, v2, v3, v4]),
-      builder: (context, child) =>
-          builder(context, v1.value, v2.value, v3.value, v4.value, child),
+      builder:
+          (context, child) =>
+              builder(context, v1.value, v2.value, v3.value, v4.value, child),
       child: child,
     );
   }
@@ -381,7 +391,8 @@ class FutureBuilder2<T, R> extends StatefulWidget {
     BuildContext context,
     AsyncSnapshot<T> snapshot1,
     AsyncSnapshot<R> snapshot2,
-  ) builder;
+  )
+  builder;
 
   @override
   State<FutureBuilder2<T, R>> createState() => _FutureBuilder2State<T, R>();
@@ -426,7 +437,8 @@ class FutureBuilder3<T, R, P> extends StatefulWidget {
     AsyncSnapshot<T> snapshot1,
     AsyncSnapshot<R> snapshot2,
     AsyncSnapshot<P> snapshot3,
-  ) builder;
+  )
+  builder;
 
   @override
   State<FutureBuilder3<T, R, P>> createState() =>
@@ -477,7 +489,8 @@ class StreamBuilder2<T, R> extends StatelessWidget {
     BuildContext context,
     AsyncSnapshot<T> snapshot1,
     AsyncSnapshot<R> snapshot2,
-  ) builder;
+  )
+  builder;
 
   @override
   Widget build(BuildContext context) {
@@ -565,18 +578,19 @@ abstract class MultiProviderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MultiProvider(
-        providers: providers.isEmpty
+    providers:
+        providers.isEmpty
             ? () {
-                final providers = getProviders(context);
-                assert(
-                  providers.isNotEmpty,
-                  'getProviders must return a non-empty list',
-                );
-                return providers;
-              }()
+              final providers = getProviders(context);
+              assert(
+                providers.isNotEmpty,
+                'getProviders must return a non-empty list',
+              );
+              return providers;
+            }()
             : providers,
-        builder: (context, _) => buildChild(context),
-      );
+    builder: (context, _) => buildChild(context),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -620,30 +634,33 @@ class StateProvider<T> extends ChangeNotifierProvider<ValueNotifier<T>> {
     super.lazy,
     Widget? child,
     super.key,
-  })  : assert(
-          valueBuilder == null || builder == null,
-          'Cannot use both valueBuilder and builder',
-        ),
-        super(
-          create: (context) {
-            final notifier = ValueNotifier(createInitialValue(context));
-            initState?.call(context, notifier);
-            if (onValueChanged != null) {
-              notifier
-                  .addListener(() => onValueChanged(context, notifier.value));
-            }
-            return notifier;
-          },
-          child: ProxyProvider<ValueNotifier<T>, T>(
-            update: (context, notifier, previous) => notifier.value,
-            updateShouldNotify: updateShouldNotify,
-            dispose: dispose,
-            builder: builder ??
-                valueBuilder
-                    ?.let((b) => (c, child) => b(c, c.watch<T>(), child)),
-            child: child,
-          ),
-        );
+  }) : assert(
+         valueBuilder == null || builder == null,
+         'Cannot use both valueBuilder and builder',
+       ),
+       super(
+         create: (context) {
+           final notifier = ValueNotifier(createInitialValue(context));
+           initState?.call(context, notifier);
+           if (onValueChanged != null) {
+             notifier.addListener(
+               () => onValueChanged(context, notifier.value),
+             );
+           }
+           return notifier;
+         },
+         child: ProxyProvider<ValueNotifier<T>, T>(
+           update: (context, notifier, previous) => notifier.value,
+           updateShouldNotify: updateShouldNotify,
+           dispose: dispose,
+           builder:
+               builder ??
+               valueBuilder?.let(
+                 (b) => (c, child) => b(c, c.watch<T>(), child),
+               ),
+           child: child,
+         ),
+       );
 }
 
 /// A [ChangeNotifierProvider] that provides a callback for dispose before
@@ -661,16 +678,16 @@ class ValueProvider<T extends ChangeNotifier> extends ListenableProvider<T> {
     super.child,
     super.key,
   }) : super(
-          create: (context) {
-            final notifier = create(context);
-            if (onNotified != null) {
-              notifier.addListener(() => onNotified(context, notifier));
-            }
-            return notifier;
-          },
-          dispose: (BuildContext context, T? notifier) {
-            onDisposed?.call(context, notifier);
-            notifier?.dispose();
-          },
-        );
+         create: (context) {
+           final notifier = create(context);
+           if (onNotified != null) {
+             notifier.addListener(() => onNotified(context, notifier));
+           }
+           return notifier;
+         },
+         dispose: (BuildContext context, T? notifier) {
+           onDisposed?.call(context, notifier);
+           notifier?.dispose();
+         },
+       );
 }

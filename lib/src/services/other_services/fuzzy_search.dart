@@ -8,7 +8,7 @@ List<String> _fuzzySearch((List<String>, String, int) args) {
           .map(
             (s) => (
               s,
-              fuzzy.tokenSortPartialRatio(s.toLowerCase(), effectiveQuery)
+              fuzzy.tokenSortPartialRatio(s.toLowerCase(), effectiveQuery),
             ),
           )
           .where((s) => s.$2 >= threshold)
@@ -26,12 +26,10 @@ List<String> fuzzySearch(
   List<String> strings,
   String query, [
   int threshold = 0,
-]) =>
-    _fuzzySearch((strings, query, threshold));
+]) => _fuzzySearch((strings, query, threshold));
 
 Future<List<String>> fuzzySearchAsync(
   List<String> strings,
   String query, [
   int threshold = 0,
-]) =>
-    compute(_fuzzySearch, (strings, query, threshold));
+]) => compute(_fuzzySearch, (strings, query, threshold));

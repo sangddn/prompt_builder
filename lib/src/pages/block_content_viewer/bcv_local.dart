@@ -32,17 +32,18 @@ class BCVLocal extends StatelessWidget {
       enterDuration: Effects.veryShortDuration,
       exitDuration: Effects.veryShortDuration,
       child: ShadTabs(
-        value: isSupportedFile(filePath)
-            ? 'content'
-            : textContent != null
+        value:
+            isSupportedFile(filePath)
+                ? 'content'
+                : textContent != null
                 ? 'textContent'
                 : transcript != null
-                    ? 'transcript'
-                    : summary != null
-                        ? 'summary'
-                        : caption != null
-                            ? 'caption'
-                            : 'content',
+                ? 'transcript'
+                : summary != null
+                ? 'summary'
+                : caption != null
+                ? 'caption'
+                : 'content',
         // expandContent: true,
         tabs: [
           ShadTab(
@@ -186,10 +187,7 @@ class __FileViewerContentState extends State<_FileViewerContent> {
             path.extension(_path).replaceAll('.', '').toLowerCase();
         return isMarkdownFile(_path) || !isCodeFile(extension)
             ? Markdown(data: content)
-            : _BCVCodeViewer(
-                fileContent: content,
-                fileExtension: extension,
-              );
+            : _BCVCodeViewer(fileContent: content, fileExtension: extension);
       },
     );
   }

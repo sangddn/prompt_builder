@@ -108,8 +108,10 @@ class HighlightedText extends StatelessWidget {
           }
         } else {
           for (int i = 0; i < highlights.length; i++) {
-            final int index =
-                lowerCaseText.indexOf(lowerCaseHighlights[i], start);
+            final int index = lowerCaseText.indexOf(
+              lowerCaseHighlights[i],
+              start,
+            );
             if (index >= 0) {
               highlightsMap.putIfAbsent(index, () => highlights[i]);
             }
@@ -158,17 +160,9 @@ class HighlightedText extends StatelessWidget {
   /// Creates a TextSpan for non-highlighted text portions
   TextSpan _normalSpan(String value, TextStyle style) {
     if (style.color == null) {
-      return TextSpan(
-        text: value,
-        style: style.copyWith(
-          color: Colors.black,
-        ),
-      );
+      return TextSpan(text: value, style: style.copyWith(color: Colors.black));
     } else {
-      return TextSpan(
-        text: value,
-        style: style,
-      );
+      return TextSpan(text: value, style: style);
     }
   }
 

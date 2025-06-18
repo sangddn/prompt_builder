@@ -10,10 +10,7 @@ class _PPCopySection extends StatelessWidget {
       children: [
         _EditPreviewToggler(),
         Gap(20.0),
-        Padding(
-          padding: k8HPadding,
-          child: _EstimatedTokenCount(),
-        ),
+        Padding(padding: k8HPadding, child: _EstimatedTokenCount()),
         Gap(12.0),
         _ExactTokenCounter(),
         Gap(20.0),
@@ -29,12 +26,13 @@ class _EstimatedTokenCount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return EstimatedTokenCounter(
-      countTokens: (context) => context.select(
-        (_PromptBlockContents content) => content.values.fold(
-          0,
-          (acc, block) => acc + (block.textTokenCount ?? 0),
-        ),
-      ),
+      countTokens:
+          (context) => context.select(
+            (_PromptBlockContents content) => content.values.fold(
+              0,
+              (acc, block) => acc + (block.textTokenCount ?? 0),
+            ),
+          ),
     );
   }
 }
@@ -45,8 +43,9 @@ class _ExactTokenCounter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExactTokenCounter(
-      hasContentChanged: (context, currentContent) =>
-          context.selectContent((c) => c != currentContent),
+      hasContentChanged:
+          (context, currentContent) =>
+              context.selectContent((c) => c != currentContent),
       getContent: () => context.getContent(),
     );
   }
@@ -77,7 +76,7 @@ class _CopyPromptButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ShadImage.square(
+              Icon(
                 HugeIcons.strokeRoundedCopy01,
                 size: 14.0,
                 color: theme.colorScheme.primaryForeground,
@@ -86,8 +85,9 @@ class _CopyPromptButton extends StatelessWidget {
               Flexible(
                 child: Text(
                   'Copy Prompt',
-                  style: theme.textTheme.p
-                      .copyWith(color: theme.colorScheme.primaryForeground),
+                  style: theme.textTheme.p.copyWith(
+                    color: theme.colorScheme.primaryForeground,
+                  ),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
@@ -114,7 +114,7 @@ class _EditPreviewToggler extends StatelessWidget {
           child: const Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ShadImage.square(HugeIcons.strokeRoundedEdit01, size: 14.0),
+              Icon(HugeIcons.strokeRoundedEdit01, size: 14.0),
               Gap(4.0),
               Text('Edit'),
             ],
@@ -126,7 +126,7 @@ class _EditPreviewToggler extends StatelessWidget {
           child: const Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ShadImage.square(HugeIcons.strokeRoundedEye, size: 14.0),
+              Icon(HugeIcons.strokeRoundedEye, size: 14.0),
               Gap(4.0),
               Text('Preview'),
             ],

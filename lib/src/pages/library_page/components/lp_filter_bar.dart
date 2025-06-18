@@ -5,9 +5,6 @@ class _LPFilterBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SliverToBoxAdapter(
-        child: TagFilterBar(
-          type: TagType.prompt,
-          notifier: context.read(),
-        ),
-      );
+    child: TagFilterBar(type: TagType.prompt, notifier: context.read()),
+  );
 }

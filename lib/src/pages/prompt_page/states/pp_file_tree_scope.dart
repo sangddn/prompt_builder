@@ -17,8 +17,7 @@ class _PPFileTreeScopeState extends State<_PPFileTreeScope> {
     IndexedFileTree tree,
     List<String> filePaths,
     List<String> folderPaths,
-  ) =>
-      maybeSetState(() => _tree = (tree, filePaths, folderPaths));
+  ) => maybeSetState(() => _tree = (tree, filePaths, folderPaths));
 
   void _handleEntityEvent(final FileSystemEvent event) {
     final tree = _tree;
@@ -28,79 +27,60 @@ class _PPFileTreeScopeState extends State<_PPFileTreeScope> {
         return;
       case (true, FileSystemCreateEvent()):
         maybeSetState(
-          () => _tree = (
-            tree.$1,
-            tree.$2,
-            tree.$3..add(event.path),
-          ),
+          () => _tree = (tree.$1, tree.$2, tree.$3..add(event.path)),
         );
       case (true, FileSystemDeleteEvent()):
         maybeSetState(
-          () => _tree = (
-            tree.$1,
-            tree.$2,
-            tree.$3..remove(event.path),
-          ),
+          () => _tree = (tree.$1, tree.$2, tree.$3..remove(event.path)),
         );
       case (true, FileSystemMoveEvent()):
         maybeSetState(
-          () => _tree = (
-            tree.$1,
-            tree.$2,
-            tree.$3
-              ..remove(event.path)
-              ..add((event as FileSystemMoveEvent).destination ?? '')
-              ..remove(''),
-          ),
+          () =>
+              _tree = (
+                tree.$1,
+                tree.$2,
+                tree.$3
+                  ..remove(event.path)
+                  ..add((event as FileSystemMoveEvent).destination ?? '')
+                  ..remove(''),
+              ),
         );
       case (false, FileSystemCreateEvent()):
         maybeSetState(
-          () => _tree = (
-            tree.$1,
-            tree.$2..add(event.path),
-            tree.$3,
-          ),
+          () => _tree = (tree.$1, tree.$2..add(event.path), tree.$3),
         );
       case (false, FileSystemDeleteEvent()):
         maybeSetState(
-          () => _tree = (
-            tree.$1,
-            tree.$2..remove(event.path),
-            tree.$3,
-          ),
+          () => _tree = (tree.$1, tree.$2..remove(event.path), tree.$3),
         );
       case (false, FileSystemMoveEvent()):
         maybeSetState(
-          () => _tree = (
-            tree.$1,
-            tree.$2
-              ..remove(event.path)
-              ..add((event as FileSystemMoveEvent).destination ?? '')
-              ..remove(''),
-            tree.$3,
-          ),
+          () =>
+              _tree = (
+                tree.$1,
+                tree.$2
+                  ..remove(event.path)
+                  ..add((event as FileSystemMoveEvent).destination ?? '')
+                  ..remove(''),
+                tree.$3,
+              ),
         );
     }
   }
 
   /// {@macro pages.prompt_page.path_search_callback}
-  Future<List<_PathSearchResult>> _searchPaths(
-    String query,
-  ) async {
-    final results = await fuzzySearchAsync(
-      [
-        ...?_tree?.$2,
-        ...?_tree?.$3.map((folder) => '//$folder'),
-      ],
-      query,
-    );
+  Future<List<_PathSearchResult>> _searchPaths(String query) async {
+    final results = await fuzzySearchAsync([
+      ...?_tree?.$2,
+      ...?_tree?.$3.map((folder) => '//$folder'),
+    ], query);
     return results.map((result) {
       final isDirectory = result.startsWith('//');
       final p = isDirectory ? result.substring(2) : result;
       return (
         p,
         path.relative(p, from: context.prompt?.folderPath),
-        isDirectory
+        isDirectory,
       );
     }).toList();
   }
@@ -110,22 +90,25 @@ class _PPFileTreeScopeState extends State<_PPFileTreeScope> {
     return MultiProvider(
       providers: [
         ProxyProvider<_PromptBlockList, _SelectedFilePaths>(
-          update: (context, blocks, _) =>
-              blocks.map((b) => b.filePath).nonNulls.toISet(),
+          update:
+              (context, blocks, _) =>
+                  blocks.map((b) => b.filePath).nonNulls.toISet(),
         ),
         Provider<_FileAndFolderPaths>.value(
           value: (ISet(_tree?.$2), ISet(_tree?.$3)),
         ),
         Provider<_PathSearchCallback>.value(value: _searchPaths),
         ChangeNotifierProvider<_FolderPathNotifier>(
-          create: (context) =>
-              createFolderPathNotifier(context, context.prompt?.folderPath),
+          create:
+              (context) =>
+                  createFolderPathNotifier(context, context.prompt?.folderPath),
         ),
         ChangeNotifierProvider<_IgnorePatternsNotifier>(
-          create: (context) => createIgnorePatternsNotifier(
-            context,
-            context.prompt?.ignorePatterns,
-          ),
+          create:
+              (context) => createIgnorePatternsNotifier(
+                context,
+                context.prompt?.ignorePatterns,
+              ),
         ),
       ],
       child: NotificationListener<FileTreeNotification>(
@@ -159,11 +142,8 @@ class _PPFileTreeScopeState extends State<_PPFileTreeScope> {
 
 typedef _SelectedFilePaths = ISet<String>;
 
-typedef _PathSearchResult = (
-  String fullPath,
-  String relativePath,
-  bool isDirectory
-);
+typedef _PathSearchResult =
+    (String fullPath, String relativePath, bool isDirectory);
 
 /// Type signature of the search results.
 /// The first element is the full path, the second element is the relative path,
@@ -251,8 +231,8 @@ extension _PPFileTreeScopeExtension on BuildContext {
 
   /// Counts how many selected files start with the given file path
   int countSelection(String filePath) => select(
-        (_SelectedFilePaths s) => s.where((e) => e.startsWith(filePath)).length,
-      );
+    (_SelectedFilePaths s) => s.where((e) => e.startsWith(filePath)).length,
+  );
 }
 
 // -----------------------------------------------------------------------------
@@ -270,10 +250,11 @@ Future<void> _handleNodeSelection(
   // Deselect the file, or all files in the folder (recursively)
   if (!isSelected) {
     final blocks = context.promptBlocks;
-    final blocksToRemove = blocks
-        .where((b) => b.filePath?.startsWith(fullPath) ?? false)
-        .map((b) => b.id)
-        .toList();
+    final blocksToRemove =
+        blocks
+            .where((b) => b.filePath?.startsWith(fullPath) ?? false)
+            .map((b) => b.id)
+            .toList();
     await context.db.deleteBlocks(blocksToRemove);
     return;
   }

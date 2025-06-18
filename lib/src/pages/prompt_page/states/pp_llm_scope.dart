@@ -7,11 +7,11 @@ class _PPLLMScope extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MultiProvider(
-        providers: [
-          ValueProvider<ValueNotifier<LLMProvider>>(
-            create: (_) => ValueNotifier(OpenAI()),
-          ),
-        ],
-        child: child,
-      );
+    providers: [
+      ValueProvider<ValueNotifier<LLMProvider>>(
+        create: (_) => ValueNotifier(OpenAI()),
+      ),
+    ],
+    child: child,
+  );
 }

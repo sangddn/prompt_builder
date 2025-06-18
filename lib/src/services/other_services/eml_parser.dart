@@ -187,8 +187,9 @@ EmlMessage parseEml(String rawEml) {
   final transferEnc =
       _getHeaderFirst(headerMap, 'Content-Transfer-Encoding')?.toLowerCase();
   final date = _parseDate(_getHeaderFirst(headerMap, 'Date'));
-  final subject =
-      _decodeMimeSentence(_getHeaderFirst(headerMap, 'Subject') ?? '');
+  final subject = _decodeMimeSentence(
+    _getHeaderFirst(headerMap, 'Subject') ?? '',
+  );
   final from = _parseAddressHeader(headerMap, 'From');
   final to = _parseAddressHeader(headerMap, 'To');
   final cc = _parseAddressHeader(headerMap, 'Cc');
@@ -215,8 +216,11 @@ EmlMessage parseEml(String rawEml) {
     );
   } else {
     // Single-part message
-    final singlePartContent =
-        _decodeBodyLines(bodyLines, contentType, transferEnc);
+    final singlePartContent = _decodeBodyLines(
+      bodyLines,
+      contentType,
+      transferEnc,
+    );
     _maybeAssignSinglePart(
       lowercasedContentType,
       singlePartContent,
@@ -322,10 +326,11 @@ List<EmlAddress> _parseAddressHeader(
   Map<String, List<String>> headerMap,
   String headerName,
 ) {
-  final rawValues = headerMap.entries
-      .where((e) => e.key.toLowerCase() == headerName.toLowerCase())
-      .expand((e) => e.value)
-      .toList();
+  final rawValues =
+      headerMap.entries
+          .where((e) => e.key.toLowerCase() == headerName.toLowerCase())
+          .expand((e) => e.value)
+          .toList();
   if (rawValues.isEmpty) return [];
 
   // Join them if multiple lines
@@ -408,12 +413,7 @@ void _parseMultipartBody(
 
   // Now parse each part
   for (final part in parts) {
-    _processMultipartPart(
-      part,
-      textBuffer,
-      htmlBuffer,
-      attachments,
-    );
+    _processMultipartPart(part, textBuffer, htmlBuffer, attachments);
   }
 }
 
@@ -438,7 +438,7 @@ void _processMultipartPart(
   final lowercasedContentType = contentType.toLowerCase();
   final transferEnc =
       _getHeaderFirst(headers, 'Content-Transfer-Encoding')?.toLowerCase() ??
-          '';
+      '';
   final disposition =
       _getHeaderFirst(headers, 'Content-Disposition')?.toLowerCase() ?? '';
 
@@ -473,9 +473,10 @@ void _processMultipartPart(
     final bytes = Uint8List.fromList(decodedContent.codeUnits);
     attachments.add(
       EmlAttachment(
-        id: contentId.isNotEmpty
-            ? contentId
-            : (fileName.isNotEmpty ? fileName : 'attachment'),
+        id:
+            contentId.isNotEmpty
+                ? contentId
+                : (fileName.isNotEmpty ? fileName : 'attachment'),
         fileName: fileName.isNotEmpty ? fileName : 'unknown.dat',
         contentType: lowercasedContentType,
         inline: disposition.contains('inline'),
@@ -498,8 +499,10 @@ String _extractFileNameFromHeaders(Map<String, List<String>> headers) {
     return cdMatch.group(1)?.trim() ?? '';
   }
 
-  final ctMatch =
-      RegExp(r'name\*?="?([^";]+)"?', caseSensitive: false).firstMatch(ctype);
+  final ctMatch = RegExp(
+    r'name\*?="?([^";]+)"?',
+    caseSensitive: false,
+  ).firstMatch(ctype);
   if (ctMatch != null) {
     return ctMatch.group(1)?.trim() ?? '';
   }
@@ -508,8 +511,10 @@ String _extractFileNameFromHeaders(Map<String, List<String>> headers) {
 
 String? _getBoundary(String contentType) {
   // multipart/alternative; boundary="_----------=_MCPart_20394923"
-  final match = RegExp(r'boundary\s*=\s*("?)([^";]+)\1', caseSensitive: false)
-      .firstMatch(contentType);
+  final match = RegExp(
+    r'boundary\s*=\s*("?)([^";]+)\1',
+    caseSensitive: false,
+  ).firstMatch(contentType);
   return match?.group(2);
 }
 
@@ -527,8 +532,9 @@ String _decodeBodyLines(
 
   if (transferEnc == 'base64') {
     try {
-      final bytes =
-          base64.decode(joined.replaceAll('\r', '').replaceAll('\n', ''));
+      final bytes = base64.decode(
+        joined.replaceAll('\r', '').replaceAll('\n', ''),
+      );
       // If text, decode to string
       if ((contentType ?? '').toLowerCase().contains('text/')) {
         return utf8.decode(bytes, allowMalformed: true);
@@ -566,8 +572,10 @@ String _decodeQuotedPrintable(String input) {
 // MIME-ENCODED WORDS (Subjects, etc.)
 // ---------------------------------------------------------------------------
 
-final _encodedWordPattern =
-    RegExp(r'=\?([^?]+)\?([bqBQ])\?([^?]+)\?=', caseSensitive: false);
+final _encodedWordPattern = RegExp(
+  r'=\?([^?]+)\?([bqBQ])\?([^?]+)\?=',
+  caseSensitive: false,
+);
 
 String _decodeMimeSentence(String raw) {
   if (raw.isEmpty) return '';
@@ -608,13 +616,14 @@ String? _decodeBytes(List<int> bytes, String charset) {
 }
 
 String? _decodeQEncoding(String text, String charset) {
-  final replaced = text
-      .replaceAll('_', ' ')
-      .replaceAllMapped(RegExp(r'=[0-9A-Fa-f]{2}'), (m) {
-    final hex = m.group(0)!.substring(1);
-    final val = int.parse(hex, radix: 16);
-    return String.fromCharCode(val);
-  });
+  final replaced = text.replaceAll('_', ' ').replaceAllMapped(
+    RegExp(r'=[0-9A-Fa-f]{2}'),
+    (m) {
+      final hex = m.group(0)!.substring(1);
+      final val = int.parse(hex, radix: 16);
+      return String.fromCharCode(val);
+    },
+  );
   return _decodeBytes(utf8.encode(replaced), charset);
 }
 

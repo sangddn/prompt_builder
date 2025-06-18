@@ -71,7 +71,8 @@ extension PromptBlocksExtension on Database {
     bool? preferSummary,
   }) async {
     final now = DateTime.now();
-    final tokenRelatedContentChanged = displayName != null ||
+    final tokenRelatedContentChanged =
+        displayName != null ||
         textContent != null ||
         filePath != null ||
         url != null ||
@@ -95,24 +96,28 @@ extension PromptBlocksExtension on Database {
             transcript != null ? Value(transcript) : const Value.absent(),
         caption: caption != null ? Value(caption) : const Value.absent(),
         summary: summary != null ? Value(summary) : const Value.absent(),
-        fullContentTokenCount: fullContentTokenCountAndMethod != null
-            ? Value(fullContentTokenCountAndMethod.$1)
-            : tokenRelatedContentChanged
+        fullContentTokenCount:
+            fullContentTokenCountAndMethod != null
+                ? Value(fullContentTokenCountAndMethod.$1)
+                : tokenRelatedContentChanged
                 ? const Value(null)
                 : const Value.absent(),
-        fullContentTokenCountMethod: fullContentTokenCountAndMethod != null
-            ? Value(fullContentTokenCountAndMethod.$2)
-            : tokenRelatedContentChanged
+        fullContentTokenCountMethod:
+            fullContentTokenCountAndMethod != null
+                ? Value(fullContentTokenCountAndMethod.$2)
+                : tokenRelatedContentChanged
                 ? const Value(null)
                 : const Value.absent(),
-        summaryTokenCount: summaryTokenCountAndMethod != null
-            ? Value(summaryTokenCountAndMethod.$1)
-            : tokenRelatedContentChanged
+        summaryTokenCount:
+            summaryTokenCountAndMethod != null
+                ? Value(summaryTokenCountAndMethod.$1)
+                : tokenRelatedContentChanged
                 ? const Value(null)
                 : const Value.absent(),
-        summaryTokenCountMethod: summaryTokenCountAndMethod != null
-            ? Value(summaryTokenCountAndMethod.$2)
-            : tokenRelatedContentChanged
+        summaryTokenCountMethod:
+            summaryTokenCountAndMethod != null
+                ? Value(summaryTokenCountAndMethod.$2)
+                : tokenRelatedContentChanged
                 ? const Value(null)
                 : const Value.absent(),
         preferSummary:
@@ -147,12 +152,14 @@ extension PromptBlocksExtension on Database {
             fullContentTokenCount || fullContentTokenCountMethod
                 ? const Value(null)
                 : const Value.absent(),
-        summaryTokenCount: summaryTokenCount || summaryTokenCountMethod
-            ? const Value(null)
-            : const Value.absent(),
-        summaryTokenCountMethod: summaryTokenCount || summaryTokenCountMethod
-            ? const Value(null)
-            : const Value.absent(),
+        summaryTokenCount:
+            summaryTokenCount || summaryTokenCountMethod
+                ? const Value(null)
+                : const Value.absent(),
+        summaryTokenCountMethod:
+            summaryTokenCount || summaryTokenCountMethod
+                ? const Value(null)
+                : const Value.absent(),
         updatedAt: Value(now),
       ),
     );
@@ -197,10 +204,11 @@ extension PromptBlockReorderExtension on Database {
     required int newIndex,
   }) async {
     // 1. Load all blocks for this prompt, sorted by ascending sortOrder
-    final blocks = await (select(promptBlocks)
-          ..where((tbl) => tbl.promptId.equals(promptId))
-          ..orderBy([(tbl) => OrderingTerm.asc(tbl.sortOrder)]))
-        .get();
+    final blocks =
+        await (select(promptBlocks)
+              ..where((tbl) => tbl.promptId.equals(promptId))
+              ..orderBy([(tbl) => OrderingTerm.asc(tbl.sortOrder)]))
+            .get();
 
     // Safety check: if we don’t have enough blocks or block not found, bail out.
     if (blocks.isEmpty) return;
@@ -274,10 +282,11 @@ extension PromptBlockReorderExtension on Database {
   /// Reindex pass: realign all blocks in increments of 100
   /// so future reorder operations have room to slot between them.
   Future<void> _reindexPromptBlocks(int promptId) async {
-    final blocks = await (select(promptBlocks)
-          ..where((tbl) => tbl.promptId.equals(promptId))
-          ..orderBy([(tbl) => OrderingTerm.asc(tbl.sortOrder)]))
-        .get();
+    final blocks =
+        await (select(promptBlocks)
+              ..where((tbl) => tbl.promptId.equals(promptId))
+              ..orderBy([(tbl) => OrderingTerm.asc(tbl.sortOrder)]))
+            .get();
 
     var sortValue = 100.0;
     for (final block in blocks) {
@@ -321,13 +330,10 @@ extension PromptBlockExtension on PromptBlock {
   }
 
   String? getSummarizableContent() => switch (type) {
-        BlockType.text ||
-        BlockType.localFile ||
-        BlockType.webUrl =>
-          textContent,
-        BlockType.youtube || BlockType.audio || BlockType.video => transcript,
-        _ => null,
-      };
+    BlockType.text || BlockType.localFile || BlockType.webUrl => textContent,
+    BlockType.youtube || BlockType.audio || BlockType.video => transcript,
+    _ => null,
+  };
 
   /// Returns a string representation of this block in a format suitable for prompts.
   ///
@@ -354,9 +360,9 @@ extension PromptBlockExtension on PromptBlock {
     final preferSummary = summary != null && this.preferSummary;
     final (tag, info) = switch ((type, preferSummary)) {
       (BlockType.text, _) => (
-          displayName.isNotEmpty ? 'text' : 'instructions',
-          displayName.isNotEmpty ? 'label="$displayName"' : '',
-        ),
+        displayName.isNotEmpty ? 'text' : 'instructions',
+        displayName.isNotEmpty ? 'label="$displayName"' : '',
+      ),
       (BlockType.localFile, false) => ('file', 'path="$filePath"'),
       (BlockType.localFile, true) => ('file-summary', 'path="$filePath"'),
       (BlockType.webUrl, false) => ('webpage-content', 'url="$url"'),
@@ -372,8 +378,9 @@ extension PromptBlockExtension on PromptBlock {
         throw Exception('Block is not supported to be copied to prompt.'),
     };
     final content = switch ((type, preferSummary)) {
-      (BlockType.text, _) =>
-        textContent?.let(SnippetExtension.collapseVariables),
+      (BlockType.text, _) => textContent?.let(
+        SnippetExtension.collapseVariables,
+      ),
       (BlockType.localFile || BlockType.webUrl, false) => textContent,
       (BlockType.youtube || BlockType.audio || BlockType.video, false) =>
         transcript,
@@ -383,7 +390,7 @@ extension PromptBlockExtension on PromptBlock {
             BlockType.video ||
             BlockType.localFile ||
             BlockType.webUrl,
-        true
+        true,
       ) =>
         summary,
       (BlockType.image, _) => caption,
@@ -404,8 +411,9 @@ $content
     if (asPrompt != null) return asPrompt;
     final filePath = this.filePath;
     if (filePath != null) {
-      final encoded = await getDataFormat(filePath)
-          ?.call(await File(filePath).readAsBytes());
+      final encoded = await getDataFormat(
+        filePath,
+      )?.call(await File(filePath).readAsBytes());
       if (encoded != null) {
         final item = DataWriterItem();
         item.add(encoded);
@@ -419,8 +427,9 @@ $content
   Future<DataWriterItem?> copyData() async {
     final filePath = this.filePath;
     if (filePath == null) return null;
-    final encoded =
-        await getDataFormat(filePath)?.call(await File(filePath).readAsBytes());
+    final encoded = await getDataFormat(
+      filePath,
+    )?.call(await File(filePath).readAsBytes());
     if (encoded == null) return null;
     final item = DataWriterItem()..add(encoded);
     return item;
@@ -435,11 +444,12 @@ extension PromptBlockCreation on Database {
       isVideoFile(filePath);
 
   Future<double> _inferLastSortOrder(int promptId) async {
-    final lastCurrentBlock = await (select(promptBlocks)
-          ..where((tbl) => tbl.promptId.equals(promptId))
-          ..orderBy([(tbl) => OrderingTerm.desc(tbl.sortOrder)])
-          ..limit(1))
-        .getSingleOrNull();
+    final lastCurrentBlock =
+        await (select(promptBlocks)
+              ..where((tbl) => tbl.promptId.equals(promptId))
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.sortOrder)])
+              ..limit(1))
+            .getSingleOrNull();
     return lastCurrentBlock?.sortOrder ?? 100.0;
   }
 
@@ -452,22 +462,24 @@ extension PromptBlockCreation on Database {
       filePaths.indexedMap((index, filePath) async {
         final mimeType = lookupMimeType(filePath);
 
-        final (name, text) = canBeRepresentedAsText(filePath)
-            ? await readFileAsText(filePath)
-            : (null, null);
+        final (name, text) =
+            canBeRepresentedAsText(filePath)
+                ? await readFileAsText(filePath)
+                : (null, null);
 
         return PromptBlocksCompanion.insert(
           promptId: promptId,
-          blockType: (text != null
-                  ? BlockType.localFile
-                  : isImageFile(filePath)
+          blockType:
+              (text != null
+                      ? BlockType.localFile
+                      : isImageFile(filePath)
                       ? BlockType.image
                       : isAudioFile(filePath)
-                          ? BlockType.audio
-                          : isVideoFile(filePath)
-                              ? BlockType.video
-                              : BlockType.unsupported)
-              .name,
+                      ? BlockType.audio
+                      : isVideoFile(filePath)
+                      ? BlockType.video
+                      : BlockType.unsupported)
+                  .name,
           filePath: Value(filePath),
           textContent: Value(text),
           displayName: name != null ? Value(name) : const Value.absent(),
@@ -517,8 +529,9 @@ extension PromptBlockCreation on Database {
     SearchProvider? searchProvider,
   ]) async {
     final lastSortOrder = await _inferLastSortOrder(promptId);
-    final content = await (searchProvider?.fetchWebpage(url) ??
-        WebService.fetchMarkdown(url));
+    final content =
+        await (searchProvider?.fetchWebpage(url) ??
+            WebService.fetchMarkdown(url));
     if (content.isEmpty) return null;
     final blockId = await createBlock(
       promptId: promptId,

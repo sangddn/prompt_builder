@@ -22,14 +22,14 @@ class _PPBlockContentScopeState extends State<_PPBlockContentScope> {
       return (
         content,
         block.summaryTokenCountAndMethod!.$1,
-        block.summaryTokenCountAndMethod!.$2
+        block.summaryTokenCountAndMethod!.$2,
       );
     }
     if (!preferSummary && block.fullContentTokenCountAndMethod != null) {
       return (
         content,
         block.fullContentTokenCountAndMethod!.$1,
-        block.fullContentTokenCountAndMethod!.$2
+        block.fullContentTokenCountAndMethod!.$2,
       );
     }
     final count = content?.let(provider.estimateTokens);
@@ -55,8 +55,10 @@ class _PPBlockContentScopeState extends State<_PPBlockContentScope> {
       );
     });
     setState(
-      () => _contents =
-          _contents.addEntries(contents.map((c) => MapEntry(c.id, c))),
+      () =>
+          _contents = _contents.addEntries(
+            contents.map((c) => MapEntry(c.id, c)),
+          ),
     );
   }
 
@@ -89,17 +91,21 @@ class _PPBlockContentScopeState extends State<_PPBlockContentScope> {
 
   @override
   Widget build(BuildContext context) => MultiProvider(
-        providers: [
-          Provider<_PromptBlockContents>.value(value: _contents),
-          ProxyProvider2<_PromptBlockList, _PromptBlockContents,
-              _PromptCopiableContent>(
-            update: (context, blocks, contents, _) => _PromptCopiableContent(
+    providers: [
+      Provider<_PromptBlockContents>.value(value: _contents),
+      ProxyProvider2<
+        _PromptBlockList,
+        _PromptBlockContents,
+        _PromptCopiableContent
+      >(
+        update:
+            (context, blocks, contents, _) => _PromptCopiableContent(
               blocks.map((b) => contents[b.id]?.text).nonNulls.join('\n\n'),
             ),
-          ),
-        ],
-        child: widget.child,
-      );
+      ),
+    ],
+    child: widget.child,
+  );
 }
 
 // -----------------------------------------------------------------------------
@@ -131,12 +137,8 @@ class _PromptBlockContent {
       textTokenCountMethod == other.textTokenCountMethod;
 
   @override
-  int get hashCode => Object.hash(
-        id,
-        text,
-        textTokenCount,
-        textTokenCountMethod,
-      );
+  int get hashCode =>
+      Object.hash(id, text, textTokenCount, textTokenCountMethod);
 }
 
 @immutable

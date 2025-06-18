@@ -34,12 +34,14 @@ class ResourcesPage extends StatelessWidget {
           dividerColor: Colors.transparent,
           children: [
             ShadResizablePanel(
+              id: 'tag-bar',
               defaultSize: .3,
               minSize: .2,
               maxSize: .4,
               child: _RPTagBar(),
             ),
             ShadResizablePanel(
+              id: 'main-content',
               defaultSize: .7,
               minSize: .6,
               maxSize: .8,
@@ -62,10 +64,7 @@ class _MainContent extends StatelessWidget {
       slivers: const [
         PAppBar(title: Text('Resources')),
         SliverGap(16.0),
-        SliverPadding(
-          padding: k16HPadding,
-          sliver: _RPSnippetList(),
-        ),
+        SliverPadding(padding: k16HPadding, sliver: _RPSnippetList()),
         SliverGap(64.0),
       ],
     );

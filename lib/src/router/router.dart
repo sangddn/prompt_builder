@@ -10,39 +10,35 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
+    DefaultRoute(
+      initial: true,
+      page: AppShellRoute.page,
+      children: [
         DefaultRoute(
           initial: true,
-          page: AppShellRoute.page,
+          page: MainTabsRoute.page,
           children: [
-            DefaultRoute(
-              initial: true,
-              page: MainTabsRoute.page,
-              children: [
-                DefaultRoute(path: 'library', page: LibraryRoute.page),
-                DefaultRoute(path: 'projects', page: ProjectsRoute.page),
-                DefaultRoute(path: 'snippets', page: SnippetsRoute.page),
-                DefaultRoute(path: 'settings', page: SettingsRoute.page),
-                DefaultRoute(path: 'resources', page: ResourcesRoute.page),
-              ],
-            ),
-            DefaultRoute(path: 'prompt/:id', page: PromptRoute.page),
-            DefaultRoute(path: 'project/:id', page: ProjectRoute.page),
-            DefaultRoute(path: 'snippet/:id', page: SnippetRoute.page),
+            DefaultRoute(path: 'library', page: LibraryRoute.page),
+            DefaultRoute(path: 'projects', page: ProjectsRoute.page),
+            DefaultRoute(path: 'snippets', page: SnippetsRoute.page),
+            DefaultRoute(path: 'settings', page: SettingsRoute.page),
+            DefaultRoute(path: 'resources', page: ResourcesRoute.page),
           ],
         ),
-      ];
+        DefaultRoute(path: 'prompt/:id', page: PromptRoute.page),
+        DefaultRoute(path: 'project/:id', page: ProjectRoute.page),
+        DefaultRoute(path: 'snippet/:id', page: SnippetRoute.page),
+      ],
+    ),
+  ];
 }
 
 class DefaultRoute extends CustomRoute<void> {
-  DefaultRoute({
-    super.path,
-    super.initial,
-    required super.page,
-    super.children,
-  }) : super(
-          transitionsBuilder: TransitionsBuilders.fadeIn,
-          durationInMilliseconds: 50,
-        );
+  DefaultRoute({super.path, super.initial, required super.page, super.children})
+    : super(
+        transitionsBuilder: TransitionsBuilders.fadeIn,
+        durationInMilliseconds: 50,
+      );
 }
 
 extension RoutingExtension on BuildContext {

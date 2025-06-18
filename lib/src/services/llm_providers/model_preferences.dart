@@ -61,35 +61,28 @@ abstract final class ModelPreferences {
   }
 
   static void _setProvider(LLMProvider provider, String model, String key) =>
-      Database().stringRef.put(
-            key,
-            switch (provider) {
-              Anthropic() => 'anthropic|$model',
-              Gemini() => 'gemini|$model',
-              OpenAI() => 'openai|$model',
-            },
-          );
+      Database().stringRef.put(key, switch (provider) {
+        Anthropic() => 'anthropic|$model',
+        Gemini() => 'gemini|$model',
+        OpenAI() => 'openai|$model',
+      });
 
   static void setSummarizationProviderAndModel(
     LLMProvider provider,
     String model,
-  ) =>
-      _setProvider(provider, model, summarizationProviderKey);
+  ) => _setProvider(provider, model, summarizationProviderKey);
   static void setImageCaptionProviderAndModel(
     LLMProvider provider,
     String model,
-  ) =>
-      _setProvider(provider, model, imageCaptionProviderKey);
+  ) => _setProvider(provider, model, imageCaptionProviderKey);
   static void setPromptGenerationProviderAndModel(
     LLMProvider provider,
     String model,
-  ) =>
-      _setProvider(provider, model, promptGenerationProviderKey);
+  ) => _setProvider(provider, model, promptGenerationProviderKey);
   static void setAudioTranscriptionProviderAndModel(
     LLMProvider provider,
     String model,
-  ) =>
-      _setProvider(provider, model, audioTranscriptionProviderKey);
+  ) => _setProvider(provider, model, audioTranscriptionProviderKey);
 
   static String getSummarizationPrompt() =>
       Database().stringRef.get(summarizationPromptKey) ??

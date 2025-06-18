@@ -29,12 +29,18 @@ class _AppearanceSettingsState extends State<AppearanceSettings> {
               },
               groupValue: themeMode,
               children: const {
-                ThemeMode.system:
-                    _AppearanceItem('System', HugeIcons.strokeRoundedComputer),
-                ThemeMode.light:
-                    _AppearanceItem('Light', HugeIcons.strokeRoundedSun03),
-                ThemeMode.dark:
-                    _AppearanceItem('Dark', HugeIcons.strokeRoundedMoon02),
+                ThemeMode.system: _AppearanceItem(
+                  'System',
+                  HugeIcons.strokeRoundedComputer,
+                ),
+                ThemeMode.light: _AppearanceItem(
+                  'Light',
+                  HugeIcons.strokeRoundedSun03,
+                ),
+                ThemeMode.dark: _AppearanceItem(
+                  'Dark',
+                  HugeIcons.strokeRoundedMoon02,
+                ),
               },
             );
           },
@@ -59,11 +65,12 @@ class _AppearanceSettingsState extends State<AppearanceSettings> {
                 padding: EdgeInsets.zero,
                 clipBehavior: Clip.none,
                 itemCount: ThemeAccent.values.length,
-                itemBuilder: (context, index) => _ThemeAccentItem(
-                  ThemeAccent.values[index],
-                  ThemeAccent.values[index] == themeAccent,
-                  () => setThemeAccent(ThemeAccent.values[index]),
-                ),
+                itemBuilder:
+                    (context, index) => _ThemeAccentItem(
+                      ThemeAccent.values[index],
+                      ThemeAccent.values[index] == themeAccent,
+                      () => setThemeAccent(ThemeAccent.values[index]),
+                    ),
               ),
             );
           },
@@ -81,16 +88,12 @@ class _AppearanceItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: k12VPadding,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ShadImage.square(icon, size: 16.0),
-            const Gap(4.0),
-            Text(label),
-          ],
-        ),
-      );
+    padding: k12VPadding,
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [Icon(icon, size: 16.0), const Gap(4.0), Text(label)],
+    ),
+  );
 }
 
 class _ThemeAccentItem extends StatelessWidget {
@@ -111,20 +114,15 @@ class _ThemeAccentItem extends StatelessWidget {
       padding: const EdgeInsets.all(3.0),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: isSelected
-            ? Border.all(
-                color: selectedBorderColor,
-                width: 2.0,
-              )
-            : null,
+        border:
+            isSelected
+                ? Border.all(color: selectedBorderColor, width: 2.0)
+                : null,
       ),
       width: 32.0,
       height: 32.0,
       child: DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color,
-        ),
+        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
       ),
     );
 
@@ -132,10 +130,7 @@ class _ThemeAccentItem extends StatelessWidget {
       tooltip: accent.name.capitalize(),
       onTap: onTap,
       padding: const EdgeInsets.all(3.0),
-      child: EnlargeOnHover(
-        scale: 1.05,
-        child: colorCircle,
-      ),
+      child: EnlargeOnHover(scale: 1.05, child: colorCircle),
     );
   }
 }

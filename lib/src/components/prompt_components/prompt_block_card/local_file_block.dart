@@ -9,7 +9,7 @@ class _LocalFileBlock extends AnimatedStatelessWidget {
     final (isCode, content) = context.selectBlock(
       (b) => (
         b.filePath?.let(isCodeFile) ?? false,
-        b.preferSummary ? b.summary : b.textContent
+        b.preferSummary ? b.summary : b.textContent,
       ),
     );
     final isExpanded = context.isExpanded();

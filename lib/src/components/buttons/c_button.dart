@@ -90,12 +90,13 @@ class CButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(cornerRadius),
                 focusNode: context.read(),
                 focusColor: context.colorScheme.selection,
-                onPressed: onTap == null
-                    ? null
-                    : addFeedback
+                onPressed:
+                    onTap == null
+                        ? null
+                        : addFeedback
                         ? () {
-                            Feedback.wrapForTap(_callback, context)?.call();
-                          }
+                          Feedback.wrapForTap(_callback, context)?.call();
+                        }
                         : _callback,
                 child: PTooltip(
                   message: tooltip is String? ? tooltip as String? : null,

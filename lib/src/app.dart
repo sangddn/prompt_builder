@@ -39,15 +39,19 @@ class _AppState extends State<App> {
       builder: (context, _) {
         final mode = context.watch<ThemeMode>();
         final accent = context.watch<ThemeAccent>();
-        return ShadApp.materialRouter(
-          title: 'Prompt Builder',
-          debugShowCheckedModeBanner: false,
-          themeCurve: Curves.ease,
+        return ShadApp.custom(
           theme: getTheme(accent, Brightness.light),
           darkTheme: getTheme(accent, Brightness.dark),
           themeMode: mode,
-          routerConfig: _appRouter.config(),
-          builder: widget.builder,
+          appBuilder:
+              (context) => MaterialApp.router(
+                title: 'Prompt Builder',
+                routerConfig: _appRouter.config(),
+                themeAnimationCurve: Curves.ease,
+                builder:
+                    (_, child) =>
+                        ShadAppBuilder(builder: widget.builder, child: child),
+              ),
         );
       },
     );

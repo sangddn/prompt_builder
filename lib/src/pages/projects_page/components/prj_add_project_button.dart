@@ -6,13 +6,13 @@ class _PRJAddProjectButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ShadButton.ghost(
-      icon: const ShadImage.square(LucideIcons.plus, size: 20.0),
       onPressed: () async {
         final id = await context.db.createProject();
         if (!context.mounted) return;
         context.controller.onProjectAdded(context, id);
         context.pushProjectRoute(id: id);
       },
+      child: const Icon(LucideIcons.plus, size: 20.0),
     );
   }
 }

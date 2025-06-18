@@ -19,20 +19,14 @@ class _RPSnippetList extends StatelessWidget {
         }
         return Builder(
           builder: (context) {
-            final (tag, snippets) = context.selectResources(
-              (r) {
-                final key = r?.keys.toList().elementAtOrNull(index);
-                if (key == null) return (null, null);
-                final snippets = r?[key] ?? const IList.empty();
-                return (key, snippets);
-              },
-            );
+            final (tag, snippets) = context.selectResources((r) {
+              final key = r?.keys.toList().elementAtOrNull(index);
+              if (key == null) return (null, null);
+              final snippets = r?[key] ?? const IList.empty();
+              return (key, snippets);
+            });
             if (tag == null) return const SizedBox.shrink();
-            return _TagSection(
-              index: index,
-              tag: tag,
-              snippets: snippets!,
-            );
+            return _TagSection(index: index, tag: tag, snippets: snippets!);
           },
         );
       },
@@ -71,8 +65,8 @@ class _TagSectionState extends State<_TagSection> {
           mainAxisSpacing: 12.0,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: widget.snippets.length,
-          itemBuilder: (context, index) =>
-              _ResourceCard(widget.snippets[index]),
+          itemBuilder:
+              (context, index) => _ResourceCard(widget.snippets[index]),
         ),
         const Gap(12.0),
       ],
@@ -106,10 +100,7 @@ class _ResourceCard extends StatelessWidget {
               ),
               padding: k16APadding,
               child: SingleChildScrollView(
-                child: Text(
-                  resource.content,
-                  style: context.textTheme.muted,
-                ),
+                child: Text(resource.content, style: context.textTheme.muted),
               ),
             ),
           ),
@@ -131,8 +122,9 @@ class _ResourceCard extends StatelessWidget {
                 ),
                 const Gap(8.0),
                 GestureDetector(
-                  onTap:
-                      resource.authorUrl?.let((u) => () => launchUrlString(u)),
+                  onTap: resource.authorUrl?.let(
+                    (u) => () => launchUrlString(u),
+                  ),
                   child: Text(
                     resource.author,
                     maxLines: 1,
@@ -163,10 +155,7 @@ class _Actions extends StatelessWidget {
         Expanded(
           child: ShadButton.secondary(
             onPressed: () => context.saveResource(snippet),
-            icon: const ShadImage.square(
-              HugeIcons.strokeRoundedQuoteDown,
-              size: 16.0,
-            ),
+            leading: const Icon(HugeIcons.strokeRoundedQuoteDown, size: 16.0),
             child: const Text('Save'),
           ),
         ),
@@ -174,14 +163,15 @@ class _Actions extends StatelessWidget {
         Expanded(
           child: CopyButton.builder(
             data: () => snippet.content,
-            builder: (context, _, copy) => ShadButton.secondary(
-              onPressed: copy,
-              icon: const ShadImage.square(
-                HugeIcons.strokeRoundedCopy01,
-                size: 16.0,
-              ),
-              child: const Text('Copy'),
-            ),
+            builder:
+                (context, _, copy) => ShadButton.secondary(
+                  onPressed: copy,
+                  leading: const Icon(
+                    HugeIcons.strokeRoundedCopy01,
+                    size: 16.0,
+                  ),
+                  child: const Text('Copy'),
+                ),
           ),
         ),
       ],

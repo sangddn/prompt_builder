@@ -35,9 +35,9 @@ class BouncingObject extends StatefulWidget {
     this.scaleFactor = 0.8,
     this.hitTestBehavior,
   }) : assert(
-          scaleFactor >= 0.0 && scaleFactor <= 1.0,
-          'The valid range of scaleFactor is from 0.0 to 1.0.',
-        );
+         scaleFactor >= 0.0 && scaleFactor <= 1.0,
+         'The valid range of scaleFactor is from 0.0 to 1.0.',
+       );
 
   /// A listener for the animation.
   ///
@@ -160,9 +160,10 @@ class _BouncingObjectState extends State<BouncingObject>
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      cursor: widget.onTap != null
-          ? SystemMouseCursors.click
-          : SystemMouseCursors.basic,
+      cursor:
+          widget.onTap != null
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.basic,
       child: GestureDetector(
         behavior: widget.hitTestBehavior,
         onTapCancel: widget.onTap != null ? _onTapCancel : null,
@@ -172,10 +173,7 @@ class _BouncingObjectState extends State<BouncingObject>
         onLongPress: widget.onLongPress != null ? _onLongPress : null,
         onSecondaryTapDown:
             widget.onSecondaryTapDown != null ? _onSecondaryTapDown : null,
-        child: ScaleTransition(
-          scale: _animation,
-          child: widget.child,
-        ),
+        child: ScaleTransition(scale: _animation, child: widget.child),
       ),
     );
   }

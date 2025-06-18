@@ -11,13 +11,12 @@ import '../../components/components.dart';
 import '../../core/core.dart';
 import '../../database/database.dart';
 
-part 'states/snp_providers.dart';
-
+part 'components/snp_add_snippet_button.dart';
 part 'components/snp_app_bar.dart';
 part 'components/snp_filter_bar.dart';
-part 'components/snp_add_snippet_button.dart';
-part 'components/snp_snippet_list.dart';
 part 'components/snp_search_bar.dart';
+part 'components/snp_snippet_list.dart';
+part 'states/snp_providers.dart';
 
 @RoutePage()
 class SnippetsPage extends StatelessWidget {
@@ -31,12 +30,9 @@ class SnippetsPage extends StatelessWidget {
           Builder(
             builder: (context) {
               return ShadContextMenuItem(
-                onPressed: () =>
-                    context.read<SnippetListController>().refresh(),
-                trailing: const ShadImage.square(
-                  LucideIcons.refreshCcw,
-                  size: 16.0,
-                ),
+                onPressed:
+                    () => context.read<SnippetListController>().refresh(),
+                trailing: const Icon(LucideIcons.refreshCcw, size: 16.0),
                 child: const Text('Refresh'),
               );
             },
