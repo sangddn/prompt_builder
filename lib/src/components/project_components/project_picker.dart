@@ -55,7 +55,7 @@ class ProjectPicker extends StatelessWidget {
           ),
           ProxyProvider<TextEditingController, List<String>>(
             lazy: false,
-            update: (context, controller, __) {
+            update: (context, controller, _) {
               WidgetsBinding.instance.addPostFrameCallback(
                 (_) => context._search(),
               );

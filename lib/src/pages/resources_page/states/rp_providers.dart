@@ -29,7 +29,7 @@ class _RPProviders extends StatelessWidget {
           },
         ),
         ProxyProvider<SnippetResources?, _OrganizedResources?>(
-          update: (_, r, __) => r?.let(_organize),
+          update: (_, r, _) => r?.let(_organize),
         ),
         ListenableProvider<ScrollController>(create: (_) => ScrollController()),
         ListenableProvider<ListController>(create: (_) => ListController()),

@@ -96,7 +96,7 @@ class SnippetPicker extends StatelessWidget {
               (context, child) =>
                   ProxyProvider<TextEditingController, List<String>>(
                     update:
-                        (_, controller, __) =>
+                        (_, controller, _) =>
                             controller.text
                                 .toLowerCase()
                                 .split(' ')

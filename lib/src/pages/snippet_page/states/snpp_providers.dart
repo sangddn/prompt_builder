@@ -52,7 +52,7 @@ class _MoreProviders extends MultiProviderWidget {
     ),
     ProxyProvider<_ContentController, IMap<String, String>>(
       create: (context) => IMap(context.snippet!.variables),
-      update: (_, controller, __) {
+      update: (_, controller, _) {
         return IMap(SnippetExtension.parseVariables(controller.text));
       },
     ),

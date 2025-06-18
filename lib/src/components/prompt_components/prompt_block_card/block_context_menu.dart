@@ -25,7 +25,7 @@ class _BlockContextMenu extends StatelessWidget {
           CopyButton.builder(
             data: context.block.copyData,
             builder:
-                (_, __, copy) => _ContextMenuAction(
+                (_, _, copy) => _ContextMenuAction(
                   HugeIcons.strokeRoundedFileAttachment,
                   'Copy Raw Data',
                   copy,
@@ -57,7 +57,7 @@ class _CopyAction extends StatelessWidget {
     return CopyButton.builder(
       data: () => context.block.copyToPrompt(),
       builder:
-          (_, __, copy) => _ContextMenuAction(
+          (_, _, copy) => _ContextMenuAction(
             HugeIcons.strokeRoundedCopy01,
             'Copy Prompt Text',
             copy,
@@ -101,7 +101,7 @@ class _UrlAction extends StatelessWidget {
         CopyButton.builder(
           data: () => context.block.url!,
           builder:
-              (_, __, copy) =>
+              (_, _, copy) =>
                   _ContextMenuAction(LucideIcons.link, 'Copy URL', copy),
         ),
         _ContextMenuAction(
@@ -128,7 +128,7 @@ class _TranscriptAction extends StatelessWidget {
         CopyButton.builder(
           data: () => context.block.transcript!,
           builder:
-              (_, __, copy) => _ContextMenuAction(
+              (_, _, copy) => _ContextMenuAction(
                 LucideIcons.fileAudio2,
                 'Copy Transcript',
                 copy,
@@ -163,7 +163,7 @@ class _DescriptionAction extends StatelessWidget {
         CopyButton.builder(
           data: () => context.block.caption!,
           builder:
-              (_, __, copy) => _ContextMenuAction(
+              (_, _, copy) => _ContextMenuAction(
                 LucideIcons.fileImage,
                 'Copy Description',
                 copy,
@@ -198,7 +198,7 @@ class _SummaryAction extends StatelessWidget {
         CopyButton.builder(
           data: () => context.block.summary!,
           builder:
-              (_, __, copy) => _ContextMenuAction(
+              (_, _, copy) => _ContextMenuAction(
                 LucideIcons.fileText,
                 'Copy Summary',
                 copy,

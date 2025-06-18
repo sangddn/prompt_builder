@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shadcn_ui/shadcn_ui.dart' hide TextDirection;
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../components/components.dart';
 import '../../database/database.dart';

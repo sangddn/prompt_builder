@@ -17,7 +17,7 @@ class _PPProviders extends StatelessWidget {
       ),
       ValueProvider<ValueNotifier<_PromptContentViewState>>(
         create: (_) => ValueNotifier(_PromptContentViewState.edit),
-        onDisposed: (_, __) => db.recordPromptOpened(id),
+        onDisposed: (_, _) => db.recordPromptOpened(id),
       ),
     ],
     child: _PPLLMScope(

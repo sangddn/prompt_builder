@@ -37,7 +37,7 @@ class DefaultRoute extends CustomRoute<void> {
   DefaultRoute({super.path, super.initial, required super.page, super.children})
     : super(
         transitionsBuilder: TransitionsBuilders.fadeIn,
-        durationInMilliseconds: 50,
+        duration: const Duration(milliseconds: 50),
       );
 }
 
