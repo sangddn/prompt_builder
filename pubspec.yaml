@@ -1,12 +1,12 @@
 name: prompt_builder
 description: "Prompt Builder"
-publish_to: 'none'
+publish_to: "none"
 
 # version: 0.0.13
 # number: 17
 
 environment:
-  sdk: ^3.7.0-323.2.beta
+  sdk: ^3.8.0
 
 dependencies:
   flutter:
@@ -23,12 +23,12 @@ dependencies:
   http_parser: ^4.1.1
   path: ^1.9.0
   auto_updater: ^1.0.0
-  file_picker: ^8.1.6
+  file_picker: ^10.2.0
   fuzzywuzzy: ^1.2.0
 
   provider: ^6.1.2
-  auto_route: ^9.2.2
-  shadcn_ui: ^0.16.3
+  auto_route: ^10.1.0+1
+  shadcn_ui: ^0.27.2
   cupertino_icons: ^1.0.8
   flutter_animate: ^4.1.1+1
   flutter_markdown: ^0.7.3+2
@@ -42,27 +42,26 @@ dependencies:
   youtube_explode_dart: ^2.3.6
   any_link_preview: ^3.0.2
   infinite_scroll_pagination: ^4.1.0
-  super_drag_and_drop: ^0.8.24
-  super_clipboard: ^0.8.24
+  super_drag_and_drop: ^0.9.1
+  super_clipboard: ^0.9.1
   super_sliver_list: ^0.4.1
   flutter_highlight: ^0.7.0
   highlight: ^0.7.0
   webview_flutter: ^4.10.0
-  syncfusion_flutter_pdfviewer: ^28.1.36
+  syncfusion_flutter_pdfviewer: ^29.2.11
   flutter_staggered_grid_view: ^0.7.0
-  record: ^5.2.0
+  record: ^6.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  analyzer: ^6.11.0
-  flutter_lints: ^5.0.0
+  analyzer: ^7.4.5
+  flutter_lints: ^6.0.0
   build_runner: ^2.4.14
   flutter_launcher_icons: ^0.14.0
   drift_dev: ^2.22.1
-  auto_route_generator: ^9.0.0
+  auto_route_generator: ^10.2.3
   flutter_dotenv: ^5.2.1
-
 
 flutter:
   uses-material-design: true
@@ -79,7 +78,6 @@ flutter:
     - family: GeistMono
       fonts:
         - asset: assets/fonts/GeistMono-VariableFont_wght.ttf
-
 
 flutter_launcher_icons:
   macos:
