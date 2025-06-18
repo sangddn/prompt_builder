@@ -32,3 +32,6 @@ doc/api/
 .metadata
 /dist
 build_and_sign.sh
+
+# FVM Version Cache
+.fvm/
